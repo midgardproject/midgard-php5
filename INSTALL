@@ -1,0 +1,57 @@
+
+1 - To install midgard-php5 module, you'll first need to have the version 
+5.2 or later of PHP, as well as the matching php-devel package (or install 
+PHP from source). 
+
+2 - Then run:
+
+./mkall 
+
+	If pkg-config is not in system's PATH, 	use --with-pkg-config argument.
+	Full path including pkg-config executable is required in such case.
+
+	./mkall --with-pkg-config=/usr/local/bin/pkg-config
+
+	If php-config is not in system's PATH, use --with-php-config argument.
+	Full path including php-config executable is required in such case.
+
+	./mkall --with-php-config=/opt/bin/php-config
+
+3 - Edit your php.ini to add:
+
+extension=midgard.so
+midgard.http=On
+
+and make sure that extension_dir at least contains the output of `php-config --extension-dir`
+
+4 - Stop and start httpd.
+
+You may stop and start httpd server when midgard-data is already configured and 
+installed.
+
+
+########################################################
+########### PHP ini configuration directives ###########
+########################################################
+
+midgard.configuration
+	Name of midgard unified configuration file. Default is ''.
+	It's not used if midgard.http is 'Off'. It's set when module is loaded, 
+	and you can change it later, during runtime. Usable with virtual hosts.
+	( For example: php_admin_value midgard.configuration midgard )
+
+midgard.http
+	Switch which forces midgard module to initialize all system configurations
+	when module is loaded. All connections to all defined databases	are made at once. 
+	It should not be set for cli applications. This configuration should be set 
+	in main php.ini which is used only by php http server module.
+	It can not be changed during runtime. Default is 'Off'.
+
+midgard.engine
+	Disable or enable midgard engine. Default is 'On'.
+	You can change it between requests and also use in .htaccess files.
+
+midgard.quota
+	Disable or enable quota check. Default is 'Off'.
+	You can change it between requests and also use in .htaccess files.
+

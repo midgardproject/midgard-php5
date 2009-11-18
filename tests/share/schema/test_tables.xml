@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+    <type name="atype" table="atype">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="a" type="string">
+            <description>A-field</description>
+        </property>
+        <property name="b" type="string">
+            <description>B-field</description>
+        </property>
+        <property name="up" type="unsigned integer" link="atype:id" upfield="up">
+            <description>parent atype</description>
+        </property>
+    </type>
+
+    <type name="xtype" table="xtype" parent="atype">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="owner" type="unsigned integer" link="atype:id" parentfield="owner">
+            <description>Link to A-table</description>
+        </property>
+        <property name="x" type="string">
+            <description>X-field</description>
+        </property>
+        <property name="y" type="string">
+            <description>Y-field</description>
+        </property>
+    </type>
+
+</Schema>
