@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+    <view name="vview" table="atype">
+        <join type="left" class="xtype">
+            <condition left="atype:id" right="xtype:owner" />
+        </join>
+
+        <property name="guid" use="atype:guid" />
+        <property name="a" use="atype:a" />
+        <property name="b" use="atype:b" />
+        <property name="x" use="xtype:x" />
+        <property name="y" use="xtype:y" />
+    </view>
+
+</Schema>

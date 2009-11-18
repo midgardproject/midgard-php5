@@ -1,0 +1,187 @@
+2002-05-17 12:56  torben
+
+	* Switched default back to Non-MMP, so that the automatically
+	  built packages work. This can be reversed if MMP works finally.
+
+2002-05-02 15:08  torben
+
+	* Backported the new PHP UDF Functions from MMP to non-MMP
+	  non-MMP now uses the same set of functions
+	* During this I've explicitly removed all the old udf-functions
+	  from the php4 module
+
+2001-01-30 10:07  emile
+
+	* MidgardClassWhatever renamed to MidgardWhatever
+
+2001-01-26 02:09  david
+
+	* httpd.error_log.tgz: this is the httpd error_log associated with
+	the backtrace (see bt.txt).
+
+2001-01-26 02:05  david
+
+	* bt.txt: backtrace of an Asgard request (running out of memory).
+
+2001-01-26 02:04  david
+
+	* preparser-parser.y, preparser-scanner.l, preparser.c: debug
+	version. Lots of log, in httpd error_log and in the browser.
+
+2001-01-25 18:25  david
+
+	* preparser-parser.y, preparser-scanner.l, preparser.c: oops,
+	forgot default rule when in eval'ed quoted strings...
+
+2001-01-25 15:18  david
+
+	* article.c: removed some useless logging in mgd_get_article.
+
+2001-01-25 15:15  david
+
+	* Makefile.in, access.c, article.c, attachment.c, config.m4,
+	element.c, host.c, mgd_access.h, midgard.c, page.c, pageelement.c,
+	pagelink.c, preparser.c, style.c, topic.c: Eliminated the warnings
+	at compile, and cleaned the code.
+
+2001-01-25 04:38  david
+
+	* ab_config.m4, ab_mgd_preparser.h, ab_preparser-parser.y,
+	ab_preparser-scanner.l, ab_preparser.c, config.m4, mgd_preparser.h,
+	mkall, preparser-parser.y, preparser-scanner.l, preparser.c: added
+	Alexander's memory management modifications.  changed the lexer to
+	be more readable (easier to debug).  Status: old admin and VMUC
+	still working, Asgard has the same problem
+
+2001-01-24 21:45  david
+
+	* preparser-parser.y, preparser-scanner.l, preparser.c: Syncing. 
+	Asgard still crashing on form-template snippet but this is not a
+	mgd_include_snippet problem
+
+2001-01-24 20:46  david
+
+	* parameter.c, snippet.c: little bug on parameters oop members.
+
+2001-01-24 20:01  ab
+
+	* ab_mgd_preparser.h: Example site now works with dynamic memory
+	management.  Old Admin site has problems with authentication (?)
+
+2001-01-24 19:22  david
+
+	* test-db.tar.gz: My test DB, Asgard was modified in order to fix
+	some PHP3/PHP4 incompatibilities so everybody can test it.
+
+2001-01-24 19:09  david
+
+	* mgd_preparser.h, midgard.c, preparser-parser.y,
+	preparser-scanner.l, preparser.c: Preparser modifications, Asgard
+	is working almost fine, I'm on the way...
+
+2001-01-24 12:05  david
+
+	* preparser-parser.y, preparser.c: just syncing...  added the call
+	to zend_eval_string that seems to work on the snippets...  need to
+	implement it in variables and template elements.
+
+2001-01-24 02:24  david
+
+	* ab_config.m4, ab_mgd_preparser.h, ab_preparser-parser.y,
+	ab_preparser-scanner.l, ab_preparser.c, php_midgard.h: Alexander's
+	patch to the memory management in the preparser.  Doesn't work yet.
+
+2001-01-23 21:12  david
+
+	* BUGS, mgd_preparser.h, preparser-parser.y, preparser-scanner.l,
+	preparser.c: Fixed the variable handling, the VMUC example site now
+	runs fine.
+
+2001-01-23 18:51  david
+
+	* mgd_oop.h, midgard.c, preparser-parser.y, preparser.c: little fix
+	on snippets, MidgardClassSitegroup fix from marius and misc sync.
+
+2001-01-23 15:47  david
+
+	* host.c, parameter.c, preparser-parser.y, preparser.c,
+	sitegroup.c, snippet.c, snippetdir.c: Several bugs on php3/Zend
+	differences fixed.
+
+2001-01-23 11:34  david
+
+	* preparser-parser.y, preparser-scanner.l, preparser.c:
+	Modification on mgd_include_snippet handling in the preparser.
+
+2001-01-23 10:36  david
+
+	* preparser-scanner.l, preparser.c: Fixed snippet bug, doesn't work
+	with Asgard yet though (something like snippet too big).
+
+2001-01-23 09:48  david
+
+	* BUGS, oop.c: Bug on object instanciating fixed.  Now the old
+	admin work !!!
+
+2001-01-23 09:09  david
+
+	* BUGS: Known bugs updated.
+
+2001-01-23 03:13  david
+
+	* article.c, attachment.c, mgd_oop.h, midgard.c, oop.c,
+	parameter.c, preparser-scanner.l, sitegroup.c, topic.c: some more
+	bug fixing and code cleaning.
+
+2001-01-23 00:39  david
+
+	* mgd_internal.h: fixing differences between different Zend API
+	versions (at least between php-4.0.4-1.src.rpm and the current zend
+	CVS)
+
+2001-01-22 19:55  david
+
+	* mgd_internal.h, preparser.c: fixed a bug with variable as array
+
+2001-01-22 19:11  david
+
+	* BUGS, access.c, article.c, element.c, event.c, group.c, host.c,
+	mgd_internal.h, mgd_preparser.h, oop.c, pagelink.c, person.c,
+	preparser-scanner.l, preparser.c, sitegroup.c, snippetdir.c,
+	topic.c: corrected a lot of (maybe) harmful warnings.  added the
+	file BUGS
+
+2001-01-22 16:15  david
+
+	* Makefile.in, config.m4, mgd_internal.h, preparser-parser.y,
+	preparser.c: one of the reasons it segfaults fixed.  it still
+	segfaults on the old admin...
+
+2001-01-22 02:15  david
+
+	* mgd_internal.h, mgd_preparser.h, preparser-scanner.l,
+	preparser.c: Some work done on memory management in the preparser.
+
+2001-01-21 21:01  david
+
+	* midgard-root.php: midgard-root.php used instead of
+	midgard-root.php3
+
+2001-01-21 20:51  david
+
+	* .cvsignore, Makefile.in, access.c, article.c, attachment.c,
+	calendar.c, config.m4, element.c, event.c, eventmember.c, file.c,
+	fudge, genentry.pl, group.c, host.c, image.c, mail.c, member.c,
+	mgd_access.h, mgd_article.h, mgd_attachment.h, mgd_calendar.h,
+	mgd_element.h, mgd_errno.c, mgd_errno.h, mgd_errno.pl, mgd_event.h,
+	mgd_eventmember.h, mgd_file.h, mgd_group.h, mgd_host.h,
+	mgd_image.h, mgd_internal.h, mgd_mail.h, mgd_member.h,
+	mgd_midgard.h, mgd_oop.h, mgd_page.h, mgd_pageelement.h,
+	mgd_pagelink.h, mgd_person.h, mgd_preferences.h, mgd_preparser.h,
+	mgd_sitegroup.h, mgd_snippet.h, mgd_snippetdir.h, mgd_style.h,
+	mgd_topic.h, midgard.c, mkall, oop.c, page.c, pageelement.c,
+	pagelink.c, parameter.c, person.c, php_midgard.h, preferences.c,
+	preparser-parser.y, preparser-scanner.l, preparser.c, sitegroup.c,
+	snippet.c, snippetdir.c, style.c, topic.c: PHP4+preparser self
+	contained module source.
+
