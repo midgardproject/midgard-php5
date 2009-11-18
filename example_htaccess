@@ -1,0 +1,6 @@
+Options +FollowSymlinks
+php_value midgard.engine On
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !\.css$
+RewriteCond %{REQUEST_URI} !\midcom-static
+RewriteRule ^(.*)\.* midgard-root.php [nc] 

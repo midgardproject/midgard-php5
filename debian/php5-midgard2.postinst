@@ -1,0 +1,50 @@
+#!/bin/sh
+
+set -e
+
+#DEBHELPER#
+
+if [ "$1" != "configure" ]; then
+	exit 0
+fi
+
+if [ -n "$2" ]; then
+# we're upgrading. don't ask again
+        exit 0
+fi
+
+if [ -f /etc/php5/apache2/php.ini ]; then
+	if ! grep -q "^[[:space:]]*extension[[:space:]]*=[[:space:]]*midgard.so" /etc/php4/apache2/php.ini; then
+		echo "You are installing midgard support for php5, but it's not"
+		echo "enabled in your /etc/php5/apache2/php.ini."
+		echo
+		echo "To enable it you need to add this line:"
+		echo
+		echo "extension=midgard.so"
+		echo
+		echo -n "Do you want me to add it now [Y/n] ?"
+		read a
+		if ! echo $a | grep -iq ^n; then
+			echo "extension=midgard.so" >> /etc/php5/apache2/php.ini
+		fi
+	fi
+fi
+
+if [ -f /etc/php5/cli/php.ini ]; then
+	if ! grep -q "^[[:space:]]*extension[[:space:]]*=[[:space:]]*midgard.so" /etc/php5/cli/php.ini; then
+		echo "You are installing midgard support for php5, but it's not"
+		echo "enabled in your /etc/php5/cli/php.ini."
+		echo
+		echo "To enable it you need to add this line:"
+		echo
+		echo "extension=midgard.so"
+		echo
+		echo -n "Do you want me to add it now [Y/n] ?"
+		read a
+		if ! echo $a | grep -iq ^n; then
+			echo "extension=midgard.so" >> /etc/php5/cli/php.ini
+		fi
+	fi
+fi
+
+exit 0

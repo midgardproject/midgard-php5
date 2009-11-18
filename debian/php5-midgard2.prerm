@@ -1,0 +1,47 @@
+#!/bin/sh
+
+set -e
+
+#DEBHELPER#
+
+if [ "$1" != "remove" -a "$1" != "purge" ]; then
+	exit 0
+fi
+
+if [ -f /etc/php5/apache2/php.ini ]; then
+	if grep -q "^[[:space:]]*extension[[:space:]]*=[[:space:]]*midgard.so" /etc/php5/apache2/php.ini; then
+		echo "You are removing midgard support for php5, but it is still"
+		echo "enabled in your /etc/php5/apache2/php.ini."
+		echo
+		echo "You should remove this line:"
+		echo
+		echo "extension=midgard.so"
+		echo
+		echo -n "Do you want me to do it now [Y/n] ?"
+		read a
+		if ! echo $a | grep -iq ^n; then
+			cat /etc/php5/apache2/php.ini | grep -v "^[[:space:]]*extension[[:space:]]*=[[:space:]]*midgard.so" > /etc/php5/apache2/php.ini.midgardremove
+			mv /etc/php5/apache2/php.ini.midgardremove /etc/php5/apache2/php.ini
+		fi
+	fi
+fi
+
+if [ -f /etc/php5/cli/php.ini ]; then
+	if grep -q "^[[:space:]]*extension[[:space:]]*=[[:space:]]*midgard.so" /etc/php5/cli/php.ini; then
+		echo "You are removing midgard support for php5, but it is still"
+		echo "enabled in your /etc/php5/cli/php.ini."
+		echo
+		echo "You should remove this line:"
+		echo
+		echo "extension=midgard.so"
+		echo
+		echo -n "Do you want me to do it now [Y/n] ?"
+		read a
+		if ! echo $a | grep -iq ^n; then
+			cat /etc/php5/cli/php.ini | grep -v "^[[:space:]]*extension[[:space:]]*=[[:space:]]*midgard.so" > /etc/php5/cli/php.ini.midgardremove
+			mv /etc/php5/cli/php.ini.midgardremove /etc/php5/cli/php.ini
+		fi
+	fi
+fi
+
+exit 0

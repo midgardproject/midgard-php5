@@ -1,0 +1,31 @@
+#!/bin/sh
+
+CONFIGURE_OPTIONS="$@"
+
+# test for apxs later
+#APXSOK=`apxs 2>&1 | grep -c Usage`
+#if test $APXSOK -ne 1 ; then
+#   echo apxs not in PATH
+#   exit 1
+#fi
+
+if test "x$CC" != "x" ; then
+   COMPILER=$CC
+else
+   COMPILER=gcc
+fi
+
+[ -f Makefile ] && make distclean
+
+phpize
+
+# Be more verbose with warnings
+unset CFLAGS
+export CFLAGS='-g -Wall -fno-strict-aliasing '
+
+# Enable the last parameter for MMP with cache features fixed
+#./configure $CONFIGURE_OPTIONS # --without-old-mod-midgard
+./configure $CONFIGURE_OPTIONS
+
+make
+make install
