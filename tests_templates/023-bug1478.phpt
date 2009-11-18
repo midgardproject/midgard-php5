@@ -28,9 +28,15 @@ $user2 = new midgard_user($params);
 
 $mgd = midgard_connection::get_instance();
 
-function my_callback()
+function my_callback($obj)
 {
     echo "Callback called\n";
+    if (null === $obj)
+        echo "NULL\n";
+    elseif ($obj instanceof midgard_connection)
+        echo "midgard_connection\n";
+    else
+        echo "UNKNOWN!!\n";
 }
 
 $mgd->connect('auth-changed', 'my_callback', array());
@@ -41,6 +47,8 @@ var_dump($user2->login());
 ===DONE===
 --EXPECTF--
 Callback called
+midgard_connection
 bool(true)
 ===DONE===
 Callback called
+NULL

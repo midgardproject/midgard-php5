@@ -1326,12 +1326,17 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 	MAKE_STD_ZVAL(params);
 	array_init(params);
 
-	if (mgdclosure->zobject != NULL) {
+	// "10000" on next line is a HACK. Just took a number which is slightly above normal, but still doesn't look like invalid
+	if (mgdclosure->zobject != NULL && Z_REFCOUNT_P(mgdclosure->zobject) < 10000) {
+		if (MGDG(midgard_memory_debug)) {
+			php_printf("[%p] ---> zobject refcount = %d\n", closure, Z_REFCOUNT_P(mgdclosure->zobject));
+		}
 		zval_add_ref(&(mgdclosure->zobject));
 		zend_hash_next_index_insert(Z_ARRVAL_P(params), &(mgdclosure->zobject), sizeof(zval *), NULL);
 	} else {
 		zval *dummy = NULL;
 		MAKE_STD_ZVAL(dummy);
+		ZVAL_NULL(dummy);
 		zend_hash_next_index_insert(Z_ARRVAL_P(params), &dummy, sizeof(zval *), NULL);
 	}
 
