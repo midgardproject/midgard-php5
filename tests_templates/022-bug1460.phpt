@@ -13,7 +13,7 @@ report_memleaks = Off
 MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
-$login = 'tester';
+$login = 'bug1460';
 $authtype = 'Plaintext';
 
 $user = new midgard_user();
