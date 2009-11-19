@@ -14,6 +14,9 @@
         <property name="up" type="unsigned integer" link="atype:id" upfield="up">
             <description>parent atype</description>
         </property>
+        <property name="flt" type="float">
+            <description>Float field</description>
+        </property>
     </type>
 
     <type name="xtype" table="xtype" parent="atype">
