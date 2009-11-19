@@ -495,6 +495,7 @@ PHP_MINIT_FUNCTION(midgard2)
 
 static PHP_GINIT_FUNCTION(midgard2)
 {
+	midgard2_globals->can_deliver_signals = FALSE;
 	midgard2_globals->connection_established = FALSE;
 	midgard2_globals->all_configs = NULL;
 	midgard2_globals->midgard_global_holder = NULL;
@@ -569,11 +570,15 @@ PHP_RINIT_FUNCTION(midgard2)
 		php_printf("<= RINIT\n");
 	}
 
+	MGDG(can_deliver_signals) = 1;
+
 	return SUCCESS;
 }
 
 PHP_RSHUTDOWN_FUNCTION(midgard2)
 {
+	MGDG(can_deliver_signals) = 0;
+
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("RSHUTDOWN\n");
 	}
