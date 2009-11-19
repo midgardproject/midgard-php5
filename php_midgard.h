@@ -102,6 +102,7 @@ ZEND_BEGIN_MODULE_GLOBALS(midgard2)
 	zend_bool connection_established;
 	GHashTable *all_configs;
 	MgdGHolder *midgard_global_holder;
+	zend_bool can_deliver_signals;
 	char *midgard_configuration;
 	char *midgard_configuration_file;
 	zend_bool midgard_engine;

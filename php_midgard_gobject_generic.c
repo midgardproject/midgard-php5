@@ -1319,6 +1319,9 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 	zval *params = NULL;
 	TSRMLS_FETCH();
 
+	if (MGDG(can_deliver_signals) == 0)
+		return; // engine is not in sane state
+
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("[%p] php_midgard_closure_default_marshal(args = %p)\n", closure, mgdclosure->args);
 	}
