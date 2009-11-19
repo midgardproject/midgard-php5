@@ -42,7 +42,6 @@ function my_callback($obj)
 $mgd->connect('auth-changed', 'my_callback', array());
 
 var_dump($user2->login());
-// Callback should be called 2 times: 1) explicit login; 2) implicit logout on request-end
 ?>
 ===DONE===
 --EXPECTF--
@@ -50,5 +49,3 @@ Callback called
 midgard_connection
 bool(true)
 ===DONE===
-Callback called
-NULL
