@@ -158,6 +158,10 @@ function _get_php_executable()
     static $php_exec = null;
 
     if (null === $php_exec) {
+        if (!file_exists(_SRC_DIR_.'/Makefile')) {
+            throw new LogicException("Makefile is missing. You have to build extension before testing it!");
+        }
+
         $makefile = file(_SRC_DIR_.'/Makefile');
         foreach ($makefile as $row) {
             if (strpos($row, 'PHP_EXECUTABLE = ') !== 0)
