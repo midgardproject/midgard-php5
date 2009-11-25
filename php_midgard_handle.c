@@ -173,7 +173,8 @@ static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *c
 
 	if (!midgard_connection_open_from_file(mgd, config_path, &err)) {
 
-		g_warning("Failed to open connection using given '%s' configuration file. %s", config_path, err->message);
+		g_warning("Failed to open connection using given '%s' configuration file. %s", 
+				config_path, err && err->message ? err->message : " Unknown reason ");
 		g_error_free(err);
 		g_object_unref(mgd);
 		return NULL;
