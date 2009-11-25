@@ -204,6 +204,23 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_connection_open_config, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, config, midgard_config, 0)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_connection, is_connected)
+{
+	RETVAL_FALSE;
+	zend_bool rv;
+
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardConnection *mgd = __midgard_connection_get_ptr (getThis());
+	rv = (zend_bool) midgard_connection_is_connected (mgd);
+
+	RETURN_BOOL(rv);
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_is_connected, 0)
+ZEND_END_ARG_INFO()
+
 static PHP_METHOD(midgard_connection, get_error)
 {
 	CHECK_MGD;
@@ -374,6 +391,7 @@ void php_midgard_connection_init(int module_number)
 		PHP_ME(midgard_connection,	get_instance,		arginfo_midgard_connection_get_instance,	ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_connection,	open,			arginfo_midgard_connection_open,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection,	open_config,		arginfo_midgard_connection_open_config,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection,	is_connected,		arginfo_midgard_connection_is_connected,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection,	connect,		arginfo_midgard_connection_connect,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection,	get_error,		arginfo_midgard_connection_get_error,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection,	set_error,		arginfo_midgard_connection_set_error,		ZEND_ACC_PUBLIC)
