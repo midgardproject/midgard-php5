@@ -140,30 +140,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_config_read_data, 0, 0, 1)
 	ZEND_ARG_INFO(0, data)
 ZEND_END_ARG_INFO()
 
-static PHP_METHOD(midgard_config, create_midgard_tables)
-{
-	RETVAL_FALSE;
-	gboolean rv;
-	zval *zval_object = getThis();
-
-	if (zend_parse_parameters_none() == FAILURE) {
-		return;
-	}
-
-	MidgardConfig *config = NULL;
-
-	if (zval_object) {
-		config = (MidgardConfig *) __php_gobject_ptr(zval_object);
-	}
-
-	rv = midgard_config_create_midgard_tables(config, mgd_handle());
-
-	RETURN_BOOL(rv);
-}
-
-ZEND_BEGIN_ARG_INFO(arginfo_midgard_config_create_midgard_tables, 0)
-ZEND_END_ARG_INFO()
-
 static PHP_METHOD(midgard_config, list_files)
 {
 	RETVAL_FALSE;
@@ -200,86 +176,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_config_list_files, 0, 0, 0)
 	ZEND_ARG_INFO(0, user)
 ZEND_END_ARG_INFO()
 
-static PHP_METHOD(midgard_config, create_class_table)
-{
-	RETVAL_FALSE;
-	CHECK_MGD;
-	gboolean rv;
-	gchar *name;
-	guint name_length;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
-				&name, &name_length) == FAILURE) {
-		return;
-	}
-
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(name);
-
-	if (!klass)
-		return;
-
-	rv = midgard_config_create_class_table(NULL, klass, mgd_handle());
-
-	RETURN_BOOL(rv);
-}
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_config_create_class_table, 0, 0, 1)
-	ZEND_ARG_INFO(0, classname)
-ZEND_END_ARG_INFO()
-
-static PHP_METHOD(midgard_config, class_table_exists)
-{
-	RETVAL_FALSE;
-	CHECK_MGD;
-	gchar *name;
-	guint name_length;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
-				&name, &name_length) == FAILURE) {
-		return;
-	}
-
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(name);
-
-	if (!klass)
-		return;
-
-	gboolean rv;
-	rv = midgard_config_class_table_exists(NULL, klass, mgd_handle());
-	RETURN_BOOL(rv);
-}
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_config_class_table_exists, 0, 0, 1)
-	ZEND_ARG_INFO(0, classname)
-ZEND_END_ARG_INFO()
-
-static PHP_METHOD(midgard_config, update_class_table)
-{
-	RETVAL_FALSE;
-	CHECK_MGD;
-	gboolean rv;
-	gchar *name;
-	guint name_length;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
-				&name, &name_length) == FAILURE) {
-		return;
-	}
-
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(name);
-
-	if (!klass)
-		RETURN_BOOL(FALSE);
-
-	rv = midgard_config_update_class_table(NULL, klass, mgd_handle());
-
-	RETURN_BOOL(rv);
-}
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_config_update_class_table, 0, 0, 1)
-	ZEND_ARG_INFO(0, classname)
-ZEND_END_ARG_INFO()
-
 static PHP_METHOD(midgard_config, create_blobdir)
 {
 	RETVAL_FALSE;
@@ -308,17 +204,13 @@ void php_midgard_config_init(int module_numer)
 {
 
 	static function_entry midgard_config_methods[] = {
-		PHP_ME(midgard_config,	__construct,			arginfo_midgard_config___construct,				ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(midgard_config,	save_file,				arginfo_midgard_config_save_file,				ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_config,	read_file,				arginfo_midgard_config_read_file,				ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_config,	read_file_at_path,		arginfo_midgard_config_read_file_at_path,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_config,	read_data,				arginfo_midgard_config_read_data,				ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_config,	list_files,				arginfo_midgard_config_list_files,				ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_config,	create_midgard_tables,	arginfo_midgard_config_create_midgard_tables,	ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_config,	create_class_table,		arginfo_midgard_config_create_class_table,		ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_config,	class_table_exists,		arginfo_midgard_config_class_table_exists,		ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_config,	update_class_table,		arginfo_midgard_config_update_class_table,		ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_config,	create_blobdir,			arginfo_midgard_config_create_blobdir,			ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config,	__construct,		arginfo_midgard_config___construct,		ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_config,	save_file,		arginfo_midgard_config_save_file,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config,	read_file,		arginfo_midgard_config_read_file,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config,	read_file_at_path,	arginfo_midgard_config_read_file_at_path,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config,	read_data,		arginfo_midgard_config_read_data,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config,	list_files,		arginfo_midgard_config_list_files,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config,	create_blobdir,		arginfo_midgard_config_create_blobdir,		ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
