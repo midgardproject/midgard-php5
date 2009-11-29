@@ -249,6 +249,52 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_has_metadata, 0, 0, 1)
 	ZEND_ARG_INFO(0, classname)
 ZEND_END_ARG_INFO()
 
+static ZEND_METHOD(midgard_object_class, get_schema_value)
+{
+	CHECK_MGD;
+	RETVAL_FALSE;
+	zval *zvalue;
+	gchar *name;
+	guint name_length;
+	MidgardObjectClass *klass = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zs", &zvalue, &name, &name_length) == FAILURE) {
+		return;
+	}
+
+	if (Z_TYPE_P(zvalue) != IS_STRING) {
+		if (Z_TYPE_P(zvalue) != IS_OBJECT) {
+			php_error(E_WARNING,
+					"%s() accepts object or string as first argument",
+					get_active_function_name(TSRMLS_C));
+			RETURN_FALSE;
+		}
+	}
+
+	if (Z_TYPE_P(zvalue) == IS_STRING) {
+		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_STRVAL_P(zvalue));
+	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_OBJCE_P(zvalue)->name);
+	}
+
+	if (!klass) {
+
+		php_error(E_WARNING, "MidgardObjectClass not found");
+		RETURN_FALSE;
+	}
+
+	const gchar *schema_value = midgard_object_class_get_schema_value (klass, (const gchar *)name);
+
+	if (!schema_value)
+		RETURN_NULL();
+
+	RETURN_STRING((gchar *)schema_value, 1);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_schema_value, 0, 0, 2)
+	ZEND_ARG_INFO(0, classname)
+	ZEND_ARG_INFO(0, node_name)
+ZEND_END_ARG_INFO()
 
 
 void php_midgard_object_class_init(int module_number)
@@ -268,6 +314,8 @@ void php_midgard_object_class_init(int module_number)
 				arginfo_midgard_object_class_connect_default,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		ZEND_ME(midgard_object_class,   has_metadata,
 				arginfo_midgard_object_class_has_metadata,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		ZEND_ME(midgard_object_class,   get_schema_value,
+				arginfo_midgard_object_class_get_schema_value,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
