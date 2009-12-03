@@ -177,6 +177,12 @@ function _get_php_executable()
         }
         unset($makefile);
     }
-
+    
+    if (!$php_exec)
+    {
+        // Fallback
+        $php_exec = 'php';
+    }
+    
     return $php_exec;
 }
