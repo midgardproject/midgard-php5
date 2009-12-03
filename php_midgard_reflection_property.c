@@ -216,6 +216,25 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_mrp_get_user_value, 0, 0, 1)
 	ZEND_ARG_INFO(0, name)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_reflection_property, is_private)
+{
+	gchar *property_name;
+	guint property_name_length;
+	RETVAL_FALSE;
+	CHECK_MGD;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &property_name, &property_name_length) == FAILURE)
+		return;
+
+	_GET_MRP_OBJECT;
+
+	RETURN_BOOL(midgard_reflection_property_is_private(mrp, property_name));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_mrp_is_private, 0, 0, 1)
+	ZEND_ARG_INFO(0, property)
+ZEND_END_ARG_INFO()
+
 void php_midgard_reflection_property_init(int module_number)
 {
 	static function_entry reflection_property_methods[] = {
@@ -233,6 +252,8 @@ void php_midgard_reflection_property_init(int module_number)
 				arginfo_mrp_description,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflection_property,	get_user_value,
 				arginfo_mrp_get_user_value,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property,	is_private,
+				arginfo_mrp_is_private,		ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
