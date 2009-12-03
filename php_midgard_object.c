@@ -692,8 +692,8 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_get_by_guid),
 		ZEND_ACC_PUBLIC,
 		{
-			{ "A1", 0, "A2", 0, 0, 0, 0, 0, 1 },
-			{ "guid", sizeof("guid")-1, "B1", 0, 0, 0, 0, 0, 0 },
+			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
+			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0, 0, 0 },
 		}, 
 		1, 
 		"Get object which is identified by given guid"
