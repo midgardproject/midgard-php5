@@ -54,12 +54,16 @@ string(%d) "/**
      * Hi, method
      */"
 string(%d) "returns doc_comment of method"
-array(3) {
+array(5) {
   [0]=>
   string(5) "error"
   [1]=>
   string(12) "auth-changed"
   [2]=>
   string(13) "lost-provider"
+  [3]=>
+  string(9) "connected"
+  [4]=>
+  string(12) "disconnected"
 }
 ===DONE===
