@@ -64,7 +64,7 @@ static ZEND_METHOD(midgard_object_class, get_object_by_guid)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length) == FAILURE)
 		return;
 
-	MgdObject *object = midgard_object_class_get_object_by_guid(mgd_handle(), guid);
+	MidgardObject *object = midgard_object_class_get_object_by_guid(mgd_handle(), guid);
 
 	if (!object) {
 		php_midgard_error_exception_throw(mgd_handle());

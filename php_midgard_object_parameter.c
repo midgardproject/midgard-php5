@@ -33,8 +33,8 @@ PHP_FUNCTION(_php_midgard_object_list_parameters)
 		return;
 	}
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
-	MgdObject **objects = midgard_object_list_parameters(mobj, domain);
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject **objects = midgard_object_list_parameters(mobj, domain);
 	array_init(return_value);
 
 	if (objects) {
@@ -52,7 +52,7 @@ PHP_FUNCTION(php_midgard_object_has_parameters)
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	zend_bool rv = (zend_bool)midgard_object_has_parameters(mobj);
 
@@ -72,7 +72,7 @@ PHP_FUNCTION(_php_midgard_object_delete_parameters)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 	zend_bool rv = (zend_bool) midgard_object_delete_parameters(mobj, n_params, parameters);
 
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
@@ -93,7 +93,7 @@ PHP_FUNCTION(_php_midgard_object_purge_parameters)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 	zend_bool rv = (zend_bool) midgard_object_purge_parameters(mobj, n_params, parameters);
 
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
@@ -107,7 +107,7 @@ PHP_FUNCTION(_php_midgard_object_find_parameters)
 	CHECK_MGD;
 	zval *zval_object = getThis();
 	zval *params = NULL;
-	MgdObject **objects = NULL;
+	MidgardObject **objects = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a", &params) != SUCCESS) {
 		return;
@@ -115,7 +115,7 @@ PHP_FUNCTION(_php_midgard_object_find_parameters)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 	objects = midgard_object_find_parameters(mobj, n_params, parameters);
 
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
@@ -143,7 +143,7 @@ PHP_FUNCTION(_php_midgard_object_get_parameter)
 				&name, &name_length) != SUCCESS)
 		return;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 	gvalue = midgard_object_get_parameter(mobj, domain, name);
 
 	if (gvalue == NULL)
@@ -173,7 +173,7 @@ PHP_FUNCTION(_php_midgard_object_set_parameter)
 		return;
 	}
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (strval == NULL)
 		strval = "";
@@ -209,7 +209,7 @@ PHP_FUNCTION(_php_midgard_object_parameter)
 		return;
 	}
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	switch (_args) {
 		case 2:

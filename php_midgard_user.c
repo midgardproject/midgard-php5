@@ -142,7 +142,7 @@ static PHP_METHOD(midgard_user, get_person)
 
 	_GET_USER_OBJECT;
 
-	const MgdObject *person = midgard_user_get_person(user);
+	const MidgardObject *person = midgard_user_get_person(user);
 
 	if (person == NULL)
 		RETURN_NULL();

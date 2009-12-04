@@ -35,7 +35,7 @@ zend_class_entry *php_midgard_object_class = NULL;
 
 #define _GET_MIDGARD_OBJECT \
 	zval *zval_object = getThis(); \
-	MgdObject *object = MIDGARD_OBJECT(__php_gobject_ptr(zval_object)); \
+	MidgardObject *object = MIDGARD_OBJECT(__php_gobject_ptr(zval_object)); \
 	if (!object) \
 		php_error(E_ERROR, "Can not find underlying midgard object instance");
 
@@ -45,7 +45,7 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *bas
 	MidgardConnection *mgd = mgd_handle();
 
 	if (objid == NULL) {
-		/* Initialize empty MgdObject */
+		/* Initialize empty MidgardObject */
 		gobject = midgard_object_new(mgd, (const gchar *) base_classname, NULL);
 	} else {
 		/* There is one parameter , so we get object by id or guid */
@@ -170,7 +170,7 @@ PHP_FUNCTION(_get_type_by_id)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &id) == FAILURE)
 		return;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		midgard_object_get_by_id(mobj, id);
@@ -193,7 +193,7 @@ PHP_FUNCTION(_midgard_php_object_get_by_guid)
 		return;
 	}
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		midgard_object_get_by_guid(mobj, guid);
@@ -220,7 +220,7 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 	if (rootid == 0 && id == 0)
 		RETURN_TRUE;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		if (midgard_object_is_in_parent_tree(mobj, rootid, id)) {
@@ -240,7 +240,7 @@ PHP_FUNCTION(_midgard_php_object_is_in_tree)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &rootid, &id) == FAILURE)
 		return;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		if (midgard_object_is_in_tree(mobj, rootid, id)) {
@@ -256,7 +256,7 @@ PHP_FUNCTION(_midgard_php_object_delete)
 	CHECK_MGD;
 	zval *zval_object = getThis();
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		g_signal_emit(mobj, MIDGARD_OBJECT_GET_CLASS(mobj)->signal_action_delete_hook, 0);
@@ -272,12 +272,12 @@ PHP_FUNCTION(_midgard_php_object_get_parent)
 	RETVAL_FALSE;
 	CHECK_MGD;
 	zval *zval_object = getThis();
-	MgdObject *pobj;
+	MidgardObject *pobj;
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		pobj = midgard_object_get_parent(mobj);
@@ -304,7 +304,7 @@ PHP_FUNCTION(_midgard_php_object_list)
 
 	array_init(return_value);
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		GObject **objects;
@@ -342,7 +342,7 @@ PHP_FUNCTION(_midgard_php_object_list_children)
 
 	array_init(return_value);
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		guint i, n_objects;
@@ -393,7 +393,7 @@ PHP_FUNCTION(_midgard_php_object_get_by_path)
 		return;
 	}
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		gboolean rv = midgard_object_get_by_path(mobj, path);
@@ -411,7 +411,7 @@ PHP_FUNCTION(_midgard_php_object_parent)
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		parent_class_name = midgard_object_parent(mobj);
@@ -429,7 +429,7 @@ PHP_FUNCTION(_php_midgard_object_purge)
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MgdObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
 		g_signal_emit(mobj, MIDGARD_OBJECT_GET_CLASS(mobj)->signal_action_purge_hook, 0);
@@ -558,7 +558,7 @@ PHP_FUNCTION(_php_midgard_object_set_guid)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length) == FAILURE)
 		return;
 
-	MgdObject *object = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *object = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	RETURN_BOOL(midgard_object_set_guid(object, (const gchar *)guid));
 }
@@ -574,7 +574,7 @@ PHP_FUNCTION(_php_midgard_object_emit)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_length) == FAILURE)
 		return;
 
-	MgdObject *object = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *object = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	g_signal_emit_by_name(object, name);
 }

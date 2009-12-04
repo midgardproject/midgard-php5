@@ -51,7 +51,7 @@ MGD_FUNCTION(ret_type, snippet, (type param))
 	MidgardConnection *mgd = mgd_handle();
 	const gchar *path;
 	guint pathl;
-	MgdObject *object;
+	MidgardObject *object;
 
 	CHECK_MGD;
 
@@ -81,7 +81,7 @@ MGD_FUNCTION(ret_type, snippet_required, (type param))
 	MidgardConnection *mgd = mgd_handle();
 	const gchar *path;
 	guint pathl;
-	MgdObject *object;
+	MidgardObject *object;
 
 	CHECK_MGD;
 

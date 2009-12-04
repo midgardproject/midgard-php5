@@ -51,7 +51,7 @@ static PHP_METHOD(midgard_blob, __construct)
 		return;
 	}
 
-	MgdObject *att = MIDGARD_OBJECT(ppo->gobject);
+	MidgardObject *att = MIDGARD_OBJECT(ppo->gobject);
 	blob = midgard_blob_new(att, encoding);
 
 	if (!blob) {

@@ -21,7 +21,7 @@
 
 static zend_class_entry *php_midgard_replicator_class;
 
-static MgdObject *_get_object(zval *object)
+static MidgardObject *_get_object(zval *object)
 {
 	TSRMLS_FETCH();
 	return MIDGARD_OBJECT(__php_gobject_ptr(object));
@@ -66,7 +66,7 @@ static ZEND_METHOD(midgard_replicator, export)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zobject) == FAILURE) 
 		return;
 	
-	MgdObject *object = _get_object(zobject);
+	MidgardObject *object = _get_object(zobject);
 	exported = midgard_replicator_export(MIDGARD_DBOBJECT(object));
 
 	RETURN_BOOL(exported);
@@ -156,7 +156,7 @@ static ZEND_METHOD(midgard_replicator, serialize_blob)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zobject) == FAILURE) 
 		return;
 
-	MgdObject *object = _get_object(zobject);
+	MidgardObject *object = _get_object(zobject);
 	xml = midgard_replicator_serialize_blob(object);
 
 	if (xml == NULL)
@@ -229,7 +229,7 @@ static ZEND_METHOD(midgard_replicator, import_object)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o|b", &zobject, &zbool) == FAILURE) 
 		return;
 
-	MgdObject *object = _get_object(zobject);
+	MidgardObject *object = _get_object(zobject);
 	imported = midgard_replicator_import_object(MIDGARD_DBOBJECT(object), zbool);
 
 	RETURN_BOOL(imported);
