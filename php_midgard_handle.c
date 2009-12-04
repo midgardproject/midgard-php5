@@ -195,13 +195,10 @@ MidgardConnection *php_midgard_handle_lookup(MgdGHolder **mgh, GHashTable *globa
 	if (*mgh == NULL)
 		php_midgard_handle_holder_init(mgh);
 
-	const gchar *config_name = NULL;
-	const gchar *config_path = NULL;
+	const gchar *config_path = __get_configuration_filepath();
 
-	config_name = __get_configuration_name();
-
-	if (config_name != NULL) {
-		MidgardConnection *handle = __handle_from_global_config(*mgh, global_cfgs, config_name);
+	if (config_path != NULL) {
+		MidgardConnection *handle = __handle_from_filepath(*mgh, config_path);
 
 		if (handle != NULL) {
 			return handle;
@@ -210,10 +207,10 @@ MidgardConnection *php_midgard_handle_lookup(MgdGHolder **mgh, GHashTable *globa
 		// handle is NULL. falling back to file-based search of config
 	}
 
-	config_path = __get_configuration_filepath();
+	const gchar *config_name = __get_configuration_name();
 
-	if (config_path != NULL)
-		return __handle_from_filepath(*mgh, config_path);
+	if (config_name != NULL)
+		return __handle_from_global_config(*mgh, global_cfgs, config_name);
 
 	return NULL;
 }
