@@ -234,6 +234,9 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue)
 
 					/* TODO , check zval ref and alloc */
 					php_midgard_gobject_init(zvalue, gclass_name, gobject_property, TRUE);
+					 /* Add strong reference, we will decrease it zval dtor, so final 
+					  * GObject destructor will be invoked */
+					g_object_ref (gobject_property);
 
 					return TRUE;
 				} else {
