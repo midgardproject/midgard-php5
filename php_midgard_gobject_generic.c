@@ -234,6 +234,9 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue)
 
 					/* TODO , check zval ref and alloc */
 					php_midgard_gobject_init(zvalue, gclass_name, gobject_property, TRUE);
+					/* Add strong reference, we will decrease it zval dtor, so final 
+					 * GObject destructor will be invoked */
+					g_object_ref (gobject_property);
 
 					return TRUE;
 				} else {
@@ -444,7 +447,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			zval **property;
 			if (zend_hash_find(Z_OBJPROP_P(zobject), Z_STRVAL_P(prop), Z_STRLEN_P(prop)+1 ,(void **) &property) == SUCCESS) {
 				_retval = *property;
-				// zval_add_ref(property);
+				//zval_add_ref(&_retval);
 			} else {
 				MAKE_STD_ZVAL(_retval);
 				ZVAL_NULL(_retval);
@@ -776,7 +779,8 @@ static void __php_midgard_gobject_dtor(void *object TSRMLS_DC)
 				php_printf("[%p] =========> gobject's refcount = %d (before unref)\n", object, php_gobject->gobject->ref_count);
 			}
 
-			/*php_error(E_NOTICE, "%s DTOR (%p)", G_OBJECT_TYPE_NAME(G_OBJECT(php_gobject->gobject)), (void*)php_gobject->gobject); */
+			/* php_error(E_NOTICE, "%s (%d) DTOR (%p)", G_OBJECT_TYPE_NAME(G_OBJECT(php_gobject->gobject)), 
+					G_OBJECT(php_gobject->gobject)->ref_count, (void*)php_gobject->gobject); */
 			/* TODO, find a way to destroy properties of object type.
 			 * Memory usage will be a bit abused, but I really have no idea how it should be implemented */
 			__object_properties_dtor(&php_gobject->zo);
@@ -1396,7 +1400,7 @@ static GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall
 	zval_add_ref(&fci.function_name);
 	mgdclosure->fci = fci;
 	mgdclosure->fci_cache = fci_cache;
-	mgdclosure->zobject = zobject; // we do not add reference here, as closure would be destroyed when object destroyed
+	mgdclosure->zobject = zobject; // we do not add reference here, as closure would be destroyed when object destroyed	
 
 	mgdclosure->args = NULL;
 
