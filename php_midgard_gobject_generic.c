@@ -577,7 +577,17 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 		GValue *gvalue = php_midgard_zval2gvalue(value);
 
 		if (gvalue) {
-			g_object_set_property(gobject, Z_STRVAL_P(prop), gvalue);
+
+			/* Transform int to uint */
+			if (pspec->value_type == G_TYPE_UINT && G_VALUE_HOLDS_INT (gvalue)) {
+				GValue uintval = {0, };
+				g_value_init (&uintval, G_TYPE_UINT);
+				g_value_transform ((const GValue *) gvalue, &uintval);
+				g_object_set_property (gobject, Z_STRVAL_P (prop), &uintval);
+				g_value_unset (&uintval);
+			} else {
+				g_object_set_property(gobject, Z_STRVAL_P(prop), gvalue);
+			}
 
 			if (Z_TYPE_P(value) != IS_OBJECT) {
 				g_value_unset(gvalue);
