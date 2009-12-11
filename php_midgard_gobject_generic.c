@@ -1384,7 +1384,9 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 	zend_call_function(&(mgdclosure->fci), &(mgdclosure->fci_cache) TSRMLS_CC);
 	zend_fcall_info_args_clear(&(mgdclosure->fci), 1);
 
-	zval_ptr_dtor(&retval);
+	if (retval)
+		zval_ptr_dtor(&retval);
+
 	zval_ptr_dtor(&params);
 }
 
