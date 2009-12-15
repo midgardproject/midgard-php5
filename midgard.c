@@ -724,24 +724,27 @@ zend_class_entry *midgard_php_register_internal_class(const gchar *class_name, G
 		return NULL;
 	}
 
-	if (G_TYPE_IS_DERIVED(class_type)) {
-		GType parent_type = g_type_parent(class_type);
-
-		if (parent_type > 0) {
-			gchar *parent_name = (gchar *) g_type_name(parent_type);
-
-			zend_class_entry *pce, *registered_class = NULL;
-
-			pce = php_midgard_get_class_ptr_by_name(parent_name);
-			if (NULL != pce) {
-				registered_class = zend_register_internal_class_ex(&ce , pce, parent_name TSRMLS_CC);
-			}
-
-			return registered_class;
-		}
+	if (!G_TYPE_IS_DERIVED(class_type)) {
+		php_error(E_ERROR, "'%s' class doesn't have base-class in GType system!", class_name);
+		return NULL;
 	}
 
-	return NULL;
+	GType parent_type = g_type_parent(class_type);
+
+	if (parent_type <= 0) {
+		php_error(E_ERROR, "'%s' class has invalid base-class in GType system!", class_name);
+		return NULL;
+	}
+
+	gchar *parent_name = (gchar *) g_type_name(parent_type);
+	zend_class_entry *pce = php_midgard_get_class_ptr_by_name(parent_name);
+
+	if (NULL == pce) {
+		php_error(E_ERROR, "'%s' class's parent '%s' is not registered in php", class_name, parent_name);
+		return NULL;
+	}
+
+	return zend_register_internal_class_ex(&ce , pce, parent_name TSRMLS_CC);
 }
 
 ZEND_GET_MODULE(midgard2)
