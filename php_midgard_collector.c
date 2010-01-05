@@ -500,12 +500,9 @@ void php_midgard_collector_init(int module_number)
 			php_midgard_collector_class_entry,
 			"midgard_collector", collector_methods);
 
-	php_midgard_collector_class =
-		midgard_php_register_internal_class(
-				"midgard_collector",
-				MIDGARD_TYPE_COLLECTOR,
-				php_midgard_collector_class_entry,
-				collector_methods);
+	/* FIXME, this inheritance should be automatic once we switch to namespaces */
+	php_midgard_collector_class = 
+		zend_register_internal_class_ex (&php_midgard_collector_class_entry, NULL, "midgard_query_builder" TSRMLS_CC);
 
 	/* Set function to initialize underlying data */
 	php_midgard_collector_class->create_object = php_midgard_gobject_new;
