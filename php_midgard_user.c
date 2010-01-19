@@ -290,6 +290,21 @@ static PHP_METHOD(midgard_user, update)
 ZEND_BEGIN_ARG_INFO(arginfo_midgard_user_update, 0)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_user, delete)
+{
+	RETVAL_FALSE;
+	CHECK_MGD;
+
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	_GET_USER_OBJECT;
+	RETURN_BOOL(midgard_user_delete(user));
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_user_delete, 0)
+ZEND_END_ARG_INFO()
+
 static PHP_METHOD(midgard_user, login)
 {
 	RETVAL_FALSE;
@@ -326,7 +341,7 @@ ZEND_BEGIN_ARG_INFO(arginfo_midgard_user_logout, 0)
 ZEND_END_ARG_INFO()
 
 /* Initialize ZEND&PHP class */
-void php_midgard_user_init(int module_number)
+void php_midgard_user_init (int module_number)
 {
 	static function_entry midgard_user_methods[] = {
 		PHP_ME(midgard_user,	__construct,	arginfo_midgard_user___construct,	ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -339,6 +354,7 @@ void php_midgard_user_init(int module_number)
 		PHP_ME(midgard_user,    query,     	arginfo_midgard_user_query,		ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user,    create,     	arginfo_midgard_user_create,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_user,    update,     	arginfo_midgard_user_update,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user,    delete,     	arginfo_midgard_user_delete,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_user,    login,     	arginfo_midgard_user_login,		ZEND_ACC_PUBLIC)	
 		PHP_ME(midgard_user,    logout,     	arginfo_midgard_user_logout,		ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
