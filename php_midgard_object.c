@@ -75,7 +75,7 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *bas
 	}
 
 	MGD_PHP_SET_GOBJECT(instance, gobject);
-
+	
 	return TRUE;
 }
 

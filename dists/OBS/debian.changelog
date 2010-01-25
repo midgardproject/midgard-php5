@@ -1,3 +1,9 @@
+php5-midgard2 (9.09.2-1) unstable; urgency=low
+
+  * New upstream
+
+ -- Piotr Pokora <piotrek.pokora@gmail.com>  Mon, 25 Jan 2010 13:23:30 +0200
+
 php5-midgard2 (9.09.1-1) unstable; urgency=low
 
   * New upstream
