@@ -15,7 +15,7 @@ Suggests: midgard-doc
 Replaces: 
 Conflicts: 
 Recommends: 
-Description: Midgard2 Content Repository - PHP5 language bindings and module.
+Description: Midgard2 Content Repository - PHP5 language bindings and module
  .
  Midgard2 is an Open Source Content Repository. It provides an object-oriented
  and replicated environment for building data-intensive applications for both 
