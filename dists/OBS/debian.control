@@ -4,6 +4,7 @@ Priority: optional
 Maintainer:  Piotr Pokora <piotrek.pokora@gmail.com>
 Uploaders: 
 Standards-Version: 3.2.1
+Homepage: http://www.midgard-project.org
 Build-Depends: debhelper (>=3), php5-dev, libmidgard2-dev(>=9.09.99) 
  
 Package: php5-midgard2
