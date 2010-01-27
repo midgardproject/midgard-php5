@@ -1,16 +1,15 @@
 Source: php5-midgard2
 Section: web
 Priority: optional
-Maintainer:  Piotr Pokora <piotrek.pokora@gmail.com>
+Maintainer: Piotr Pokora <piotrek.pokora@gmail.com>
 Uploaders: 
 Standards-Version: 3.8.3
 Homepage: http://www.midgard-project.org
 Build-Depends: debhelper (>=5), php5-dev, libmidgard2-dev(>=9.09.2) 
  
 Package: php5-midgard2
-Section: web
 Architecture: any
-Depends: libapache2-mod-php5 (>=5.2.0) | lighttpd | nginx, php5-cli (>=5.2.0) | php5-cgi (>=5.2.0), php5-memcache, midgard2-common (>=9.09.2), ucf, ${shlibs:Depends}
+Depends: libapache2-mod-php5 (>=5.2.0) | lighttpd | nginx, php5-cli (>=5.2.0) | php5-cgi (>=5.2.0), php5-memcache, midgard2-common (>=9.09.2), ucf, ${shlibs:Depends}, ${misc:Depends}
 Suggests: midgard-doc
 Replaces: 
 Conflicts: 

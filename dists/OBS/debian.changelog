@@ -1,3 +1,11 @@
+php5-midgard2 (9.09.2-4) unstable; urgency=low
+
+  * Fixed debian-rules-sets-DH_COMPAT
+  * Fixed debhelper-but-no-misc-depends
+  * Fixed binary-control-field-duplicates-source
+
+ -- Piotr Pokora <piotrek.pokora@gmail.com>  Wed, 28 Jan 2010 13:38:09 +0200
+
 php5-midgard2 (9.09.2-3) unstable; urgency=low
 
   * Fixed debian-rules-sets-DH_COMPAT
