@@ -1,7 +1,7 @@
 #! /usr/bin/make -f
 
 #export DH_VERBOSE=1
-export DH_COMPAT=4
+export DH_COMPAT=5
 export DH_OPTIONS
 
 DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -43,7 +43,7 @@ configure-midgard-php5-stamp:
 
 clean:
 	dh_testdir
-	-$(MAKE) distclean
+	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -rf $(PHPIZE_CRUFT) conftest.c conftest
 #	rm -f build-stamp configure-stamp php_config.h
 	rm -f configure-midgard-php5-stamp build-midgard-php5-stamp

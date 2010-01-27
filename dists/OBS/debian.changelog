@@ -1,3 +1,12 @@
+php5-midgard2 (9.09.2-3) unstable; urgency=low
+
+  * Fixed debian-rules-sets-DH_COMPAT
+  * Fixed debian-rules-ignores-make-clean-error
+  * Fixed package-lacks-versioned-build-depends-on-debhelper
+  * Fixed ancient-standards-version
+
+ -- Piotr Pokora <piotrek.pokora@gmail.com>  Wed, 28 Jan 2010 08:57:56 +0200
+
 php5-midgard2 (9.09.2-2) unstable; urgency=low
 
   * Fixed 'description-synopsis-might-not-be-phrased-properly' issue
