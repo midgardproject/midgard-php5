@@ -1,0 +1,24 @@
+Source: php5-midgard2
+Section: web
+Priority: optional
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Piotr Pokora <piotrek.pokora@gmail.com>
+Standards-Version: 3.8.3
+Homepage: http://www.midgard-project.org
+Build-Depends: debhelper (>=5), php5-dev, libmidgard2-dev(>=9.09.2) 
+ 
+Package: php5-midgard2
+Architecture: any
+Depends: libapache2-mod-php5 (>=5.2.0) | lighttpd | nginx, php5-cli (>=5.2.0) | php5-cgi (>=5.2.0), php5-memcache, midgard2-common (>=9.09.2), ucf, ${shlibs:Depends}, ${misc:Depends}
+Suggests: midgard-doc
+Replaces: 
+Conflicts: 
+Recommends: 
+Description: Midgard2 Content Repository - PHP5 language bindings and module
+ .
+ Midgard2 is an Open Source Content Repository. It provides an object-oriented
+ and replicated environment for building data-intensive applications for both 
+ web and the desktop. Midgard2 is built on the GNOME stack of libraries like 
+ GLib and libgda. Communications between applications written in the different
+ languages happen over D-Bus.
+ .
