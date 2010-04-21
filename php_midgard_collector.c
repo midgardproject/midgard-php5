@@ -495,6 +495,7 @@ void php_midgard_collector_init(int module_number)
 	};
 
 	static zend_class_entry php_midgard_collector_class_entry;
+	TSRMLS_FETCH();
 
 	INIT_CLASS_ENTRY(
 			php_midgard_collector_class_entry,
