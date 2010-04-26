@@ -45,7 +45,7 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 void php_midgard_gobject_new_with_gobject(zval *zvalue, zend_class_entry *ce, GObject *gobject, gboolean dtor);
 
 /* Initialize new php object by classname */
-void php_midgard_gobject_init(zval *zvalue, const char *classname, GObject *gobject, gboolean dtor);
+void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *gobject, gboolean dtor);
 
 /* Get base class pointer */
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
@@ -67,5 +67,8 @@ void php_midgard_gobject_unset_property(zval *object, zval *member TSRMLS_DC);
 /* SIGNALS */
 void php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAMETERS);
 void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS);
+
+const char* g_class_name_to_php_class_name(const gchar *g_class_name);
+const gchar* php_class_name_to_g_class_name(const char *php_class_name);
 
 #endif /* PHP_MIDGARD_GOBJECT_GENERIC  */

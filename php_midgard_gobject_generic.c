@@ -168,7 +168,6 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue)
 
 	gchar *tmpstr;
 	double f, dpval, tmp_val;
-	const gchar *gclass_name;
 	GValueArray *array;
 	GValue *arr_val;
 	zval *zarr_val;
@@ -227,16 +226,18 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue)
 				GObject *gobject_property = g_value_get_object(gvalue);
 
 				if (gobject_property) {
-					gclass_name = G_OBJECT_TYPE_NAME(gobject_property);
+					const gchar *gclass_name = G_OBJECT_TYPE_NAME(gobject_property);
 
 					if (!gclass_name)
 						return FALSE;
 
+					const char* php_class_name = g_class_name_to_php_class_name(gclass_name);
+
 					/* TODO , check zval ref and alloc */
-					php_midgard_gobject_init(zvalue, gclass_name, gobject_property, TRUE);
+					php_midgard_gobject_init(zvalue, php_class_name, gobject_property, TRUE);
 					 /* Add strong reference, we will decrease it zval dtor, so final 
 					  * GObject destructor will be invoked */
-					g_object_ref (gobject_property);
+					g_object_ref(gobject_property);
 
 					return TRUE;
 				} else {
@@ -654,7 +655,8 @@ void php_midgard_zendobject_register_properties(zval *zobject, GObject *gobject)
 				gclass_name = g_type_name(G_OBJECT_TYPE(G_OBJECT(g_value_get_object(&pval))));
 
 				if (gclass_name) {
-					zend_class_entry *ce = php_midgard_get_class_ptr_by_name(gclass_name);
+					const char *php_class_name = g_class_name_to_php_class_name(gclass_name);
+					zend_class_entry *ce = php_midgard_get_class_ptr_by_name(php_class_name);
 
 					if (NULL != ce) {
 						MAKE_STD_ZVAL(tmp_object);
@@ -692,14 +694,14 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 		php_printf("[%p] php_midgard_zendobject_get_properties()\n", zobject);
 	}
 
-	GObject *gobject = php_gobject->gobject;	
+	GObject *gobject = php_gobject->gobject;
 	guint propn, i;
 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
 	for (i = 0; i < propn; i++) {
 
-		GValue pval = {0, };	
-		g_value_init(&pval, props[i]->value_type);      
+		GValue pval = {0, };
+		g_value_init(&pval, props[i]->value_type);
 		g_object_get_property(gobject, (gchar*)props[i]->name, &pval);
 
 		zval *tmp;
@@ -834,12 +836,11 @@ void php_midgard_init_properties_objects(zval *zobject)
 	GParamSpec **pspecs = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
 	for (i = 0; i < propn; i++) {
-		
 		/* Property which is not object type will be initialized in read_property hook.
 		 * Workaround for PHP read/write property bug */
-		if(G_TYPE_FUNDAMENTAL(pspecs[i]->value_type) != G_TYPE_OBJECT)
-			                        continue;
-		
+		if (G_TYPE_FUNDAMENTAL(pspecs[i]->value_type) != G_TYPE_OBJECT)
+			continue;
+
 		zval *prop_zobject;
 		MAKE_STD_ZVAL(prop_zobject);
 
@@ -848,8 +849,14 @@ void php_midgard_init_properties_objects(zval *zobject)
 		g_object_get_property(gobject, pspecs[i]->name, &oval);
 		GObject *prop_gobject = g_value_get_object(&oval);
 
-		zend_class_entry *ce =
-			php_midgard_get_baseclass_ptr_by_name(G_OBJECT_TYPE_NAME(prop_gobject));
+		const char *php_class_name = g_class_name_to_php_class_name(G_OBJECT_TYPE_NAME(prop_gobject));
+		zend_class_entry *ce = php_midgard_get_baseclass_ptr_by_name(php_class_name);
+
+		if (ce == NULL) {
+			php_error(E_NOTICE, "Didn't find class for \"%s\" property", pspecs[i]->name);
+			g_value_unset(&oval);
+			continue;
+		}
 
 		object_init_ex(prop_zobject, ce);
 		zval_add_ref(&prop_zobject);
@@ -918,7 +925,7 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	return retval;
 }
 
-void php_midgard_gobject_init(zval *zvalue, const char *classname, GObject *gobject, gboolean dtor)
+void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *gobject, gboolean dtor)
 {
 	zend_class_entry *ce = NULL;
 	TSRMLS_FETCH();
@@ -927,13 +934,13 @@ void php_midgard_gobject_init(zval *zvalue, const char *classname, GObject *gobj
 		MAKE_STD_ZVAL(zvalue);
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_gobject_init(%s)\n", zvalue, classname);
+		php_printf("[%p] php_midgard_gobject_init(%s)\n", zvalue, php_classname);
 	}
 
-	ce = php_midgard_get_class_ptr_by_name(classname);
+	ce = php_midgard_get_class_ptr_by_name(php_classname);
 
 	if (ce == NULL)
-		php_error(E_ERROR, "Class '%s' is not registered", classname);
+		php_error(E_ERROR, "Class '%s' is not registered", php_classname);
 
 	php_midgard_gobject_new_with_gobject(zvalue, ce, gobject, dtor);
 }
@@ -1590,4 +1597,22 @@ CLEAN_AND_RETURN_NULL:
 	g_free(parameters);
 
 	return NULL;
+}
+
+const char* g_class_name_to_php_class_name(const char *g_class_name)
+{
+	if (strcmp(g_class_name, "MidgardMetadata") == 0) {
+		return "midgard_metadata";
+	}
+
+	return g_class_name;
+}
+
+const gchar* php_class_name_to_g_class_name(const char *php_class_name)
+{
+	if (strcmp(php_class_name, "midgard_metadata") == 0) {
+		return "MidgardMetadata";
+	}
+
+	return php_class_name;
 }

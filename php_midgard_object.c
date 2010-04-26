@@ -39,14 +39,15 @@ zend_class_entry *php_midgard_object_class = NULL;
 	if (!object) \
 		php_error(E_ERROR, "Can not find underlying midgard object instance");
 
-static zend_bool init_php_midgard_object_from_id(zval *instance, const char *base_classname, zval *objid TSRMLS_DC)
+static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php_classname, zval *objid TSRMLS_DC)
 {
 	MidgardObject *gobject = NULL;
 	MidgardConnection *mgd = mgd_handle();
+	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
 
 	if (objid == NULL) {
 		/* Initialize empty MidgardObject */
-		gobject = midgard_object_new(mgd, (const gchar *) base_classname, NULL);
+		gobject = midgard_object_new(mgd, (const gchar *) g_classname, NULL);
 	} else {
 		/* There is one parameter , so we get object by id or guid */
 
@@ -58,13 +59,13 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *bas
 				convert_to_long(objid);
 			}
 		} else {
-			php_error(E_WARNING, "Wrong type for '%s' constructor", base_classname);
+			php_error(E_WARNING, "Wrong id-type for '%s' constructor", php_classname);
 			php_midgard_error_exception_throw(mgd);
 			return FALSE;
 		}
 
 		GValue *value = php_midgard_zval2gvalue(objid);
-		gobject = midgard_object_new(mgd, (const gchar *) base_classname, value);
+		gobject = midgard_object_new(mgd, (const gchar *) g_classname, value);
 		g_value_unset(value);
 		g_free(value);
 	}
@@ -666,6 +667,7 @@ static struct
 	zend_uint num_args;
 	char *doc_comment;
 }
+
 __midgard_php_type_functions[] =
 {
 	{"__construct",
@@ -1186,9 +1188,8 @@ static void __add_method_comments(const char *class_name)
 {
 	guint j;
 
-	for (j = 0; __midgard_php_type_functions[j].fname; j++) {
-	
-	        php_midgard_docs_add_method_comment (class_name, __midgard_php_type_functions[j].fname, __midgard_php_type_functions[j].doc_comment);
+	for (j = 0; __midgard_php_type_functions[j].fname != NULL; j++) {
+		php_midgard_docs_add_method_comment(class_name, __midgard_php_type_functions[j].fname, __midgard_php_type_functions[j].doc_comment);
 	}
 }
 
@@ -1198,21 +1199,20 @@ void php_midgard_object_init(int module_number)
 	static zend_class_entry php_midgard_dbobject_ce;
 	TSRMLS_FETCH();
 	INIT_CLASS_ENTRY(php_midgard_dbobject_ce, "midgard_dbobject", NULL);
-	php_midgard_dbobject_class =
-		zend_register_internal_class(&php_midgard_dbobject_ce TSRMLS_CC);
+	php_midgard_dbobject_class = zend_register_internal_class(&php_midgard_dbobject_ce TSRMLS_CC);
 
 	/* Register midgard_object class */
 	static zend_class_entry php_midgard_object_ce;
 	INIT_CLASS_ENTRY(php_midgard_object_ce, "midgard_object", NULL);
-	php_midgard_object_class =
-		zend_register_internal_class_ex(&php_midgard_object_ce, php_midgard_dbobject_class, "midgard_dbobject" TSRMLS_CC);
+	php_midgard_object_class = zend_register_internal_class_ex(&php_midgard_object_ce, php_midgard_dbobject_class, "midgard_dbobject" TSRMLS_CC);
 
 	guint n_types, i;
 	const gchar *typename;
 	GType *all_types = g_type_children(MIDGARD_TYPE_OBJECT, &n_types);
 
 	for (i = 0; i < n_types; i++) {
-		typename = g_type_name(all_types[i]);
+		typename = g_class_name_to_php_class_name(g_type_name(all_types[i]));
+
 		__register_php_classes(typename, php_midgard_object_class);
 		__add_method_comments(typename);
 	}
