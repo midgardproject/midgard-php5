@@ -1603,6 +1603,8 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 {
 	if (strcmp(g_class_name, "MidgardMetadata") == 0) {
 		return "midgard_metadata";
+	} else if (strcmp(g_class_name, "MidgardConnection") == 0) {
+		return "midgard_connection";
 	}
 
 	return g_class_name;
@@ -1612,6 +1614,8 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 {
 	if (strcmp(php_class_name, "midgard_metadata") == 0) {
 		return "MidgardMetadata";
+	} else if (strcmp(php_class_name, "midgard_connection") == 0) {
+		return "MidgardConnection";
 	}
 
 	return php_class_name;
