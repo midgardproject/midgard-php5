@@ -1,5 +1,7 @@
 <?php
 
+pake_import('phpExtension');
+
 ini_set('display_errors', 'On');
 
 define('_SRC_DIR_', dirname(__FILE__));
@@ -10,7 +12,7 @@ pake_desc('Init tests');
 pake_task('init_tests', 'clean_tests');
 
 pake_desc('Init test-database');
-pake_task('init_test_db', 'enable_midgard', 'init_tests', 'clean_test_db');
+pake_task('init_test_db', 'init_tests', 'clean_test_db', 'enable_midgard');
 
 pake_desc('Run tests');
 pake_task('test', 'init_tests', 'init_test_db');
@@ -34,7 +36,7 @@ function run_test()
     }
 
     pake_echo_comment('Running test-suite. This can take awhile…');
-    pake_sh('make test TEST_PHP_ARGS=-n'.$php_cgi);
+    pake_sh('make test NO_INTERACTION=1 TEST_PHP_ARGS=-n'.$php_cgi);
     pake_echo_comment('Done');
 
     $path = _SRC_DIR_.'/tests';
@@ -65,11 +67,13 @@ function run_init_test_db()
 
     putenv('MIDGARD_ENV_GLOBAL_SHAREDIR='._SRC_DIR_.'/tests/share'.'');
     putenv('PAKE_MIDGARD_CFG='._SRC_DIR_.'/tests/test.cfg');
+
     pake_sh(_get_php_executable().' '._SRC_DIR_.'/pake/create_database.php');
 }
 
 function run_init_tests()
 {
+    pake_echo_comment('Creating tests from templates');
     $path = _SRC_DIR_.'/tests';
     $src_path = _SRC_DIR_.'/tests_templates';
 
@@ -114,6 +118,7 @@ function run_clean_test_db()
 
 function run_enable_midgard()
 {
+    pake_echo_comment('Enabling midgard2 extension');
     if (extension_loaded('midgard2')) {
         throw new LogicException('Please disable midgard2-extension in php.ini. test-suite will enable it automatically');
     }
