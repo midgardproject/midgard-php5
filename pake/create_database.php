@@ -22,7 +22,11 @@ $cfg->read_file_at_path($_SERVER['PAKE_MIDGARD_CFG']);
 $cfg->create_blobdir();
 
 $mgd = midgard_connection::get_instance();
-$mgd->open_config($cfg);
+$res = $mgd->open_config($cfg);
+
+if (false === $res) {
+    throw new RuntimeException('connection failed: '.$mgd->get_error_string());
+}
 
 echo "midgard_storage: create_base_storage\n";
 midgard_storage::create_base_storage();
