@@ -1,9 +1,9 @@
 <?php
 
-pake_import('phpExtension');
+if (version_compare(pakeApp::VERSION, '1.4.0', '<='))
+    throw new pakeException('Pake 1.4.1 or newer is required');
 
 ini_set('display_errors', 'On');
-
 define('_SRC_DIR_', dirname(__FILE__));
 
 // "public" tasks
@@ -14,47 +14,23 @@ pake_task('init_tests', 'clean_tests');
 pake_desc('Init test-database');
 pake_task('init_test_db', 'init_tests', 'clean_test_db', 'enable_midgard');
 
-pake_desc('Run tests');
-pake_task('test', 'init_tests', 'init_test_db');
-
-pake_desc('Cleanup after tests');
-pake_task('cleanup', 'clean_test_db', 'clean_tests');
-
 // "private" tasks
 
 pake_task('clean_tests');
 pake_task('clean_test_db', 'enable_midgard');
 pake_task('enable_midgard');
 
-function run_test()
-{
-    $php_cgi = '';
+// Adding standard extension-building tasks
+pake_import('phpExtension', false);
+// -> injecting dependencies
+pakePhpExtensionTask::$tasks['test'][1][] = 'init_tests';
+pakePhpExtensionTask::$tasks['test'][1][] = 'init_test_db';
+pakePhpExtensionTask::$tasks['clean'][1][] = 'clean_tests';
+pakePhpExtensionTask::$tasks['clean'][1][] = 'clean_test_db';
+// -> registering tasks
+pakePhpExtensionTask::import_default_tasks();
+// DONE
 
-    $_php_cgi = _get_php_executable().'-cgi';
-    if (file_exists($_php_cgi)) {
-        $php_cgi = ' '.escapeshellarg('TEST_PHP_CGI_EXECUTABLE='.$_php_cgi);
-    }
-
-    pake_echo_comment('Running test-suite. This can take awhile…');
-    pake_sh('make test NO_INTERACTION=1 TEST_PHP_ARGS=-n'.$php_cgi);
-    pake_echo_comment('Done');
-
-    $path = _SRC_DIR_.'/tests';
-    $files = pakeFinder::type('file')->ignore_version_control()->relative()->name('*.diff')->in($path);
-    if (count($files) == 0) {
-        pake_echo('   All tests PASSed!');
-    } else {
-        pake_echo_error('Following tests FAILed:');
-        foreach ($files as $file) {
-            $phpt_file = mb_ereg_replace('\.diff$', '.phpt', $file);
-            $_lines = file($path.'/'.$phpt_file);
-            $line = $_lines[1];
-            unset($_lines);
-
-            pake_echo('     '.$phpt_file.' ('.rtrim($line).')');
-        }
-    }
-}
 
 function run_init_test_db()
 {
@@ -110,10 +86,10 @@ function run_clean_tests()
 
 function run_clean_test_db()
 {
-    $dir = _db_dir();
-    $cfg = _get_midgard_config();
+    $file = _db_dir().'/'._get_midgard_config()->database.'.db';
 
-    pake_remove(pakeFinder::type('file')->name($cfg->database.'.db'), $dir);
+    if (file_exists($file))
+        pake_remove($file, '');
 }
 
 function run_enable_midgard()
@@ -130,8 +106,6 @@ function run_enable_midgard()
     ini_set('midgard.http', 'Off');
     dl('midgard2.so');
 }
-
-function run_cleanup() {}
 
 // Support tools
 
