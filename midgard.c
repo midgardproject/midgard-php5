@@ -55,8 +55,6 @@ GHashTable *mgdg_config_names = NULL;
 GHashTable *mgdg_config_files = NULL;
 /* End of true globals */
 
-static void php_midgard_register_as_zend_extension();
-
 MGD_FUNCTION(ret_type, is_guid, (type_param));
 
 /* Undocumented */

@@ -38,7 +38,6 @@ static PHP_METHOD(midgard_query_builder, __construct)
 	CHECK_MGD;
 	char *classname;
 	long classname_length;
-	zend_class_entry *ce_base;
 	zval *zval_object = getThis();
 	GObject *gobject;
 
