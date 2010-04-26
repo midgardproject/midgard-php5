@@ -13,26 +13,37 @@ report_memleaks = Off
 MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
+// =========================================================================================
+// = Order of fields might differ, so we compare sorted arrays of fiels instead of objects =
+// =========================================================================================
 $obj = new atype();
 $obj->a = 'example.com';
 $obj->create();
 
-$string1 = var_export($obj, true);
+$arr = (array)$obj;
+ksort($arr);
+$string1 = var_export($arr, true);
 
 $obj = new atype($obj->id);
-$string2 = var_export($obj, true);
+$arr = (array)$obj;
+ksort($arr);
+$string2 = var_export($arr, true);
 
 $query = new midgard_query_builder('atype');
 var_dump($query->count() == 1);
 $res = $query->execute();
 
-$string3 = var_export($res[0], true);
+$arr = (array)$res[0];
+ksort($arr);
+$string3 = var_export($arr, true);
 
 $query2 = atype::new_query_builder();
 var_dump($query2->count() == 1);
 $res = $query2->execute();
 
-$string4 = var_export($res[0], true);
+$arr = (array)$res[0];
+ksort($arr);
+$string4 = var_export($arr, true);
 
 $obj->delete();
 
