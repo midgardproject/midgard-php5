@@ -13,22 +13,22 @@ report_memleaks = Off
 MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
-$obj = new midgard_host();
-$obj->name = 'example.com';
+$obj = new atype();
+$obj->a = 'example.com';
 $obj->create();
 
 $string1 = var_export($obj, true);
 
-$obj = new midgard_host($obj->id);
+$obj = new atype($obj->id);
 $string2 = var_export($obj, true);
 
-$query = new midgard_query_builder('midgard_host');
+$query = new midgard_query_builder('atype');
 var_dump($query->count() == 1);
 $res = $query->execute();
 
 $string3 = var_export($res[0], true);
 
-$query2 = midgard_host::new_query_builder();
+$query2 = atype::new_query_builder();
 var_dump($query2->count() == 1);
 $res = $query2->execute();
 
