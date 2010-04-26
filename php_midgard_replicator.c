@@ -108,33 +108,39 @@ static ZEND_METHOD(midgard_replicator, export_purged)
 	MidgardObjectClass *klass = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|ss",
-				&ook, &startdate, &start_length,
-				&enddate, &end_length) == FAILURE)
+				&ook, &startdate, &start_length, &enddate, &end_length) == FAILURE)
 	{
 		return;
 	}
 
-	if ((Z_TYPE_P(ook) != IS_STRING) &&
-			Z_TYPE_P(ook) != IS_OBJECT)
+	if ((Z_TYPE_P(ook) != IS_STRING) && Z_TYPE_P(ook) != IS_OBJECT)
 	{
 		php_error(E_WARNING,
 				"%s() accepts object or string as first argument",
 				get_active_function_name(TSRMLS_C));
-		RETURN_FALSE;
+		return;
 	}
+
+	const gchar *classname;
 
 	if (Z_TYPE_P(ook) == IS_STRING) {
-		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_STRVAL_P(ook));
+		classname = (const gchar *)Z_STRVAL_P(ook);
 	} else if (Z_TYPE_P(ook) == IS_OBJECT) {
-		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_OBJCE_P(ook)->name);
+		classname = (const gchar *)Z_OBJCE_P(ook)->name;
 	}
 
-	xml = midgard_replicator_export_purged(mgd_handle(), klass, startdate, enddate);
+	klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(classname);
+
+	if (!klass) {
+		php_error(E_WARNING, "MidgardObjectClass not found");
+		return;
+	}
+
+	xml = midgard_replicator_export_purged(mgd_handle(), classname, startdate, enddate);
 
 	if (xml == NULL)
 		RETURN_NULL();
 
-	RETVAL_TRUE;
 	RETVAL_STRING(xml, 1);
 	g_free(xml);
 }

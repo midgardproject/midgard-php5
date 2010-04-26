@@ -35,30 +35,18 @@ static PHP_METHOD(midgard_storage, create_base_storage)
 ZEND_BEGIN_ARG_INFO(arginfo_midgard_storage_create_base_storage, 0)
 ZEND_END_ARG_INFO()
 
-#define __INITIALIZE_DBOBJECT_CLASS(dbklass) \
-{ \
-	CHECK_MGD; \
-	gchar *classname; \
-	gint classname_length; \
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &classname, &classname_length) == FAILURE) { \
-		return; \
-	} \
-	zend_class_entry *ce_base; \
-	PHP_MIDGARD_PARSE_CLASS_ARGUMENT(classname, MIDGARD_TYPE_DBOBJECT, TRUE, &ce_base); \
-	dbklass = g_type_class_peek(g_type_from_name(ce_base->name)); \
-	if (!dbklass) { \
-		php_error(E_ERROR, "%s is not registered as midgard_dbobject derived class", ce_base->name); \
-		return; \
-	} \
-}
-
 static PHP_METHOD(midgard_storage, create_class_storage)
 {
 	RETVAL_FALSE;
-	MidgardDBObjectClass *dbklass;
+	CHECK_MGD;
+	gchar *classname;
+	gint classname_length;
 
-	__INITIALIZE_DBOBJECT_CLASS(dbklass)
-	zend_bool rv = (zend_bool) midgard_storage_create_class_storage(mgd_handle(), dbklass);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &classname, &classname_length) == FAILURE) {
+		return;
+	}
+
+	zend_bool rv = (zend_bool) midgard_storage_create(mgd_handle(), classname);
 	RETURN_BOOL(rv);
 }
 
@@ -69,10 +57,14 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_storage, update_class_storage)
 {
 	RETVAL_FALSE;
-	MidgardDBObjectClass *dbklass;
+	gchar *classname;
+	gint classname_length;
 
-	__INITIALIZE_DBOBJECT_CLASS(dbklass)
-	zend_bool rv = (zend_bool) midgard_storage_update_class_storage(mgd_handle(), dbklass);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &classname, &classname_length) == FAILURE) {
+		return;
+	}
+
+	zend_bool rv = (zend_bool) midgard_storage_update(mgd_handle(), classname);
 	RETURN_BOOL(rv);
 }
 
@@ -83,10 +75,14 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_storage, delete_class_storage)
 {
 	RETVAL_FALSE;
-	MidgardDBObjectClass *dbklass;
+	gchar *classname;
+	gint classname_length;
 
-	__INITIALIZE_DBOBJECT_CLASS(dbklass)
-	zend_bool rv = (zend_bool) midgard_storage_delete_class_storage(mgd_handle(), dbklass);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &classname, &classname_length) == FAILURE) {
+		return;
+	}
+
+	zend_bool rv = (zend_bool) midgard_storage_delete(mgd_handle(), classname);
 	RETURN_BOOL(rv);
 }
 
@@ -97,10 +93,14 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_storage, class_storage_exists)
 {
 	RETVAL_FALSE;
-	MidgardDBObjectClass *dbklass;
+	gchar *classname;
+	gint classname_length;
 
-	__INITIALIZE_DBOBJECT_CLASS(dbklass)
-	zend_bool rv = (zend_bool) midgard_storage_class_storage_exists(mgd_handle(), dbklass);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &classname, &classname_length) == FAILURE) {
+		return;
+	}
+
+	zend_bool rv = (zend_bool) midgard_storage_exists(mgd_handle(), classname);
 	RETURN_BOOL(rv);
 }
 

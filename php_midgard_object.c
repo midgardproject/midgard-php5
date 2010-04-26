@@ -452,7 +452,7 @@ PHP_FUNCTION(_php_midgard_object_undelete)
 		return;
 	}
 
-	rv = midgard_object_undelete(mgd_handle(), (const gchar *)guid);
+	rv = midgard_schema_object_factory_object_undelete(mgd_handle(), (const gchar *)guid);
 	RETURN_BOOL(rv);
 }
 

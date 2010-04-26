@@ -59,7 +59,7 @@ MGD_FUNCTION(ret_type, snippet, (type param))
 		return;
 	}
 
-	if ((object = midgard_object_class_get_object_by_path(mgd, "midgard_snippet", path)) != NULL) {
+	if ((object = midgard_schema_object_factory_get_object_by_path(mgd, "midgard_snippet", path)) != NULL) {
 		gchar *code = NULL;
 		g_object_get(G_OBJECT(object), "code", &code, NULL);
 
@@ -89,7 +89,7 @@ MGD_FUNCTION(ret_type, snippet_required, (type param))
 		return;
 	}
 
-	if ((object = midgard_object_class_get_object_by_path(mgd, "midgard_snippet", path)) != NULL) {
+	if ((object = midgard_schema_object_factory_get_object_by_path(mgd, "midgard_snippet", path)) != NULL) {
 		gchar *code;
 		g_object_get(G_OBJECT(object), "code", &code, NULL);
 		RETVAL_STRING(code,1);
