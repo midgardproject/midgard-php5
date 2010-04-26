@@ -190,7 +190,7 @@ static PHP_METHOD(php_midgard_reflection_class, listSignals)
 	if (ce == NULL)
 		return;
 
-	GType classtype = g_type_from_name(ce->name);
+	GType classtype = g_type_from_name(php_class_name_to_g_class_name(ce->name));
 	guint *ids;
 	guint n_ids;
 	guint i;
