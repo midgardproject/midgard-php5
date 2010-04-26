@@ -99,27 +99,29 @@ static ZEND_METHOD(midgard_object_class, get_property_up)
 		return;
 	}
 
-	if (Z_TYPE_P(zvalue) != IS_STRING) {
-		if (Z_TYPE_P(zvalue) != IS_OBJECT) {
-			php_error(E_WARNING,
-					"%s() accepts object or string as first argument",
-					get_active_function_name(TSRMLS_C));
-			RETURN_FALSE;
-		}
+	if (Z_TYPE_P(zvalue) != IS_STRING && Z_TYPE_P(zvalue) != IS_OBJECT) {
+		php_error(E_WARNING,
+				"%s() accepts object or string as first argument",
+				get_active_function_name(TSRMLS_C));
+		return;
 	}
 
+	const gchar *classname = NULL;
+
 	if (Z_TYPE_P(zvalue) == IS_STRING) {
-		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_STRVAL_P(zvalue));
+		classname = (const gchar *)Z_STRVAL_P(zvalue);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_OBJCE_P(zvalue)->name);
+		classname = (const gchar *)Z_OBJCE_P(zvalue)->name;
 	}
+
+	klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(classname);
 
 	if (!klass) {
 		php_error(E_WARNING, "MidgardObjectClass not found");
-		RETURN_FALSE;
+		return;
 	}
 
-	const gchar *property_up = midgard_object_class_get_property_up(klass);
+	const gchar *property_up = midgard_reflector_object_get_property_up(classname);
 
 	if (!property_up)
 		RETURN_NULL();
@@ -142,27 +144,29 @@ static ZEND_METHOD(midgard_object_class, get_property_parent)
 		return;
 	}
 
-	if (Z_TYPE_P(zvalue) != IS_STRING) {
-		if (Z_TYPE_P(zvalue) != IS_OBJECT) {
-			php_error(E_WARNING,
-					"%s() accepts object or string as first argument",
-					get_active_function_name(TSRMLS_C));
-			RETURN_FALSE;
-		}
+	if (Z_TYPE_P(zvalue) != IS_STRING && Z_TYPE_P(zvalue) != IS_OBJECT) {
+		php_error(E_WARNING,
+				"%s() accepts object or string as first argument",
+				get_active_function_name(TSRMLS_C));
+		return;
 	}
 
+	const gchar *classname = NULL;
+
 	if (Z_TYPE_P(zvalue) == IS_STRING) {
-		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_STRVAL_P(zvalue));
+		classname = (const gchar *)Z_STRVAL_P(zvalue);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-		klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)Z_OBJCE_P(zvalue)->name);
+		classname = (const gchar *)Z_OBJCE_P(zvalue)->name;
 	}
+
+	klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(classname);
 
 	if (!klass) {
 		php_error(E_WARNING, "MidgardObjectClass not found");
-		RETURN_FALSE;
+		return;
 	}
 
-	const gchar *property_parent = midgard_object_class_get_property_parent(klass);
+	const gchar *property_parent = midgard_reflector_object_get_property_parent(classname);
 
 	if (!property_parent)
 		RETURN_NULL();
