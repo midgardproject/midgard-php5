@@ -7,6 +7,7 @@ midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
 midgard.superglobals_compat = Off
+display_startup_errors = On
 --FILE--
 <?php
 function mytest()

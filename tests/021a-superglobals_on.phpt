@@ -7,7 +7,7 @@ midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
 midgard.superglobals_compat = On
-display_startup_errors = Off
+display_startup_errors = On
 --FILE--
 <?php
 function mytest()
@@ -23,7 +23,7 @@ var_dump(isset($_MIDGARD_CONNECTION));
 ?>
 ===DONE===
 --EXPECTF--
-PHP %s:  midgard.superglobals_compat option is deprecated and might be removed in next release in Unknown on line 0
+%s midgard.superglobals_compat option is deprecated and might be removed in next release in %s
 bool(true)
 bool(true)
 bool(true)
