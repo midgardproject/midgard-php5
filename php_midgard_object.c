@@ -210,7 +210,6 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
 	long rootid, id;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &rootid, &id) == FAILURE)
@@ -221,34 +220,96 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 	if (rootid == 0 && id == 0)
 		RETURN_TRUE;
 
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardConnection *mgd = mgd_handle();
+	zval *zval_object = getThis();
+	zend_class_entry *base_class = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(zval_object));
+	const char *php_classname = base_class->name;
 
-	if (mobj) {
-		if (midgard_object_is_in_parent_tree(mobj, rootid, id)) {
-			/* FIXME , throw exception */
-			RETURN_TRUE;
+	MidgardObject *leaf_obj = NULL, *root_obj = NULL;
+
+	{
+		const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
+		GValue tmp_gval;
+		g_value_set_int(&tmp_gval, id);
+
+		leaf_obj = midgard_object_new(mgd, g_classname, &tmp_gval);
+
+		if (!leaf_obj) {
+			php_error(E_NOTICE, "Did not find object with id=%ld", id);
+			return;
 		}
 	}
+
+	{
+		const gchar *g_parent_classname = midgard_schema_object_tree_get_parent_name(leaf_obj);
+		GValue tmp_gval;
+		g_value_set_int(&tmp_gval, rootid);
+
+		root_obj = midgard_object_new(mgd, g_parent_classname, &tmp_gval);
+
+		if (!root_obj) {
+			php_error(E_NOTICE, "Did not find object with id=%ld", rootid);
+			g_object_unref(leaf_obj);
+			return;
+		}
+	}
+
+	if (midgard_schema_object_tree_is_in_tree(leaf_obj, root_obj)) {
+		RETVAL_TRUE;
+	}
+
+	g_object_unref(leaf_obj);
+	g_object_unref(root_obj);
 }
 
 PHP_FUNCTION(_midgard_php_object_is_in_tree)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
 	long rootid, id;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &rootid, &id) == FAILURE)
 		return;
 
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardConnection *mgd = mgd_handle();
+	zval *zval_object = getThis();
+	zend_class_entry *base_class = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(zval_object));
+	const char *php_classname = base_class->name;
+	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
 
-	if (mobj) {
-		if (midgard_object_is_in_tree(mobj, rootid, id)) {
-			/* FIXME , throw excpetion */
-			RETURN_TRUE;
+	MidgardObject *leaf_obj = NULL, *root_obj = NULL;
+
+	{
+		GValue tmp_gval;
+		g_value_set_int(&tmp_gval, id);
+
+		leaf_obj = midgard_object_new(mgd, g_classname, &tmp_gval);
+
+		if (!leaf_obj) {
+			php_error(E_NOTICE, "Did not find object with id=%ld", id);
+			return;
 		}
 	}
+
+	{
+		GValue tmp_gval;
+		g_value_set_int(&tmp_gval, rootid);
+
+		root_obj = midgard_object_new(mgd, g_classname, &tmp_gval);
+
+		if (!root_obj) {
+			php_error(E_NOTICE, "Did not find object with id=%ld", rootid);
+			g_object_unref(leaf_obj);
+			return;
+		}
+	}
+
+	if (midgard_schema_object_tree_is_in_tree(leaf_obj, root_obj)) {
+		RETVAL_TRUE;
+	}
+
+	g_object_unref(leaf_obj);
+	g_object_unref(root_obj);
 }
 
 PHP_FUNCTION(_midgard_php_object_delete)
@@ -281,7 +342,7 @@ PHP_FUNCTION(_midgard_php_object_get_parent)
 	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
-		pobj = midgard_object_get_parent(mobj);
+		pobj = midgard_schema_object_tree_get_parent_object(mobj);
 
 		if (pobj) {
 			char *type_name = (char *)G_OBJECT_TYPE_NAME((GObject*)pobj);
@@ -308,9 +369,8 @@ PHP_FUNCTION(_midgard_php_object_list)
 	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
-		GObject **objects;
 		guint i, n_objects;
-		objects = midgard_object_list(mobj, &n_objects);
+		MidgardObject **objects = midgard_schema_object_tree_list_objects(mobj, &n_objects);
 
 		if (objects) {
 			zend_class_entry *ce = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(zval_object));
@@ -347,7 +407,7 @@ PHP_FUNCTION(_midgard_php_object_list_children)
 
 	if (mobj) {
 		guint i, n_objects;
-		GObject **objects = midgard_object_list_children(mobj, childcname, &n_objects);
+		MidgardObject **objects = midgard_schema_object_tree_list_children_objects(mobj, childcname, &n_objects);
 
 		if (objects != NULL) {
 			zend_class_entry *ce = php_midgard_get_mgdschema_class_ptr_by_name(childcname);
@@ -415,7 +475,7 @@ PHP_FUNCTION(_midgard_php_object_parent)
 	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
 
 	if (mobj) {
-		parent_class_name = midgard_object_parent(mobj);
+		parent_class_name = midgard_schema_object_tree_get_parent_name(mobj);
 		if (parent_class_name)
 			RETVAL_STRING((gchar *)parent_class_name, 1);
 	}
