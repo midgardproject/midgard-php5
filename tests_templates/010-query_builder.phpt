@@ -13,7 +13,7 @@ report_memleaks = Off
 MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
-$query = new midgard_query_builder('midgard_style');
+$query = new midgard_query_builder('atype');
 
 var_dump($query->set_limit(-1));
 var_dump($query->set_offset(-1));
@@ -22,13 +22,13 @@ var_dump($query->set_limit(1));
 var_dump($query->set_offset(1));
 
 var_dump($query->add_order('thereisnosuchfield', 'ASC'));
-var_dump($query->add_order('name', 'asc'));
-var_dump($query->add_order('name', 'ASC'));
+var_dump($query->add_order('a', 'asc'));
+var_dump($query->add_order('a', 'ASC'));
 
 var_dump($query->add_constraint('id', '>', new stdClass()));
 var_dump($query->add_constraint('id', '>', STDOUT));
 var_dump($query->add_constraint('id', '>', 2));
-var_dump($query->add_constraint_with_property('id', '>', 'name'));
+var_dump($query->add_constraint_with_property('id', '>', 'a'));
 
 var_dump(gettype($query->count()));
 var_dump(gettype($query->execute()));

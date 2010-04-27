@@ -6,9 +6,11 @@ test for an error, which should happen in absence of connection.
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+--ENV--
+MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
-$host = new midgard_style();
+$obj = new atype();
 ?>
 ===DONE===
 --EXPECTF--

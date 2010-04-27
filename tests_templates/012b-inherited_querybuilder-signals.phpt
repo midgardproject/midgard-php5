@@ -12,7 +12,7 @@ report_memleaks = Off
 MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
-class extend_midgard_style extends midgard_style
+class extend_atype extends atype
 {
     public function __construct($id = null)
     {
@@ -45,10 +45,10 @@ $signals = array (
 
 
 // This should turn all create hook flags to true
-$t = new extend_midgard_style();
+$t = new extend_atype();
 $t->create();
 
-$qb = new midgard_query_builder('extend_midgard_style');
+$qb = new midgard_query_builder('extend_atype');
 $res = $qb->execute();
 foreach ($res as $r)
 {

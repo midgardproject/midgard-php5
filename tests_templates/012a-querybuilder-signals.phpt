@@ -29,7 +29,7 @@ class callback_holder
 
     public static function test_global_callback($a, $b, $c)
     {
-        var_dump(is_object($a) and $a instanceof midgard_style);
+        var_dump(is_object($a) and $a instanceof atype);
         var_dump($b);
         var_dump($c === 'test');
     }
@@ -37,10 +37,10 @@ class callback_holder
 
 $clbk = new callback_holder();
 
-midgard_object_class::connect_default('midgard_style', 'action-create', array('callback_holder', 'test_global_callback'), array('create', 'test'));
-midgard_object_class::connect_default('midgard_style', 'action-update', array('callback_holder', 'test_global_callback'), array('update', 'test'));
+midgard_object_class::connect_default('atype', 'action-create', array('callback_holder', 'test_global_callback'), array('create', 'test'));
+midgard_object_class::connect_default('atype', 'action-update', array('callback_holder', 'test_global_callback'), array('update', 'test'));
 
-$t = new midgard_style();
+$t = new atype();
 $t->connect('action-update',      array($clbk, 'test_callback'), array('update'));
 $t->connect('action-update-hook', array($clbk, 'test_callback'), array('update-hook'));
 $t->connect('action-updated',     array($clbk, 'test_callback'), array('updated'));
@@ -52,7 +52,7 @@ $t->connect('action-created',     array($clbk, 'test_callback'), array('created'
 echo "== create() ==\n";
 $t->create();
 
-$qb = new midgard_query_builder('midgard_style');
+$qb = new midgard_query_builder('atype');
 $res = $qb->execute();
 
 foreach ($res as $r)

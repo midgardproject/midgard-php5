@@ -30,7 +30,7 @@ class dumb
 
 $dumb_obj = new dumb();
 
-$obj = new midgard_style();
+$obj = new atype();
 echo "1\n";
 $obj->connect('action-update', array(null, 'fun_callback'), array());
 echo "2\n";
@@ -45,30 +45,30 @@ echo "6\n";
 $obj->connect('action-update', array($dumb_obj, 'my_callback'));
 
 echo "7\n";
-midgard_object_class::connect_default('midgard_style', 'action-update', array(null, 'test_callback'), array('test'));
+midgard_object_class::connect_default('atype', 'action-update', array(null, 'test_callback'), array('test'));
 echo "8\n";
-midgard_object_class::connect_default('midgard_style', 'action-update', array('dumb', null));
+midgard_object_class::connect_default('atype', 'action-update', array('dumb', null));
 echo "9\n";
-midgard_object_class::connect_default('midgard_style', 'action-update', array('fun_callback'), array('test'));
+midgard_object_class::connect_default('atype', 'action-update', array('fun_callback'), array('test'));
 echo "10\n";
-midgard_object_class::connect_default('midgard_style', 'action-update', 'fun_callback', array('test'));
+midgard_object_class::connect_default('atype', 'action-update', 'fun_callback', array('test'));
 echo "11\n";
-midgard_object_class::connect_default('midgard_style', 'action-update', array('dumb', 'test_callback'), array('test'));
+midgard_object_class::connect_default('atype', 'action-update', array('dumb', 'test_callback'), array('test'));
 echo "12\n";
-midgard_object_class::connect_default('midgard_style', 'action-update', array($dumb_obj, 'my_callback'), array('test'));
+midgard_object_class::connect_default('atype', 'action-update', array($dumb_obj, 'my_callback'), array('test'));
 
 ?>
 ===DONE===
 --EXPECTF--
 1
 
-Warning: midgard_style::connect() %s in %s on line %d
+Warning: atype::connect() %s in %s on line %d
 2
 
-Warning: midgard_style::connect() %s in %s on line %d
+Warning: atype::connect() %s in %s on line %d
 3
 
-Warning: midgard_style::connect() %s in %s on line %d
+Warning: atype::connect() %s in %s on line %d
 4
 5
 6
