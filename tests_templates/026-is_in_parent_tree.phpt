@@ -22,8 +22,6 @@ $obj2->x = '2';
 $obj2->owner = $obj1->id;
 $obj2->create();
 
-var_dump($obj1, $obj2);
-
 $dummy = new xtype();
 var_dump($dummy->is_in_parent_tree($obj1->id, $obj2->id));
 
