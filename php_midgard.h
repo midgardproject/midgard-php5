@@ -75,8 +75,10 @@
 
 typedef struct _MgdGHolder MgdGHolder;
 typedef struct _php_midgard2stream_data {
-    MidgardObject *obj;
-    off_t position;
+	MidgardObject *obj;
+	char *buffer;
+	int size;
+	off_t position;
 } php_midgard2stream_data;
 
 

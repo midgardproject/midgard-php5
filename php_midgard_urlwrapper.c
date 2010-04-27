@@ -18,14 +18,14 @@
 #include "php_midgard_urlwrapper.h"
 
 static php_stream_ops php_midgard2stream_ops = {
-	NULL, //php_midgard2stream_write,
+	php_midgard2stream_write,
 	php_midgard2stream_read,
 	php_midgard2stream_closer,
-	NULL, //php_midgard2stream_flush,
+	php_midgard2stream_flush,
 	PHP_MIDGARD2_STREAMTYPE,
 	php_midgard2stream_seek,
 	NULL,
-	NULL,
+	NULL, // php_midgard2stream_stat,
 	NULL,
 };
 
@@ -33,6 +33,11 @@ php_stream * php_midgard2stream_opener(php_stream_wrapper *wrapper, char *filena
 {
 	if (strncmp(filename, PHP_MIDGARD2_WRAPPER "://", strlen(PHP_MIDGARD2_WRAPPER) + 3) != 0) {
 		php_stream_wrapper_log_error(wrapper, options TSRMLS_CC, "Invalid schema. midgard:// expected");
+		return NULL;
+	}
+
+	if (options & STREAM_OPEN_PERSISTENT) {
+		php_stream_wrapper_log_error(wrapper, options TSRMLS_CC, "Unable to open %s persistently", filename);
 		return NULL;
 	}
 
@@ -48,6 +53,24 @@ php_stream * php_midgard2stream_opener(php_stream_wrapper *wrapper, char *filena
 		return NULL;
 	}
 
+	if (mode[0] == 'w') {
+		data->buffer = NULL;
+		data->size = 0;
+	} else {
+		GValue pval = {0, };
+		g_value_init(&pval, G_TYPE_STRING);
+
+		g_object_get_property(G_OBJECT(data->obj), "code", &pval);
+		const gchar *tmp_string = g_value_get_string(&pval);
+
+		data->buffer = estrdup(tmp_string);
+		data->size = strlen(tmp_string);
+
+		if (mode[0] == 'a') {
+			data->position = data->size;
+		}
+	}
+
 	return php_stream_alloc(&php_midgard2stream_ops, data, 0, mode);
 }
 
@@ -57,55 +80,72 @@ int php_midgard2stream_closer(php_stream *stream, int close_handle TSRMLS_DC)
 
 	if (data->obj) {
 		g_object_unref(data->obj);
-		efree(data);
 	}
+
+	if (data->buffer) {
+		efree(data->buffer);
+	}
+
+	efree(data);
 
 	return 0;
 }
 
-// size_t php_midgard2stream_write(php_stream *stream, const char *buf, size_t count TSRMLS_DC)
-// {
-// 	php_midgard2stream_data *data = stream->abstract;
-// 
-// 	return 0;
-// }
+size_t php_midgard2stream_write(php_stream *stream, const char *buf, size_t count TSRMLS_DC)
+{
+	php_midgard2stream_data *data = stream->abstract;
+	size_t new_size = data->position + count + 1;
+
+	if (data->size < new_size) {
+		data->buffer = erealloc(data->buffer, new_size);
+		data->size = new_size;
+	}
+
+	memcpy(data->buffer + data->position, buf, count);
+	data->position += count;
+	data->buffer[data->position] = '\0';
+
+	return count;
+}
 
 size_t php_midgard2stream_read(php_stream *stream, char *buf, size_t count TSRMLS_DC)
 {
 	php_midgard2stream_data *data = stream->abstract;
-
-	GValue pval = {0, };
-	g_value_init(&pval, G_TYPE_STRING);
-
-	g_object_get_property(G_OBJECT(data->obj), "code", &pval);
-
-	const char *tmp = g_value_get_string(&pval);
+	const char *tmp = data->buffer;
 
 	size_t to_read = count;
 
-	if (data->position + count > strlen(tmp)) {
-		to_read = strlen(tmp) - data->position;
+	if (data->position + count > data->size) {
+		to_read = data->size - data->position;
 	}
 
-	strncpy(buf, tmp + data->position, to_read);
+	memcpy(buf, tmp + data->position, to_read);
 	data->position += to_read;
 
 	return to_read;
 }
 
-// int php_midgard2stream_flush(php_stream *stream TSRMLS_DC)
-// {
-// 	php_midgard2stream_data *data = stream->abstract;
-// 
-// 	g_signal_emit(data->obj, MIDGARD_OBJECT_GET_CLASS(data->obj)->signal_action_update_hook, 0);
-// 
-// 	if (!midgard_object_update(data->obj)) {
-// 		// FIXME: do something more meaningful
-// 		php_error(E_WARNING, "failed to flush stream");
-// 	}
-// 
-// 	return 0;
-// }
+int php_midgard2stream_flush(php_stream *stream TSRMLS_DC)
+{
+	php_midgard2stream_data *data = stream->abstract;
+
+	{
+		GValue pval = {0, };
+		g_value_init(&pval, G_TYPE_STRING);
+		g_value_set_string(&pval, data->buffer);
+
+		g_object_set_property(G_OBJECT(data->obj), "code", &pval);
+		g_value_unset(&pval);
+	}
+
+	g_signal_emit(data->obj, MIDGARD_OBJECT_GET_CLASS(data->obj)->signal_action_update_hook, 0);
+	if (!midgard_object_update(data->obj)) {
+		// FIXME: do something more meaningful
+		php_error(E_WARNING, "failed to flush stream");
+	}
+
+	return 0;
+}
 
 int php_midgard2stream_seek(php_stream *stream, off_t offset, int whence, off_t *newoffset TSRMLS_DC)
 {
@@ -142,3 +182,8 @@ int php_midgard2stream_seek(php_stream *stream, off_t offset, int whence, off_t 
 
 	return 0;
 }
+
+// int php_midgard2stream_stat(php_stream *stream, php_stream_statbuf *ssb TSRMLS_DC)
+// {
+// 	return 0;
+// }

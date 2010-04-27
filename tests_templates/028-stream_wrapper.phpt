@@ -31,6 +31,22 @@ var_dump(fclose($fp));
 
 include 'midgard:///directory/snippet';
 
+$fp = fopen('midgard:///directory/snippet', 'w');
+var_dump(false !== $fp);
+
+var_dump(false !== fwrite($fp, "Hello, test!\n"));
+var_dump(fclose($fp));
+
+include 'midgard:///directory/snippet';
+
+$fp = fopen('midgard:///directory/snippet', 'a');
+var_dump(false !== $fp);
+
+var_dump(false !== fwrite($fp, "And Again!\n"));
+var_dump(fclose($fp));
+
+include 'midgard:///directory/snippet';
+
 $obj2->delete();
 $obj->delete();
 
@@ -41,4 +57,13 @@ bool(true)
 bool(true)
 bool(true)
 Hello, world!
+bool(true)
+bool(true)
+bool(true)
+Hello, test!
+bool(true)
+bool(true)
+bool(true)
+Hello, test!
+And Again!
 ===DONE===

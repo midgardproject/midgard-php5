@@ -21,3 +21,4 @@ size_t php_midgard2stream_write(php_stream *stream, const char *buf, size_t coun
 size_t php_midgard2stream_read(php_stream *stream, char *buf, size_t count TSRMLS_DC);
 int php_midgard2stream_flush(php_stream *stream TSRMLS_DC);
 int php_midgard2stream_seek(php_stream *stream, off_t offset, int whence, off_t *newoffset TSRMLS_DC);
+int php_midgard2stream_stat(php_stream *stream, php_stream_statbuf *ssb TSRMLS_DC);
