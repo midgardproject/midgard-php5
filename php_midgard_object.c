@@ -229,7 +229,8 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 
 	{
 		const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-		GValue tmp_gval;
+		GValue tmp_gval = { 0 };
+		g_value_init(&tmp_gval, G_TYPE_INT);
 		g_value_set_int(&tmp_gval, id);
 
 		leaf_obj = midgard_object_new(mgd, g_classname, &tmp_gval);
@@ -242,7 +243,8 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 
 	{
 		const gchar *g_parent_classname = midgard_schema_object_tree_get_parent_name(leaf_obj);
-		GValue tmp_gval;
+		GValue tmp_gval = { 0 };
+		g_value_init(&tmp_gval, G_TYPE_INT);
 		g_value_set_int(&tmp_gval, rootid);
 
 		root_obj = midgard_object_new(mgd, g_parent_classname, &tmp_gval);
@@ -280,7 +282,8 @@ PHP_FUNCTION(_midgard_php_object_is_in_tree)
 	MidgardObject *leaf_obj = NULL, *root_obj = NULL;
 
 	{
-		GValue tmp_gval;
+		GValue tmp_gval = { 0 };
+		g_value_init(&tmp_gval, G_TYPE_INT);
 		g_value_set_int(&tmp_gval, id);
 
 		leaf_obj = midgard_object_new(mgd, g_classname, &tmp_gval);
@@ -292,7 +295,8 @@ PHP_FUNCTION(_midgard_php_object_is_in_tree)
 	}
 
 	{
-		GValue tmp_gval;
+		GValue tmp_gval = { 0 };
+		g_value_init(&tmp_gval, G_TYPE_INT);
 		g_value_set_int(&tmp_gval, rootid);
 
 		root_obj = midgard_object_new(mgd, g_classname, &tmp_gval);
