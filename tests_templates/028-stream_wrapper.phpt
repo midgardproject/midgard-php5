@@ -23,8 +23,10 @@ $obj2->code = '<?php echo "Hello, world!"; ?>';
 $obj2->doc = 'This snippet says "Hello, world!"';
 $obj2->create();
 
-$fp = fopen('midgard://directory/snippet', 'r');
+$fp = fopen('midgard:///directory/snippet', 'r');
+
 var_dump(false !== $fp);
+var_dump(fgets($fp) === $obj2->code);
 var_dump(fclose($fp));
 
 $obj2->delete();
@@ -33,6 +35,7 @@ $obj->delete();
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
 bool(true)
 bool(true)
 ===DONE===

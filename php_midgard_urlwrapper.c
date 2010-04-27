@@ -36,9 +36,17 @@ php_stream * php_midgard2stream_opener(php_stream_wrapper *wrapper, char *filena
 		return NULL;
 	}
 
+	const char *path = filename + (strlen(PHP_MIDGARD2_WRAPPER) + 3);
+
 	php_midgard2stream_data *data = emalloc(sizeof(php_midgard2stream_data));
-	data->obj = NULL; // TODO: place proper object here
+	data->obj = midgard_schema_object_factory_get_object_by_path(mgd_handle(), "midgard_snippet", path);
 	data->position = 0;
+
+	if (data->obj == NULL) {
+		efree(data);
+		php_stream_wrapper_log_error(wrapper, options TSRMLS_CC, "Couldn't find midgard_snippet object using %s path", path);
+		return NULL;
+	}
 
 	return php_stream_alloc(&php_midgard2stream_ops, data, 0, mode);
 }
@@ -80,6 +88,7 @@ size_t php_midgard2stream_read(php_stream *stream, char *buf, size_t count TSRML
 	}
 
 	strncpy(buf, tmp + data->position, to_read);
+	data->position += to_read;
 
 	return to_read;
 }
