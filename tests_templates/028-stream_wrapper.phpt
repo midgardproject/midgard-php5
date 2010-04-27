@@ -19,7 +19,7 @@ $obj->create();
 $obj2 = new midgard_snippet();
 $obj2->snippetdir = $obj->id;
 $obj2->name = 'snippet';
-$obj2->code = '<?php echo "Hello, world!"; ?>';
+$obj2->code = '<?php echo "Hello, world!\n"; ?>';
 $obj2->doc = 'This snippet says "Hello, world!"';
 $obj2->create();
 
@@ -28,6 +28,8 @@ $fp = fopen('midgard:///directory/snippet', 'r');
 var_dump(false !== $fp);
 var_dump(fgets($fp) === $obj2->code);
 var_dump(fclose($fp));
+
+include 'midgard:///directory/snippet';
 
 $obj2->delete();
 $obj->delete();
@@ -38,4 +40,5 @@ $obj->delete();
 bool(true)
 bool(true)
 bool(true)
+Hello, world!
 ===DONE===
