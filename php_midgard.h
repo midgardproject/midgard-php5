@@ -56,6 +56,11 @@
 
 #if HAVE_MIDGARD
 
+#define PHP_MIDGARD2_EXTNAME MIDGARD_PACKAGE_NAME
+#define PHP_MIDGARD2_EXTVER MIDGARD_LIB_VERSION
+#define PHP_MIDGARD2_WRAPPER "midgard"
+#define PHP_MIDGARD2_STREAMTYPE "midgard2stream"
+
 #define MGD_FUNCTION(ret, name, param) \
 	PHP_FUNCTION(mgd_##name)
 
@@ -69,6 +74,11 @@
 # endif
 
 typedef struct _MgdGHolder MgdGHolder;
+typedef struct _php_midgard2stream_data {
+    MidgardObject *obj;
+    off_t position;
+} php_midgard2stream_data;
+
 
 extern guint global_loghandler;
 extern gboolean php_midgard_log_enabled;
@@ -76,13 +86,6 @@ extern gboolean php_midgard_log_enabled;
 MidgardConnection *mgd_handle();
 /* FIXME, is_connected is confusing because it says about connection instance pointer only */
 #define php_midgard_is_connected() (MGDG(connection_established) == TRUE)
-
-
-// #ifdef ZTS
-// typedef struct {
-// 	MidgardConnection *mgd;
-// } midgard2_globals;
-// #endif
 
 # define phpext_midgard_ptr &midgard2_module_entry
 

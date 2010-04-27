@@ -28,6 +28,7 @@
 #include "mgd_preparser.h"
 #include "php_midgard_gobject.h"
 #include "php_midgard_handle.h"
+#include "php_midgard_urlwrapper.h"
 
 #include "php_midgard__helpers.h"
 
@@ -247,14 +248,14 @@ zend_module_entry midgard2_module_entry = {
 	STANDARD_MODULE_HEADER_EX,
 	NULL,
 	midgard2_deps,
-	MIDGARD_PACKAGE_NAME,
+	PHP_MIDGARD2_EXTNAME,
 	midgard2_functions,
 	PHP_MINIT(midgard2),
 	PHP_MSHUTDOWN(midgard2),
 	PHP_RINIT(midgard2),
 	PHP_RSHUTDOWN(midgard2),
 	PHP_MINFO(midgard2),
-	MIDGARD_LIB_VERSION, /* extension version number (string) */
+	PHP_MIDGARD2_EXTVER, /* extension version number (string) */
 	PHP_MODULE_GLOBALS(midgard2),
 	PHP_GINIT(midgard2),
 	NULL,
@@ -323,6 +324,37 @@ static zend_bool php_midgard_initialize_configs()
 
 	return TRUE;
 }
+
+static php_stream_ops php_midgard2stream_ops = {
+	php_midgard2stream_write,
+	php_midgard2stream_read,
+	php_midgard2stream_closer,
+	php_midgard2stream_flush,
+	PHP_MIDGARD2_STREAMTYPE,
+	php_midgard2stream_seek,
+	NULL,
+	NULL,
+	NULL,
+};
+
+static php_stream_wrapper_ops php_midgard2stream_wrapper_ops = {
+	php_midgard2stream_opener,
+	NULL, /* will call underlying closer */
+	NULL,
+	NULL,
+	NULL,
+	PHP_MIDGARD2_WRAPPER,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+};
+
+static php_stream_wrapper php_midgard2stream_wrapper = {
+	&php_midgard2stream_wrapper_ops,
+	NULL,
+	0,
+};
 
 PHP_MINIT_FUNCTION(midgard2)
 {
