@@ -360,6 +360,10 @@ PHP_MINIT_FUNCTION(midgard2)
 		return SUCCESS;
 	}
 
+	if (php_register_url_stream_wrapper(PHP_MIDGARD2_WRAPPER, &php_midgard2stream_wrapper TSRMLS_CC) == FAILURE) {
+		return FAILURE;
+	}
+
 	global_loghandler = g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_MASK, midgard_error_default_log,
 										  NULL);
 
@@ -532,6 +536,11 @@ static void __free_connections(gpointer key, gpointer val, gpointer ud)
 PHP_MSHUTDOWN_FUNCTION(midgard2)
 {
 	UNREGISTER_INI_ENTRIES();
+
+	if (php_unregister_url_stream_wrapper(PHP_MIDGARD2_WRAPPER TSRMLS_CC) == FAILURE) {
+		return FAILURE;
+	}
+
 	return SUCCESS;
 
 	/* Free schema */

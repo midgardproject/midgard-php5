@@ -47,8 +47,10 @@ int php_midgard2stream_closer(php_stream *stream, int close_handle TSRMLS_DC)
 {
 	php_midgard2stream_data *data = stream->abstract;
 
-	g_object_unref(data->obj);
-	efree(data);
+	if (data->obj) {
+		g_object_unref(data->obj);
+		efree(data);
+	}
 
 	return 0;
 }
@@ -70,9 +72,16 @@ size_t php_midgard2stream_read(php_stream *stream, char *buf, size_t count TSRML
 	g_object_get_property(G_OBJECT(data->obj), "code", &pval);
 
 	const char *tmp = g_value_get_string(&pval);
-	strncpy(buf, tmp + data->position, count);
 
-	return 0;
+	size_t to_read = count;
+
+	if (data->position + count > strlen(tmp)) {
+		to_read = strlen(tmp) - data->position;
+	}
+
+	strncpy(buf, tmp + data->position, to_read);
+
+	return to_read;
 }
 
 // int php_midgard2stream_flush(php_stream *stream TSRMLS_DC)
