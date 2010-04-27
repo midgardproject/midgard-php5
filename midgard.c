@@ -325,18 +325,6 @@ static zend_bool php_midgard_initialize_configs()
 	return TRUE;
 }
 
-static php_stream_ops php_midgard2stream_ops = {
-	php_midgard2stream_write,
-	php_midgard2stream_read,
-	php_midgard2stream_closer,
-	php_midgard2stream_flush,
-	PHP_MIDGARD2_STREAMTYPE,
-	php_midgard2stream_seek,
-	NULL,
-	NULL,
-	NULL,
-};
-
 static php_stream_wrapper_ops php_midgard2stream_wrapper_ops = {
 	php_midgard2stream_opener,
 	NULL, /* will call underlying closer */
