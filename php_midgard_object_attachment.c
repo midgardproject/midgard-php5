@@ -25,16 +25,14 @@ PHP_FUNCTION(_php_midgard_object_list_attachments)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
-	MidgardObject **objects = NULL;
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
-	objects = midgard_object_list_attachments(mobj);
-
 	array_init(return_value);
+
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
+	MidgardObject **objects = midgard_object_list_attachments(mobj);
 
 	if (objects) {
 		php_midgard_array_from_objects((GObject **)objects, "midgard_attachment", return_value TSRMLS_CC);
@@ -46,13 +44,11 @@ PHP_FUNCTION(php_midgard_object_has_attachments)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
-
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 	zend_bool rv = (zend_bool)midgard_object_has_attachments(mobj);
 
 	RETURN_BOOL(rv);
@@ -62,7 +58,6 @@ PHP_FUNCTION(_php_midgard_object_delete_attachments)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
 	zval *params = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &params) != SUCCESS) {
@@ -71,7 +66,7 @@ PHP_FUNCTION(_php_midgard_object_delete_attachments)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	zend_bool rv = (zend_bool) midgard_object_delete_attachments(mobj, n_params, parameters);
 
@@ -84,7 +79,6 @@ PHP_FUNCTION(_php_midgard_object_purge_attachments)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
 	zval *params = NULL;
 	zend_bool zbool = TRUE;
 
@@ -94,7 +88,7 @@ PHP_FUNCTION(_php_midgard_object_purge_attachments)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	zend_bool rv = (zend_bool) midgard_object_purge_attachments(mobj, (gboolean) zbool, n_params, parameters);
 
@@ -107,23 +101,21 @@ PHP_FUNCTION(_php_midgard_object_find_attachments)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
 	zval *params = NULL;
-	MidgardObject **objects = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a", &params) != SUCCESS) {
 		return;
 	}
 
+	array_init(return_value);
+
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
-	objects = midgard_object_find_attachments(mobj, n_params, parameters);
+	MidgardObject **objects = midgard_object_find_attachments(mobj, n_params, parameters);
 
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
-
-	array_init(return_value);
 
 	if (objects) {
 		php_midgard_array_from_objects((GObject **)objects, "midgard_attachment", return_value TSRMLS_CC);
@@ -135,9 +127,8 @@ PHP_FUNCTION(_php_midgard_object_create_attachment)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
-	const gchar *name = NULL, *title = NULL, *mimetype = NULL;
-	guint name_length, title_length, mimetype_length;
+	const char *name = NULL, *title = NULL, *mimetype = NULL;
+	int name_length, title_length, mimetype_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|sss",
 				&name, &name_length,
@@ -147,7 +138,7 @@ PHP_FUNCTION(_php_midgard_object_create_attachment)
 		return;
 	}
 
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 	MidgardObject *att = midgard_object_create_attachment(mobj, name, title, mimetype);
 
 	if (!att) {
@@ -167,15 +158,15 @@ PHP_FUNCTION(_php_midgard_object_serve_attachment)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	const gchar *guid;
-	guint guid_length;
+	const char *guid;
+	int guid_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length) != SUCCESS) {
 		return;
 	}
 
 	if (!midgard_is_guid(guid)) {
-		php_error(E_WARNING, "Given parameter is not a guid");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Given parameter is not a guid");
 		return;
 	}
 
@@ -214,7 +205,7 @@ PHP_FUNCTION(_php_midgard_object_serve_attachment)
 
 	FILE *fp;
 	if (!(fp = fopen(path, "r"))) {
-		php_error(E_WARNING, "File doesn't exist");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File doesn't exist");
 		MIDGARD_ERRNO_SET(mgd_handle(), MGD_ERR_INTERNAL);
 		return;
 	}
