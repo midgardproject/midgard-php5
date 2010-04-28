@@ -218,7 +218,6 @@ static ZEND_METHOD(midgard_object_class, has_metadata)
 	CHECK_MGD;
 	RETVAL_FALSE;
 	zval *zvalue;
-	MidgardObjectClass *klass = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zvalue) == FAILURE) {
 		return;
@@ -231,24 +230,23 @@ static ZEND_METHOD(midgard_object_class, has_metadata)
 		return;
 	}
 
-	const gchar *classname = NULL;
+	const char *php_classname = NULL;
 
 	if (Z_TYPE_P(zvalue) == IS_STRING) {
-		classname = (const gchar *)Z_STRVAL_P(zvalue);
+		php_classname = Z_STRVAL_P(zvalue);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-		classname = (const gchar *)Z_OBJCE_P(zvalue)->name;
+		php_classname = Z_OBJCE_P(zvalue)->name;
 	}
 
-	klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(classname);
+	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
+	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
 
 	if (!klass) {
 		php_error(E_WARNING, "MidgardObjectClass not found");
 		return;
 	}
 
-	gboolean rv = midgard_reflector_object_has_metadata_class(classname);
-
-	RETURN_BOOL(rv);
+	RETURN_BOOL(midgard_reflector_object_has_metadata_class(g_classname));
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_has_metadata, 0, 0, 1)

@@ -44,9 +44,14 @@ $guid = $obj->guid;
 $obj->delete();
 
 var_dump(midgard_object_class::undelete($guid));
+$obj = new atype($guid);
+
+var_dump(midgard_object_class::has_metadata($obj));
+var_dump(midgard_object_class::has_metadata('atype'));
+var_dump(midgard_object_class::has_metadata('midgard_metadata'));
+
 
 // cleanup
-$obj = new atype($guid);
 $obj->delete();
 
 ?>
@@ -65,4 +70,7 @@ bool(true)
 bool(true)
 bool(true)
 bool(true)
+bool(true)
+bool(true)
+bool(false)
 ===DONE===
