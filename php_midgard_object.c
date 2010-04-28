@@ -414,8 +414,7 @@ PHP_FUNCTION(php_midgard_object_has_dependents)
 		return;
 
 	MidgardObject *object = MIDGARD_OBJECT(__php_gobject_ptr(getThis()));
-	gboolean rv = midgard_object_has_dependents(object);
-	RETURN_BOOL(rv);
+	RETURN_BOOL(midgard_object_has_dependents(object));
 }
 
 PHP_FUNCTION(_midgard_php_object_get_by_path)
@@ -430,8 +429,7 @@ PHP_FUNCTION(_midgard_php_object_get_by_path)
 	}
 
 	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(getThis()));
-	gboolean rv = midgard_object_get_by_path(mobj, path);
-	RETURN_BOOL(rv);
+	RETURN_BOOL(midgard_object_get_by_path(mobj, path));
 }
 
 PHP_FUNCTION(_midgard_php_object_parent)
@@ -477,8 +475,7 @@ PHP_FUNCTION(_php_midgard_object_undelete)
 		return;
 	}
 
-	gboolean rv = midgard_schema_object_factory_object_undelete(mgd_handle(), (const gchar *)guid);
-	RETURN_BOOL(rv);
+	RETURN_BOOL(midgard_schema_object_factory_object_undelete(mgd_handle(), (const gchar *)guid));
 }
 
 PHP_FUNCTION(_php_midgard_object_connect)

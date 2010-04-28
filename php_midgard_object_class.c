@@ -40,10 +40,11 @@ static ZEND_METHOD(midgard_object_class, factory)
 
 	object_init_ex(return_value, ce); /* Initialize new object for which QB has been created for */
 
+	/* Call class constructor on given instance */
 	if (zvalue == NULL) {
-		zend_call_method_with_0_params(&return_value, ce, &ce->constructor, "__construct", NULL); /* Call class constructor on given instance */
+		zend_call_method_with_0_params(&return_value, ce, &ce->constructor, "__construct", NULL);
 	} else {
-		zend_call_method_with_1_params(&return_value, ce, &ce->constructor, "__construct", NULL, zvalue); /* Call class constructor on given instance */
+		zend_call_method_with_1_params(&return_value, ce, &ce->constructor, "__construct", NULL, zvalue);
 	}
 }
 
@@ -126,7 +127,7 @@ static ZEND_METHOD(midgard_object_class, get_property_up)
 	if (!property_up)
 		RETURN_NULL();
 
-	RETURN_STRING((gchar *)property_up, 1);
+	RETURN_STRING(property_up, 1);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_property_up, 0, 0, 1)
