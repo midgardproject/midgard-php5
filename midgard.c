@@ -84,26 +84,19 @@ gboolean php_midgard_error_throw_exception(MidgardConnection *mgd)
 
 /* TODO , Check how msg memory (re)allocation works if msg is passed
  * to php_error already */
-void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level,
-							const gchar *msg, gpointer userdata)
+void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gchar *msg, gpointer userdata)
 {
 	MidgardConnection *mgd = (MidgardConnection*) userdata;
-	// gchar *level_ad = NULL;
-	guint mlevel;
+	guint mlevel = G_LOG_LEVEL_WARNING;
 
-	mlevel = G_LOG_LEVEL_WARNING;	
-
-	if (mgd != NULL && MIDGARD_IS_CONNECTION(mgd)) 
+	if (mgd != NULL && MIDGARD_IS_CONNECTION(mgd)) {
 		mlevel = midgard_connection_get_loglevel(mgd);
+	}
 
 	g_assert(msg != NULL);
 
-	if (mlevel >= level) {
-
-		if (mgd != NULL) {
-			midgard_error_default_log(domain, level, msg,
-									  MIDGARD_IS_CONNECTION(mgd) ? MIDGARD_CONNECTION(mgd) : NULL);
-		}
+	if (mlevel >= level && mgd != NULL) {
+		midgard_error_default_log(domain, level, msg, MIDGARD_IS_CONNECTION(mgd) ? mgd : NULL);
 	}
 
 	if (!php_midgard_log_enabled)
@@ -120,30 +113,26 @@ void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level,
 
 	case G_LOG_LEVEL_ERROR:
 		// level_ad =  "ERROR";
-		php_error(E_ERROR,
-				  "(pid:%ld): %s",
-				  (unsigned long)getpid(), msg);
+		php_error(E_ERROR, "GLib: %s", msg);
 		return;
 		break;
 
 	case G_LOG_LEVEL_CRITICAL:
 		// level_ad = "CRITICAL ";
-		php_error(E_WARNING,
-				  "(pid:%ld): %s",
-				  (unsigned long)getpid(), msg);
+		php_error(E_WARNING, "GLib: %s", msg);
 		return;
 		break;
 
 	case G_LOG_LEVEL_WARNING:
 		// level_ad =  "WARNING";
-		php_error(E_WARNING,
-				  "(pid:%ld): %s",
-				  (unsigned long)getpid(), msg);
+		php_error(E_WARNING, "GLib: %s", msg);
 		return;
 		break;
 
 	case G_LOG_LEVEL_MESSAGE:
 		// level_ad = "MESSAGE";
+		php_error(E_NOTICE, "GLib: %s", msg);
+		return;
 		break;
 
 	case G_LOG_LEVEL_INFO:
@@ -158,69 +147,6 @@ void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level,
 		// level_ad =  "Unknown level";
 		break;
 	}
-}
-
-void php_glib_log_errors(const gchar *domain, GLogLevelFlags level,
-						 const gchar *_msg, gpointer userdata)
-{
-	if (_msg == NULL)
-		_msg = "";
-
-	zval **data;
-	gchar *ruri;
-	gchar *rhost;
-	TSRMLS_FETCH();
-
-	if (zend_hash_find(Z_ARRVAL_P(PG(http_globals)[TRACK_VARS_SERVER]),
-					   "REQUEST_URI", sizeof("REQUEST_URI"), (void **) &data) == FAILURE) {
-		ruri = "Empty request uri";
-	} else {
-		ruri = Z_STRVAL_PP(data);
-	}
-
-	zval **hdata;
-
-	if (zend_hash_find(Z_ARRVAL_P(PG(http_globals)[TRACK_VARS_SERVER]),
-					   "HTTP_HOST", sizeof("HTTP_HOST"), (void **) &hdata) == FAILURE) {
-		rhost = "Empty hostname";
-	} else {
-		rhost = Z_STRVAL_PP(hdata);
-	}
-
-	GString *mstr = g_string_new("");
-	g_string_append_printf(mstr, "%s (%s %s)", _msg, rhost, ruri);
-
-	gchar *msg = mstr->str;
-
-	switch (level) {
-	case G_LOG_FLAG_RECURSION:
-		/* Do nothing */
-		break;
-
-	case G_LOG_LEVEL_CRITICAL:
-	case G_LOG_FLAG_FATAL:
-	case G_LOG_LEVEL_ERROR:
-		php_error(E_WARNING, "(pid:%ld): %s", (unsigned long)getpid(), msg);
-		break;
-
-	case G_LOG_LEVEL_MESSAGE:
-	case G_LOG_LEVEL_WARNING:
-		php_error(E_WARNING, "(pid:%ld): %s", (unsigned long)getpid(), msg);
-		break;
-
-	case G_LOG_LEVEL_INFO:
-		php_error(E_NOTICE, "(pid:%ld): %s", (unsigned long)getpid(), msg);
-		break;
-
-	case G_LOG_LEVEL_DEBUG:
-		/* Do nothing */
-		break;
-
-	default:
-		break;
-	}
-
-	g_string_free(mstr, TRUE);
 }
 
 /* pre-declaring */
