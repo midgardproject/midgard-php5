@@ -246,6 +246,7 @@ extern zend_class_entry *php_midgard_query_builder_class;
 extern zend_class_entry *php_midgard_reflection_property_class;
 extern zend_class_entry *php_midgard_user_class;
 extern zend_class_entry *ce_midgard_error_exception;
+extern zend_class_entry *php_midgard_datetime_class;
 
 #define __php_objstore_object(instance) ((php_midgard_gobject *)zend_object_store_get_object(instance TSRMLS_CC))
 #define __php_gobject_ptr(instance) (__php_objstore_object(instance)->gobject)

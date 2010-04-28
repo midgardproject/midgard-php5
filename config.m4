@@ -50,7 +50,7 @@ if test "$PHP_MIDGARD2" != "no"; then
             php_midgard_reflection_property.c php_midgard_collector.c php_midgard_object_parameter.c php_midgard_object_attachment.c \
             php_midgard_config.c php_midgard_gobject_generic.c php_midgard_user.c php_midgard_blob.c php_midgard_object_class.c \
             php_midgard_functions.c php_midgard_connection.c php_midgard_object.c php_midgard_replicator.c php_midgard_dbus.c \
-            php_midgard_timestamp.c php_midgard_error.c php_midgard_handle.c php_midgard_transaction.c php_midgard__helpers.c \
+            php_midgard_timestamp.c php_midgard_timestamp_api.c php_midgard_error.c php_midgard_handle.c php_midgard_transaction.c php_midgard__helpers.c \
             php_midgard_view.c php_midgard_storage.c php_reflection_workaround.c php_midgard_key_config_context.c \
             php_midgard_key_config_file_context.c php_midgard_key_config.c php_midgard_key_config_file.c \
             php_midgard_urlwrapper.c \

@@ -19,8 +19,6 @@
 #ifndef PHP_MIDGARD_TIMESAMP_H
 #define PHP_MIDGARD_TIMESTAMP_H
 
-#include "php_midgard.h"
-
 /* GLOBALS */
 extern zend_class_entry *zend_datetime_class_ptr;
 extern zend_class_entry *zend_date_timezone_class_ptr;
