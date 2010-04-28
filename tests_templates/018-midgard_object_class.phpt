@@ -30,12 +30,19 @@ var_dump($obj->a === $obj3->a);
 var_dump($obj->b === $obj3->b);
 var_dump($obj->guid === $obj3->guid);
 
+var_dump(midgard_object_class::get_property_up('atype') === 'up');
+var_dump(midgard_object_class::get_property_up($obj)    === 'up');
+var_dump(midgard_object_class::get_property_up('xtype') === NULL);
+
 // do not leave traces!
 $obj->delete();
 
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)
