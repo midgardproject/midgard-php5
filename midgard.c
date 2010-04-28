@@ -22,7 +22,6 @@
 #include "php_midgard.h"
 #include "php_ini.h"
 
-#include "php_midgard_compat.h"
 #include "php_midgard_timestamp.h"
 
 #include "php_midgard_gobject.h"
@@ -54,19 +53,12 @@ GHashTable *mgdg_config_names = NULL;
 GHashTable *mgdg_config_files = NULL;
 /* End of true globals */
 
-MGD_FUNCTION(ret_type, is_guid, (type_param));
-
-/* Undocumented */
-/*
-  MGD_FUNCTION(ret_type, cache_invalidate, (type_param));
-  MGD_FUNCTION(ret_type, set_errno, (type_param));
-*/
-
 /* Every user visible function must have an entry in midgard_functions[].
  */
+#include "php_midgard_functions.h"
 function_entry midgard2_functions[] = {
-	MGD_FE(version, NULL)
-	MGD_FE(is_guid, NULL)
+	PHP_FE(mgd_version, NULL)
+	PHP_FE(mgd_is_guid, NULL)
 	/* Undocumented */
 	{NULL, NULL, NULL}  /* Must be the last line in midgard2_functions[] */
 };
@@ -686,25 +678,6 @@ MidgardConnection *mgd_handle()
 	MidgardConnection *connection = __midgard_connection_get_ptr(instance);
 	zval_ptr_dtor(&instance);
 	return connection;
-}
-
-/* Piotras: zend_parse_parameters_ex with first 'quiet' parameter
- * is used to return false without any warning being set on PHP level.
- * This is midcom related. */
-MGD_FUNCTION(ret_type, is_guid, (type param))
-{
-	zval *guid_zval = NULL;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &guid_zval) == FAILURE) {
-		return;
-	}
-
-	if (Z_TYPE_P(guid_zval) != IS_STRING) {
-		RETURN_FALSE;
-	}
-
-	gchar *guid = (gchar *)Z_STRVAL_P(guid_zval);
-	RETURN_BOOL(midgard_is_guid(guid));
 }
 
 zend_class_entry *midgard_php_register_internal_class(const gchar *class_name, GType class_type,
