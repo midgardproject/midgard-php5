@@ -155,12 +155,12 @@ static PHP_METHOD(php_midgard_reflection_method, getDocComment)
 
 static PHP_METHOD(php_midgard_reflection_class, __construct)
 {
-	zval *this = getThis();
 	zval *classname = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &classname) == FAILURE)
 		return;
 
+	zval *this = getThis();
 	zend_call_method_with_1_params(&this, zend_reflection_class_class, &zend_reflection_class_class->constructor, "__construct", NULL, classname);
 }
 
@@ -247,6 +247,61 @@ static PHP_METHOD(php_midgard_reflection_class, getParentClass)
 	zval_ptr_dtor(&class_name);
 }
 
+static PHP_METHOD(php_midgard_reflection_class, getMethods)
+{
+	zval *filter = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &filter) == FAILURE)
+		return;
+
+	zval *this = getThis();
+
+	zval *class_name = NULL;
+	zend_call_method_with_0_params(&this, zend_reflection_class_class, NULL, "getname", &class_name);
+
+	zval *result = NULL;
+
+	if (filter) {
+		zend_call_method_with_1_params(&this, zend_reflection_class_class, NULL, "getmethods", &result, filter);
+	} else {
+		zend_call_method_with_0_params(&this, zend_reflection_class_class, NULL, "getmethods", &result);
+	}
+
+	array_init(return_value);
+
+	HashTable *parent_ht = Z_ARRVAL_P(result);
+	for(
+		zend_hash_internal_pointer_reset(parent_ht);
+		zend_hash_has_more_elements(parent_ht) == SUCCESS;
+		zend_hash_move_forward(parent_ht)
+	) {
+		zval **ppzval = NULL;
+		zend_hash_get_current_data(parent_ht, (void**)&ppzval);
+
+		zval *method_name = NULL;
+		zend_call_method_with_0_params(ppzval, zend_reflection_function_class, NULL, "getname", &method_name);
+
+		zval *new_obj = NULL;
+		MAKE_STD_ZVAL(new_obj);
+		object_init_ex(new_obj, php_midgard_reflection_method_class);
+		zend_call_method_with_2_params(&new_obj,
+		                               php_midgard_reflection_method_class,
+		                               &php_midgard_reflection_method_class->constructor, "__construct",
+		                               NULL, class_name, method_name
+		);
+		zval_ptr_dtor(&method_name);
+
+		add_next_index_zval(return_value, new_obj);
+	}
+
+	zval_ptr_dtor(&result);
+	zval_ptr_dtor(&class_name);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(php_midgard_reflection_class_getMethods, 0, 0, 0)
+	ZEND_ARG_INFO(0, filter)
+ZEND_END_ARG_INFO()
+
 PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 {
 	__initialize_midgard_classes_hash ();
@@ -267,6 +322,7 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 		PHP_ME(php_midgard_reflection_class, getDocComment,  NULL,                                     ZEND_ACC_PUBLIC)
 		PHP_ME(php_midgard_reflection_class, listSignals,    NULL,                                     ZEND_ACC_PUBLIC)
 		PHP_ME(php_midgard_reflection_class, getParentClass, NULL,                                     ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, getMethods,     php_midgard_reflection_class_getMethods,  ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 

@@ -43,8 +43,12 @@ $cls = new midgard_reflection_class('midgard_connection');
 var_dump($cls->listSignals());
 
 $cls = new midgard_reflection_class('atype');
+
 $parent = $cls->getParentClass();
 var_dump($parent instanceof midgard_reflection_class);
+
+$methods = $cls->getMethods();
+var_dump($methods[0] instanceof midgard_reflection_method);
 
 ?>
 ===DONE===
@@ -72,5 +76,6 @@ array(5) {
   [4]=>
   string(12) "disconnected"
 }
+bool(true)
 bool(true)
 ===DONE===
