@@ -638,8 +638,7 @@ PHP_FUNCTION(_php_midgard_object_lock)
 		return;
 
 	MidgardObject *object = MIDGARD_OBJECT(__php_gobject_ptr(getThis()));
-	gboolean rv = midgard_object_lock(object);
-	RETURN_BOOL(rv);
+	RETURN_BOOL(midgard_object_lock(object));
 }
 
 PHP_FUNCTION(_php_midgard_object_is_locked)
@@ -651,8 +650,7 @@ PHP_FUNCTION(_php_midgard_object_is_locked)
 		return;
 
 	MidgardObject *object = MIDGARD_OBJECT(__php_gobject_ptr(getThis()));
-	gboolean rv = midgard_object_is_locked(object);
-	RETURN_BOOL(rv);
+	RETURN_BOOL(midgard_object_is_locked(object));
 }
 
 PHP_FUNCTION(_php_midgard_object_unlock)
@@ -664,8 +662,7 @@ PHP_FUNCTION(_php_midgard_object_unlock)
 		return;
 
 	MidgardObject *object = MIDGARD_OBJECT(__php_gobject_ptr(getThis()));
-	gboolean rv = midgard_object_unlock(object);
-	RETURN_BOOL(rv);
+	RETURN_BOOL(midgard_object_unlock(object));
 }
 
 static struct
