@@ -713,24 +713,18 @@ MidgardConnection *mgd_handle()
  * This is midcom related. */
 MGD_FUNCTION(ret_type, is_guid, (type param))
 {
-	char *guid;
-	long guidl;
-	CHECK_MGD;
+	zval *guid_zval = NULL;
 
-	if (ZEND_NUM_ARGS() != 1) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &guid_zval) == FAILURE) {
+		return;
+	}
+
+	if (Z_TYPE_P(guid_zval) != IS_STRING) {
 		RETURN_FALSE;
 	}
 
-	if (zend_parse_parameters_ex(ZEND_PARSE_PARAMS_QUIET,
-								 ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guidl) == FAILURE) {
-		RETURN_FALSE;
-	}
-
-	if (midgard_is_guid((gchar*)guid))
-		RETURN_TRUE;
-
-	RETURN_FALSE;
+	gchar *guid = (gchar *)Z_STRVAL_P(guid_zval);
+	RETURN_BOOL(midgard_is_guid(guid));
 }
 
 zend_class_entry *midgard_php_register_internal_class(const gchar *class_name, GType class_type,
