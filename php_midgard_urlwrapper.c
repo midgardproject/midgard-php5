@@ -29,6 +29,25 @@ static php_stream_ops php_midgard2stream_ops = {
 	NULL,
 };
 
+static php_stream_wrapper_ops php_midgard2stream_wrapper_ops = {
+	php_midgard2stream_opener,
+	NULL, /* will call underlying closer */
+	NULL,
+	NULL,
+	NULL,
+	PHP_MIDGARD2_WRAPPER,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+};
+
+static php_stream_wrapper php_midgard2stream_wrapper = {
+	&php_midgard2stream_wrapper_ops,
+	NULL,
+	0,
+};
+
 php_stream * php_midgard2stream_opener(php_stream_wrapper *wrapper, char *filename, char *mode, int options, char **opened_path, php_stream_context *context STREAMS_DC TSRMLS_DC)
 {
 	if (strncmp(filename, PHP_MIDGARD2_WRAPPER "://", strlen(PHP_MIDGARD2_WRAPPER) + 3) != 0) {
@@ -187,3 +206,14 @@ int php_midgard2stream_seek(php_stream *stream, off_t offset, int whence, off_t 
 // {
 // 	return 0;
 // }
+
+
+PHP_MINIT_FUNCTION(midgard2_urlwrapper)
+{
+	return php_register_url_stream_wrapper(PHP_MIDGARD2_WRAPPER, &php_midgard2stream_wrapper TSRMLS_CC);
+}
+
+PHP_MSHUTDOWN_FUNCTION(midgard2_urlwrapper)
+{
+	return php_unregister_url_stream_wrapper(PHP_MIDGARD2_WRAPPER TSRMLS_CC);
+}

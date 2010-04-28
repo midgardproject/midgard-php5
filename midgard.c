@@ -27,7 +27,6 @@
 
 #include "php_midgard_gobject.h"
 #include "php_midgard_handle.h"
-#include "php_midgard_urlwrapper.h"
 
 #include "php_midgard__helpers.h"
 
@@ -321,42 +320,21 @@ static zend_bool php_midgard_initialize_configs()
 	return TRUE;
 }
 
-static php_stream_wrapper_ops php_midgard2stream_wrapper_ops = {
-	php_midgard2stream_opener,
-	NULL, /* will call underlying closer */
-	NULL,
-	NULL,
-	NULL,
-	PHP_MIDGARD2_WRAPPER,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-};
-
-static php_stream_wrapper php_midgard2stream_wrapper = {
-	&php_midgard2stream_wrapper_ops,
-	NULL,
-	0,
-};
-
+PHP_MINIT_FUNCTION(midgard2_urlwrapper);
 PHP_MINIT_FUNCTION(midgard2)
 {
-	zend_extension *ze = zend_get_extension("midgard");
-	if (ze != NULL) {
+	if (zend_get_extension("midgard") != NULL) {
 		php_error(E_ERROR, "Module midgard (1.x) already loaded");
 		return FAILURE;
 	}
 
-	ze = zend_get_extension(MIDGARD_PACKAGE_NAME);
-
-	if (ze != NULL) {
+	if (zend_get_extension(MIDGARD_PACKAGE_NAME) != NULL) {
 		php_error(E_NOTICE, "Module %s already loaded. It's recommended to load it via php.ini",
 				  MIDGARD_PACKAGE_NAME);
 		return SUCCESS;
 	}
 
-	if (php_register_url_stream_wrapper(PHP_MIDGARD2_WRAPPER, &php_midgard2stream_wrapper TSRMLS_CC) == FAILURE) {
+	if (PHP_MINIT(midgard2_urlwrapper)(INIT_FUNC_ARGS_PASSTHRU) == FAILURE) {
 		return FAILURE;
 	}
 
@@ -529,14 +507,16 @@ static void __free_connections(gpointer key, gpointer val, gpointer ud)
 	g_object_unref(cnc);
 }
 
+PHP_MSHUTDOWN_FUNCTION(midgard2_urlwrapper);
 PHP_MSHUTDOWN_FUNCTION(midgard2)
 {
 	UNREGISTER_INI_ENTRIES();
 
-	if (php_unregister_url_stream_wrapper(PHP_MIDGARD2_WRAPPER TSRMLS_CC) == FAILURE) {
+	if (PHP_MSHUTDOWN(midgard2_urlwrapper)(INIT_FUNC_ARGS_PASSTHRU) == FAILURE) {
 		return FAILURE;
 	}
 
+	// next line is a hack. we do not free resources
 	return SUCCESS;
 
 	/* Free schema */
