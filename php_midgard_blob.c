@@ -134,10 +134,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_blob, get_handler)
 {
-	RETVAL_FALSE;
 	CHECK_MGD;
-	char *mode = NULL;
-	int mode_length = 0;
+	char *mode = "w";
+	int mode_length = 1;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &mode, &mode_length) == FAILURE)
 		return;
@@ -153,13 +152,15 @@ static PHP_METHOD(midgard_blob, get_handler)
 	 */
 	php_stream *stream = php_stream_open_wrapper_ex(
 		(char *)path,
-		mode ? mode : "w",
+		mode,
 		IGNORE_PATH | IGNORE_URL | STREAM_DISABLE_OPEN_BASEDIR,
 		NULL, NULL
 	);
 
-	if (stream == NULL)
-		RETURN_NULL();
+	if (stream == NULL) {
+		php_error_docref1(NULL TSRMLS_CC, mode, E_WARNING, "Failed to open stream. Might be permissions issue");
+		return;
+	}
 
 	php_stream_to_zval(stream, return_value);
 }
