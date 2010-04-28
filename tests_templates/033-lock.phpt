@@ -24,7 +24,7 @@ $params = array("login" => 'admin', "password" => 'password', "authtype" => 'Pla
 $user = new midgard_user($params);
 var_dump($user->login());       // true
 
-var_dump($obj1->approve());     // true (admin-user)
+var_dump($obj1->lock());     // true (admin-user)
 var_dump($obj1->is_locked()); // true
 var_dump($obj1->unlock());   // true (still, admin-user)
 var_dump($obj1->is_locked()); // false
