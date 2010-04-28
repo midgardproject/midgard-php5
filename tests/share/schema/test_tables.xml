@@ -17,6 +17,10 @@
         <property name="flt" type="float">
             <description>Float field</description>
         </property>
+        <user_values>
+            <meta1>value1</meta1>
+            <meta2>value2</meta2>
+        </user_values>
     </type>
 
     <type name="xtype" table="xtype" parent="atype">

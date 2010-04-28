@@ -50,6 +50,9 @@ var_dump(midgard_object_class::has_metadata($obj));
 var_dump(midgard_object_class::has_metadata('atype'));
 var_dump(midgard_object_class::has_metadata('midgard_metadata'));
 
+var_dump(midgard_object_class::get_schema_value('atype', 'meta1') === 'value1');
+var_dump(midgard_object_class::get_schema_value('atype', 'meta2') === 'value2');
+var_dump(midgard_object_class::get_schema_value('atype', 'meta3') === NULL);
 
 // cleanup
 $obj->delete();
@@ -73,4 +76,7 @@ bool(true)
 bool(true)
 bool(true)
 bool(false)
+bool(true)
+bool(true)
+bool(true)
 ===DONE===

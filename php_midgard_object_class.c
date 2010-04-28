@@ -258,9 +258,8 @@ static ZEND_METHOD(midgard_object_class, get_schema_value)
 	CHECK_MGD;
 	RETVAL_FALSE;
 	zval *zvalue;
-	gchar *name;
-	guint name_length;
-	MidgardObjectClass *klass = NULL;
+	char *name;
+	int name_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zs", &zvalue, &name, &name_length) == FAILURE) {
 		return;
@@ -274,13 +273,14 @@ static ZEND_METHOD(midgard_object_class, get_schema_value)
 	}
 
 	const gchar *classname = NULL;
+
 	if (Z_TYPE_P(zvalue) == IS_STRING) {
 		classname = (const gchar *) Z_STRVAL_P(zvalue);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
 		classname = (const gchar *) Z_OBJCE_P(zvalue)->name;
 	}
 
-	klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(classname);
+	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(classname);
 
 	if (!klass) {
 		php_error(E_WARNING, "MidgardObjectClass not found");
@@ -292,7 +292,7 @@ static ZEND_METHOD(midgard_object_class, get_schema_value)
 	if (!schema_value)
 		RETURN_NULL();
 
-	RETURN_STRING((gchar *)schema_value, 1);
+	RETURN_STRING((char *)schema_value, 1);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_schema_value, 0, 0, 2)
