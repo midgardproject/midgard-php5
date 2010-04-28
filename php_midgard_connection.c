@@ -148,16 +148,14 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_connection, open)
 {
 	RETVAL_FALSE;
-	gchar *cnf_name;
-	guint cnf_name_length;
-	gboolean rv;
+	char *cnf_name;
+	int cnf_name_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &cnf_name, &cnf_name_length) == FAILURE)
 		return;
 
 	MidgardConnection *mgd = __midgard_connection_get_ptr(getThis());
-
-	rv = midgard_connection_open(mgd, (const gchar *)cnf_name, NULL);
+	gboolean rv = midgard_connection_open(mgd, (const gchar *)cnf_name, NULL);
 
 	if (rv) {
 		guint loghandler = midgard_connection_get_loghandler(mgd);
@@ -167,6 +165,7 @@ static PHP_METHOD(midgard_connection, open)
 
 		global_loghandler = g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_MASK, php_midgard_log_errors, (gpointer)mgd);
 		midgard_connection_set_loghandler(mgd, global_loghandler);
+
 		if (MGDG(midgard_memory_debug)) {
 			php_printf("---> global_loghandler = %d\n", global_loghandler);
 		}
@@ -305,8 +304,8 @@ static PHP_METHOD(midgard_connection, set_loglevel)
 {
 	RETVAL_NULL();
 	CHECK_MGD;
-	const gchar *level;
-	guint level_length;
+	char *level;
+	int level_length;
 	zval *callback;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &level, &level_length, &callback) == FAILURE)
@@ -315,8 +314,9 @@ static PHP_METHOD(midgard_connection, set_loglevel)
 	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
 
 	/* no support for callback atm */
-	gboolean rv = midgard_connection_set_loglevel(mgd, level, php_midgard_log_errors);
+	gboolean rv = midgard_connection_set_loglevel(mgd, (gchar *)level, php_midgard_log_errors);
 	global_loghandler = midgard_connection_get_loghandler(mgd);
+
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("---> global_loghandler = %d\n", global_loghandler);
 	}
