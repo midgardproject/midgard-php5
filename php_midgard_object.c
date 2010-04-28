@@ -154,13 +154,12 @@ PHP_FUNCTION(_get_type_by_id)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	guint id;
-	zval *zval_object = getThis();
+	long id;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &id) == FAILURE)
 		return;
 
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	if (!midgard_object_get_by_id(mobj, id)) {
 		php_midgard_error_exception_throw(mgd_handle());
@@ -307,9 +306,8 @@ PHP_FUNCTION(_midgard_php_object_delete)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	zval *zval_object = getThis();
 
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	g_signal_emit(mobj, MIDGARD_OBJECT_GET_CLASS(mobj)->signal_action_delete_hook, 0);
 	__THROW_EXCEPTION
@@ -350,7 +348,7 @@ PHP_FUNCTION(_midgard_php_object_list)
 	array_init(return_value);
 
 	zval *zval_object = getThis();
-	MidgardObject *mobj = MIDGARD_OBJECT(__php_gobject_ptr(zval_object));
+	MidgardObject *mobj = __midgard_object_get_ptr(zval_object);
 
 	guint i, n_objects;
 	MidgardObject **objects = midgard_schema_object_tree_list_objects(mobj, &n_objects);
