@@ -593,7 +593,8 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 				g_value_unset(gvalue);
 			}
 			
-			g_free(gvalue);												                 }
+			g_free(gvalue);
+		}
 	}
 
 	std_hnd->write_property(zobject, prop, value TSRMLS_CC);
