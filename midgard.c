@@ -25,7 +25,6 @@
 #include "php_midgard_compat.h"
 #include "php_midgard_timestamp.h"
 
-#include "mgd_preparser.h"
 #include "php_midgard_gobject.h"
 #include "php_midgard_handle.h"
 #include "php_midgard_urlwrapper.h"
@@ -68,9 +67,6 @@ MGD_FUNCTION(ret_type, is_guid, (type_param));
  */
 function_entry midgard2_functions[] = {
 	MGD_FE(version, NULL)
-	MGD_FE(snippet, NULL)
-	MGD_FE(template, NULL)
-	MGD_FE(is_element_loaded, NULL)
 	MGD_FE(is_guid, NULL)
 	/* Undocumented */
 	{NULL, NULL, NULL}  /* Must be the last line in midgard2_functions[] */
