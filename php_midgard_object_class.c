@@ -19,7 +19,7 @@
 
 static zend_class_entry *php_midgard_object_class_class;
 
-static ZEND_METHOD(midgard_object_class, factory)
+static PHP_METHOD(midgard_object_class, factory)
 {
 	CHECK_MGD;
 
@@ -52,7 +52,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_factory, 0, 0, 1)
 	ZEND_ARG_INFO(0, id)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_object_class, get_object_by_guid)
+static PHP_METHOD(midgard_object_class, get_object_by_guid)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -88,7 +88,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_object_by_guid, 0, 0, 1)
 	ZEND_ARG_INFO(0, guid)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_object_class, get_property_up)
+static PHP_METHOD(midgard_object_class, get_property_up)
 {
 	CHECK_MGD;
 	zval *zvalue;
@@ -128,7 +128,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_property_up, 0, 0, 1)
 	ZEND_ARG_INFO(0, classname)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_object_class, get_property_parent)
+static PHP_METHOD(midgard_object_class, get_property_parent)
 {
 	CHECK_MGD;
 	zval *zvalue;
@@ -168,7 +168,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_property_parent, 0, 0, 1
 	ZEND_ARG_INFO(0, classname)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_object_class, undelete)
+static PHP_METHOD(midgard_object_class, undelete)
 {
 	CHECK_MGD;
 
@@ -188,7 +188,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_undelete, 0, 0, 1)
 	ZEND_ARG_INFO(0, guid)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_object_class, connect_default)
+static PHP_METHOD(midgard_object_class, connect_default)
 {
 	CHECK_MGD;
 	php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAM_PASSTHRU);
@@ -201,7 +201,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_connect_default, 0, 0, 3)
 	ZEND_ARG_INFO(0, userdata)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_object_class, has_metadata)
+static PHP_METHOD(midgard_object_class, has_metadata)
 {
 	CHECK_MGD;
 	zval *zvalue;
@@ -236,7 +236,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_has_metadata, 0, 0, 1)
 	ZEND_ARG_INFO(0, classname)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_object_class, get_schema_value)
+static PHP_METHOD(midgard_object_class, get_schema_value)
 {
 	CHECK_MGD;
 	zval *zvalue;
@@ -279,35 +279,24 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_schema_value, 0, 0, 2)
 ZEND_END_ARG_INFO()
 
 
-void php_midgard_object_class_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_object_class)
 {
 	static function_entry object_class_methods[] = {
-		ZEND_ME(midgard_object_class,	factory,
-				arginfo_midgard_object_class_factory,		ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_object_class,	undelete,
-				arginfo_midgard_object_class_undelete,		ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_object_class,	get_object_by_guid,
-				arginfo_midgard_object_class_get_object_by_guid,ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_object_class,	get_property_up,
-				arginfo_midgard_object_class_get_property_up,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_object_class,	get_property_parent,
-				arginfo_midgard_object_class_get_property_parent,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_object_class,   connect_default,
-				arginfo_midgard_object_class_connect_default,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_object_class,   has_metadata,
-				arginfo_midgard_object_class_has_metadata,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_object_class,   get_schema_value,
-				arginfo_midgard_object_class_get_schema_value,	ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, factory,             arginfo_midgard_object_class_factory,             ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, undelete,            arginfo_midgard_object_class_undelete,            ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, get_object_by_guid,  arginfo_midgard_object_class_get_object_by_guid,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, get_property_up,     arginfo_midgard_object_class_get_property_up,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, get_property_parent, arginfo_midgard_object_class_get_property_parent, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, connect_default,     arginfo_midgard_object_class_connect_default,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, has_metadata,        arginfo_midgard_object_class_has_metadata,        ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_object_class, get_schema_value,    arginfo_midgard_object_class_get_schema_value,    ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_object_class_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_object_class_class_entry, "midgard_object_class", object_class_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_object_class_class_entry,
-			"midgard_object_class", object_class_methods);
+	php_midgard_object_class_class = zend_register_internal_class(&php_midgard_object_class_class_entry TSRMLS_CC);
 
-	php_midgard_object_class_class =
-		zend_register_internal_class(&php_midgard_object_class_class_entry TSRMLS_CC);
+	return SUCCESS;
 }

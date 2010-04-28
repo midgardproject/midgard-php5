@@ -258,31 +258,27 @@ static PHP_METHOD(midgard_datetime, __toString)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_datetime___tostring, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-void php_midgard_datetime_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_datetime)
 {
 	static function_entry midgard_datetime_methods[] = {
-		PHP_ME(midgard_datetime,    __construct,	arginfo_midgard_datetime___construct,	ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(midgard_datetime,    setTimezone,	arginfo_midgard_datetime_settimezone,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime,    setTime,		arginfo_midgard_datetime_settime,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime,    setDate,		arginfo_midgard_datetime_setdate,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime,    setISODate,		arginfo_midgard_datetime_setisodate,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime,    modify,		arginfo_midgard_datetime_modify,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime,    __toString,		arginfo_midgard_datetime___tostring,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, __construct, arginfo_midgard_datetime___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_datetime, setTimezone, arginfo_midgard_datetime_settimezone, ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, setTime,     arginfo_midgard_datetime_settime,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, setDate,     arginfo_midgard_datetime_setdate,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, setISODate,  arginfo_midgard_datetime_setisodate,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, modify,      arginfo_midgard_datetime_modify,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, __toString,  arginfo_midgard_datetime___tostring,  ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_datetime_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_datetime_class_entry, "midgard_datetime", midgard_datetime_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_datetime_class_entry,
-			"midgard_datetime", midgard_datetime_methods);
-
-	php_midgard_datetime_class =
-		zend_register_internal_class_ex(
-				&php_midgard_datetime_class_entry, zend_datetime_class_ptr, "DateTime" TSRMLS_CC);
+	php_midgard_datetime_class = zend_register_internal_class_ex(&php_midgard_datetime_class_entry, zend_datetime_class_ptr, "DateTime" TSRMLS_CC);
 
 	/* Register properties */
-	zend_declare_property_string(php_midgard_datetime_class, "object", sizeof("object")-1, "", ZEND_ACC_PRIVATE TSRMLS_CC);
+	zend_declare_property_string(php_midgard_datetime_class, "object",   sizeof("object")-1,   "", ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_string(php_midgard_datetime_class, "property", sizeof("property")-1, "", ZEND_ACC_PRIVATE TSRMLS_CC);
+
+	return SUCCESS;
 }

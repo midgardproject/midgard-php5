@@ -349,44 +349,28 @@ static PHP_METHOD(midgard_query_builder, count)
 ZEND_BEGIN_ARG_INFO(arginfo_mqb_count, 0)
 ZEND_END_ARG_INFO()
 
-void php_midgard_query_builder_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_query_builder)
 {
 	static function_entry query_builder_methods[] = {
-		PHP_ME(midgard_query_builder,	__construct,
-				arginfo_mqb___construct,		ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(midgard_query_builder,	add_constraint,
-				arginfo_mqb_add_constraint,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,	add_constraint_with_property,
-				arginfo_mqb_add_constraint_with_property,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,	begin_group,
-				arginfo_mqb_begin_group,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,  	end_group,
-				arginfo_mqb_end_group,			ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,  	execute,
-				arginfo_mqb_execute,			ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,  	add_order,
-				arginfo_mqb_add_order,			ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,  	set_limit,
-				arginfo_mqb_set_limit,			ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,  	set_offset,
-				arginfo_mqb_set_offset,			ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,   include_deleted,
-				arginfo_mqb_include_deleted,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_builder,  	count,
-				arginfo_mqb_count,			ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, __construct,                  arginfo_mqb___construct,                  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_query_builder, add_constraint,               arginfo_mqb_add_constraint,               ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, add_constraint_with_property, arginfo_mqb_add_constraint_with_property, ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, begin_group,                  arginfo_mqb_begin_group,                  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, end_group,                    arginfo_mqb_end_group,                    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, execute,                      arginfo_mqb_execute,                      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, add_order,                    arginfo_mqb_add_order,                    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, set_limit,                    arginfo_mqb_set_limit,                    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, set_offset,                   arginfo_mqb_set_offset,                   ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, include_deleted,              arginfo_mqb_include_deleted,              ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_builder, count,                        arginfo_mqb_count,                        ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry query_builder_class_entry;
-	TSRMLS_FETCH();
 
-	INIT_CLASS_ENTRY(
-			query_builder_class_entry,
-			"midgard_query_builder", query_builder_methods);
-
-	php_midgard_query_builder_class =
-		zend_register_internal_class(&query_builder_class_entry TSRMLS_CC);
-
-	/* Set function to initialize underlying data */
+	INIT_CLASS_ENTRY(query_builder_class_entry, "midgard_query_builder", query_builder_methods);
+	php_midgard_query_builder_class = zend_register_internal_class(&query_builder_class_entry TSRMLS_CC);
 	php_midgard_query_builder_class->create_object = php_midgard_gobject_new;
+
+	return SUCCESS;
 }

@@ -238,7 +238,6 @@ static zend_bool php_midgard_initialize_configs()
 	return TRUE;
 }
 
-PHP_MINIT_FUNCTION(midgard2_urlwrapper);
 PHP_MINIT_FUNCTION(midgard2)
 {
 	if (zend_get_extension("midgard") != NULL) {
@@ -294,27 +293,27 @@ PHP_MINIT_FUNCTION(midgard2)
 	ce_midgard_error_exception = zend_register_internal_class_ex(&ce, exc_ce, NULL TSRMLS_CC);
 
 	// Init various classes
-	php_reflection_workaround_init(module_number);	
-	php_midgard_reflection_property_init(module_number);
-	php_midgard_query_builder_init(module_number);
-	php_midgard_config_init(module_number);
-	php_midgard_blob_init(module_number);
-	php_midgard_object_class_init(module_number);
-	php_midgard_object_init(module_number);
-	php_midgard_user_init(module_number);
-	php_midgard_collector_init(module_number);
-	php_midgard_connection_init(module_number);
-	php_midgard_dbus_init(module_number);
-	php_midgard_replicator_init(module_number);
-	php_midgard_datetime_init(module_number);
-	php_midgard_error_init(module_number);
-	php_midgard_transaction_init(module_number);
-	php_midgard_view_init(module_number);
-	php_midgard_storage_init(module_number);
-	php_midgard_key_config_context_init(module_number);
-	php_midgard_key_config_file_context_init(module_number);
-	php_midgard_key_config_init(module_number);
-	php_midgard_key_config_file_init(module_number);
+	PHP_MINIT(midgard2_reflection_workaround)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_reflection_property)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_query_builder)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_config)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_blob)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_object_class)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_collector)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_connection)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_dbus)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_replicator)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_datetime)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_error)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_transaction)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_view)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_storage)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_key_config_context)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_key_config_file_context)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_key_config)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_key_config_file)(INIT_FUNC_ARGS_PASSTHRU);
 
 	/* Register midgard_metadata class */
 	static zend_class_entry midgard_metadata_class_entry;

@@ -142,7 +142,8 @@ PHP_FUNCTION(_php_midgard_object_create_attachment)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|sss",
 				&name, &name_length,
 				&title, &title_length,
-				&mimetype, &mimetype_length) != SUCCESS) {
+				&mimetype, &mimetype_length) != SUCCESS
+	) {
 		return;
 	}
 

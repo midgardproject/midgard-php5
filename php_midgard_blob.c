@@ -205,7 +205,7 @@ static PHP_METHOD(midgard_blob, exists)
 ZEND_BEGIN_ARG_INFO(arginfo_midgard_blob_exists, 0)
 ZEND_END_ARG_INFO()
 
-void php_midgard_blob_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_blob)
 {
 	static function_entry blob_methods[] = {
 		PHP_ME(midgard_blob, __construct,   arginfo_midgard_blob___construct,   ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -219,13 +219,10 @@ void php_midgard_blob_init(int module_number)
 	};
 
 	static zend_class_entry php_midgard_blob_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_blob_class_entry, "midgard_blob", blob_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_blob_class_entry,
-			"midgard_blob", blob_methods);
-
-	php_midgard_blob_class =
-		zend_register_internal_class(&php_midgard_blob_class_entry TSRMLS_CC);
+	php_midgard_blob_class = zend_register_internal_class(&php_midgard_blob_class_entry TSRMLS_CC);
 	php_midgard_blob_class->create_object = php_midgard_gobject_new;
+
+	return SUCCESS;
 }

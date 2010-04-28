@@ -341,37 +341,33 @@ ZEND_BEGIN_ARG_INFO(arginfo_midgard_user_logout, 0)
 ZEND_END_ARG_INFO()
 
 /* Initialize ZEND&PHP class */
-void php_midgard_user_init (int module_number)
+PHP_MINIT_FUNCTION(midgard2_user)
 {
 	static function_entry midgard_user_methods[] = {
-		PHP_ME(midgard_user,	__construct,	arginfo_midgard_user___construct,	ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(midgard_user,	auth,		arginfo_midgard_user_auth,		ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)	
-		PHP_ME(midgard_user,    is_user,	arginfo_midgard_user_is_user,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_user,    is_admin,       arginfo_midgard_user_is_admin,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_user,    set_person,     arginfo_midgard_user_set_person,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_user,    get_person,     arginfo_midgard_user_get_person,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_user,    get,     	arginfo_midgard_user_get,		ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_user,    query,     	arginfo_midgard_user_query,		ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_user,    create,     	arginfo_midgard_user_create,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_user,    update,     	arginfo_midgard_user_update,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_user,    delete,     	arginfo_midgard_user_delete,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_user,    login,     	arginfo_midgard_user_login,		ZEND_ACC_PUBLIC)	
-		PHP_ME(midgard_user,    logout,     	arginfo_midgard_user_logout,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, auth,        arginfo_midgard_user_auth,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_user, get,         arginfo_midgard_user_get,         ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_user, query,       arginfo_midgard_user_query,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_user, __construct, arginfo_midgard_user___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_user, is_user,     arginfo_midgard_user_is_user,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, is_admin,    arginfo_midgard_user_is_admin,    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, set_person,  arginfo_midgard_user_set_person,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, get_person,  arginfo_midgard_user_get_person,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, create,      arginfo_midgard_user_create,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, update,      arginfo_midgard_user_update,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, delete,      arginfo_midgard_user_delete,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, login,       arginfo_midgard_user_login,       ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_user, logout,      arginfo_midgard_user_logout,      ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_user_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_user_class_entry, "midgard_user", midgard_user_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_user_class_entry,
-			"midgard_user", midgard_user_methods);
-
-	php_midgard_user_class =
-		zend_register_internal_class_ex (
-				&php_midgard_user_class_entry, NULL, "midgard_dbobject" TSRMLS_CC);
+	php_midgard_user_class = zend_register_internal_class_ex(&php_midgard_user_class_entry, NULL, "midgard_dbobject" TSRMLS_CC);
 
 	/* Set function to initialize underlying data */
 	php_midgard_user_class->create_object = php_midgard_gobject_new;
 	php_midgard_user_class->doc_comment = g_strdup (class_doc_comment);
+
+	return SUCCESS;
 }

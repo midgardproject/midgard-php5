@@ -235,37 +235,26 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_mrp_is_private, 0, 0, 1)
 	ZEND_ARG_INFO(0, property)
 ZEND_END_ARG_INFO()
 
-void php_midgard_reflection_property_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_reflection_property)
 {
 	static function_entry reflection_property_methods[] = {
-		PHP_ME(midgard_reflection_property,	__construct,
-				arginfo_mrp___construct,	ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(midgard_reflection_property,	get_midgard_type,
-				arginfo_mrp_get_midgard_type,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_reflection_property,	is_link,
-				arginfo_mrp_is_link,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_reflection_property,	get_link_name,
-				arginfo_mrp_get_link_name,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_reflection_property,	get_link_target,
-				arginfo_mrp_get_link_target,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_reflection_property,	description,
-				arginfo_mrp_description,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_reflection_property,	get_user_value,
-				arginfo_mrp_get_user_value,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_reflection_property,	is_private,
-				arginfo_mrp_is_private,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property, __construct,      arginfo_mrp___construct,      ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_reflection_property, get_midgard_type, arginfo_mrp_get_midgard_type, ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property, is_link,          arginfo_mrp_is_link,          ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property, get_link_name,    arginfo_mrp_get_link_name,    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property, get_link_target,  arginfo_mrp_get_link_target,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property, description,      arginfo_mrp_description,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property, get_user_value,   arginfo_mrp_get_user_value,   ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflection_property, is_private,       arginfo_mrp_is_private,       ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry reflection_property_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(reflection_property_class_entry, "midgard_reflection_property", reflection_property_methods);
 
-	INIT_CLASS_ENTRY(
-			reflection_property_class_entry,
-			"midgard_reflection_property", reflection_property_methods);
-	php_midgard_reflection_property_class =
-		zend_register_internal_class(&reflection_property_class_entry TSRMLS_CC);
+	php_midgard_reflection_property_class = zend_register_internal_class(&reflection_property_class_entry TSRMLS_CC);
 
-	/* Set function to initialize underlying data */
 	php_midgard_reflection_property_class->create_object = php_midgard_gobject_new;
+
+	return SUCCESS;
 }

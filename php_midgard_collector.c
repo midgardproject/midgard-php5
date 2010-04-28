@@ -472,7 +472,7 @@ static PHP_METHOD(midgard_collector, execute)
 	RETURN_BOOL(midgard_collector_execute(collector));
 }
 
-void php_midgard_collector_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_collector)
 {
 	static function_entry collector_methods[] = {
 		PHP_ME(midgard_collector, __construct,        arginfo_midgard_collector___construct,        ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -495,16 +495,11 @@ void php_midgard_collector_init(int module_number)
 	};
 
 	static zend_class_entry php_midgard_collector_class_entry;
-	TSRMLS_FETCH();
-
-	INIT_CLASS_ENTRY(
-			php_midgard_collector_class_entry,
-			"midgard_collector", collector_methods);
+	INIT_CLASS_ENTRY(php_midgard_collector_class_entry, "midgard_collector", collector_methods);
 
 	/* FIXME, this inheritance should be automatic once we switch to namespaces */
-	php_midgard_collector_class = 
-		zend_register_internal_class_ex (&php_midgard_collector_class_entry, NULL, "midgard_query_builder" TSRMLS_CC);
-
-	/* Set function to initialize underlying data */
+	php_midgard_collector_class =  zend_register_internal_class_ex (&php_midgard_collector_class_entry, NULL, "midgard_query_builder" TSRMLS_CC);
 	php_midgard_collector_class->create_object = php_midgard_gobject_new;
+
+	return SUCCESS;
 }

@@ -200,7 +200,7 @@ ZEND_BEGIN_ARG_INFO(arginfo_midgard_config_create_blobdir, 0)
 ZEND_END_ARG_INFO()
 
 /* Initialize ZEND&PHP class */
-void php_midgard_config_init(int module_numer)
+PHP_MINIT_FUNCTION(midgard2_config)
 {
 
 	static function_entry midgard_config_methods[] = {
@@ -215,17 +215,12 @@ void php_midgard_config_init(int module_numer)
 	};
 
 	static zend_class_entry php_midgard_config_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_config_class_entry, "midgard_config", midgard_config_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_config_class_entry,
-			"midgard_config", midgard_config_methods);
-
-	php_midgard_config_class =
-		zend_register_internal_class(
-				&php_midgard_config_class_entry TSRMLS_CC);
+	php_midgard_config_class = zend_register_internal_class(&php_midgard_config_class_entry TSRMLS_CC);
 
 	php_midgard_config_class->doc_comment = g_strdup("Represents Midgard unified configuration file");
-	/* Set function to initialize underlying data */
 	php_midgard_config_class->create_object = php_midgard_gobject_new;
+
+	return SUCCESS;
 }

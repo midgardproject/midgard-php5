@@ -252,35 +252,32 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_key_config_load_from_data, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 /* Initialize ZEND&PHP class */
-void php_midgard_key_config_init(int module_numer)
+PHP_MINIT_FUNCTION(midgard2_key_config)
 {
 	static function_entry midgard_key_config_methods[] = {
-		PHP_ME(midgard_key_config,	set_value,		arginfo_midgard_key_config_set_value,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	get_value,		arginfo_midgard_key_config_get_value,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	set_comment,		arginfo_midgard_key_config_set_comment,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	get_comment,		arginfo_midgard_key_config_get_comment,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	list_groups,		arginfo_midgard_key_config_list_groups,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	group_exists,		arginfo_midgard_key_config_group_exists,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	delete_group,		arginfo_midgard_key_config_delete_group,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	store,			arginfo_midgard_key_config_store,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	to_data,		arginfo_midgard_key_config_to_data,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_key_config,	load_from_data,		arginfo_midgard_key_config_load_from_data,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, set_value,      arginfo_midgard_key_config_set_value,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, get_value,      arginfo_midgard_key_config_get_value,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, set_comment,    arginfo_midgard_key_config_set_comment,    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, get_comment,    arginfo_midgard_key_config_get_comment,    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, list_groups,    arginfo_midgard_key_config_list_groups,    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, group_exists,   arginfo_midgard_key_config_group_exists,   ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, delete_group,   arginfo_midgard_key_config_delete_group,   ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, store,          arginfo_midgard_key_config_store,          ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, to_data,        arginfo_midgard_key_config_to_data,        ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_key_config, load_from_data, arginfo_midgard_key_config_load_from_data, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_key_config_class_entry;
-	TSRMLS_FETCH();
 
-	INIT_CLASS_ENTRY(
-			php_midgard_key_config_class_entry,
-			"midgard_key_config", midgard_key_config_methods);
+	INIT_CLASS_ENTRY(php_midgard_key_config_class_entry, "midgard_key_config", midgard_key_config_methods);
 
-	php_midgard_key_config_class =
-		zend_register_internal_class(
-				&php_midgard_key_config_class_entry TSRMLS_CC);
+	php_midgard_key_config_class = zend_register_internal_class(&php_midgard_key_config_class_entry TSRMLS_CC);
 
 	php_midgard_key_config_class->ce_flags = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_key_config_class->doc_comment = g_strdup(class_doc_comment);
 	/* Set function to initialize underlying data */
 	php_midgard_key_config_class->create_object = php_midgard_gobject_new;
+
+	return SUCCESS;
 }

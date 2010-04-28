@@ -154,9 +154,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_error_debug, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 /* Initialize ZEND&PHP class */
-void php_midgard_error_init(int module_numer)
+PHP_MINIT_FUNCTION(midgard2_error)
 {
-
 	static function_entry midgard_error_methods[] = {
 		PHP_ME(midgard_error, __construct, arginfo_midgard_error___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_error, error,       arginfo_midgard_error_error,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -169,13 +168,9 @@ void php_midgard_error_init(int module_numer)
 	};
 
 	static zend_class_entry php_midgard_error_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_error_class_entry, "midgard_error", midgard_error_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_error_class_entry,
-			"midgard_error", midgard_error_methods);
+	php_midgard_error_class = zend_register_internal_class(&php_midgard_error_class_entry TSRMLS_CC);
 
-	php_midgard_error_class =
-		zend_register_internal_class(
-				&php_midgard_error_class_entry TSRMLS_CC);
+	return SUCCESS;
 }

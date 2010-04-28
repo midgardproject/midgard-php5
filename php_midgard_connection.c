@@ -382,27 +382,26 @@ int __unserialize_cnc_hook(zval **zobject, zend_class_entry *ce, const unsigned 
 }
 
 
-void php_midgard_connection_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_connection)
 {
 	static function_entry connection_methods[] = {
-		PHP_ME(midgard_connection,	__construct,		arginfo_midgard_connection___construct,		ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
-		PHP_ME(midgard_connection,	__destruct,		arginfo_midgard_connection___destruct,		ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
-		PHP_ME(midgard_connection,	get_instance,		arginfo_midgard_connection_get_instance,	ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_connection,	open,			arginfo_midgard_connection_open,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	open_config,		arginfo_midgard_connection_open_config,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	is_connected,		arginfo_midgard_connection_is_connected,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	connect,		arginfo_midgard_connection_connect,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	get_error,		arginfo_midgard_connection_get_error,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	set_error,		arginfo_midgard_connection_set_error,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	get_error_string,	arginfo_midgard_connection_get_error_string,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	get_user,		arginfo_midgard_connection_get_user,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	set_loglevel,		arginfo_midgard_connection_set_loglevel,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_connection,	list_auth_types,	arginfo_midgard_connection_list_auth_types,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, __construct,      arginfo_midgard_connection___construct,      ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
+		PHP_ME(midgard_connection, __destruct,       arginfo_midgard_connection___destruct,       ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
+		PHP_ME(midgard_connection, get_instance,     arginfo_midgard_connection_get_instance,     ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_connection, open,             arginfo_midgard_connection_open,             ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, open_config,      arginfo_midgard_connection_open_config,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, is_connected,     arginfo_midgard_connection_is_connected,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, connect,          arginfo_midgard_connection_connect,          ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, get_error,        arginfo_midgard_connection_get_error,        ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, set_error,        arginfo_midgard_connection_set_error,        ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, get_error_string, arginfo_midgard_connection_get_error_string, ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, get_user,         arginfo_midgard_connection_get_user,         ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, set_loglevel,     arginfo_midgard_connection_set_loglevel,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, list_auth_types,	 arginfo_midgard_connection_list_auth_types,  ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_connection_class_entry;
-	TSRMLS_FETCH();
 
 	INIT_CLASS_ENTRY(php_midgard_connection_class_entry, "midgard_connection", connection_methods);
 
@@ -416,4 +415,6 @@ void php_midgard_connection_init(int module_number)
 	php_midgard_connection_class->doc_comment = g_strdup(class_doc_comment);
 
 	zend_declare_property_null(php_midgard_connection_class, "instance", sizeof("instance")-1, ZEND_ACC_PRIVATE|ZEND_ACC_STATIC TSRMLS_CC);
+
+	return SUCCESS;
 }

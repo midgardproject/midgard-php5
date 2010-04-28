@@ -109,32 +109,22 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_storage_class_storage_exists, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 /* Initialize ZEND&PHP class */
-void php_midgard_storage_init(int module_numer)
+PHP_MINIT_FUNCTION(midgard2_storage)
 {
 	static function_entry midgard_storage_methods[] = {
-		PHP_ME(midgard_storage,	create_base_storage,
-				arginfo_midgard_storage_create_base_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_storage,	create_class_storage,
-				arginfo_midgard_storage_create_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_storage,	update_class_storage,
-				arginfo_midgard_storage_update_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_storage,	delete_class_storage,
-				arginfo_midgard_storage_delete_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-		PHP_ME(midgard_storage,	class_storage_exists,
-				arginfo_midgard_storage_class_storage_exists, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_storage, create_base_storage,  arginfo_midgard_storage_create_base_storage,  ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_storage, create_class_storage, arginfo_midgard_storage_create_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_storage, update_class_storage, arginfo_midgard_storage_update_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_storage, delete_class_storage, arginfo_midgard_storage_delete_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_storage, class_storage_exists, arginfo_midgard_storage_class_storage_exists, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_storage_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_storage_class_entry, "midgard_storage", midgard_storage_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_storage_class_entry,
-			"midgard_storage", midgard_storage_methods);
-
-	php_midgard_storage_class =
-		zend_register_internal_class(&php_midgard_storage_class_entry TSRMLS_CC);
-
-	/* Set function to initialize underlying data */
+	php_midgard_storage_class = zend_register_internal_class(&php_midgard_storage_class_entry TSRMLS_CC);
 	php_midgard_storage_class->create_object = NULL;
+
+	return SUCCESS;
 }

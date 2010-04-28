@@ -120,15 +120,13 @@ static void __register_view_php_classes(const gchar *class_name, zend_class_entr
 	g_free(mgdclass);
 }
 
-void php_midgard_view_init(int module_numer)
+PHP_MINIT_FUNCTION(midgard2_view)
 {
 	/* Register midgard_view class */
 	static zend_class_entry php_midgard_view_ce;
-	TSRMLS_FETCH();
-
 	INIT_CLASS_ENTRY(php_midgard_view_ce, "midgard_view", NULL);
-	php_midgard_view_class =
-		zend_register_internal_class_ex(&php_midgard_view_ce, php_midgard_dbobject_class, "midgard_view" TSRMLS_CC);
+
+	php_midgard_view_class = zend_register_internal_class_ex(&php_midgard_view_ce, php_midgard_dbobject_class, "midgard_view" TSRMLS_CC);
 
 	guint n_types, i;
 	GType *all_types = g_type_children(MIDGARD_TYPE_VIEW, &n_types);
@@ -139,4 +137,6 @@ void php_midgard_view_init(int module_numer)
 	}
 
 	g_free(all_types);
+
+	return SUCCESS;
 }

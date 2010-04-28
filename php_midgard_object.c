@@ -1195,17 +1195,18 @@ static void __add_method_comments(const char *class_name)
 	}
 }
 
-void php_midgard_object_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_object)
 {
 	/* Register midgard_dbobject class */
 	static zend_class_entry php_midgard_dbobject_ce;
-	TSRMLS_FETCH();
 	INIT_CLASS_ENTRY(php_midgard_dbobject_ce, "midgard_dbobject", NULL);
+
 	php_midgard_dbobject_class = zend_register_internal_class(&php_midgard_dbobject_ce TSRMLS_CC);
 
 	/* Register midgard_object class */
 	static zend_class_entry php_midgard_object_ce;
 	INIT_CLASS_ENTRY(php_midgard_object_ce, "midgard_object", NULL);
+
 	php_midgard_object_class = zend_register_internal_class_ex(&php_midgard_object_ce, php_midgard_dbobject_class, "midgard_dbobject" TSRMLS_CC);
 
 	guint n_types, i;
@@ -1219,4 +1220,6 @@ void php_midgard_object_init(int module_number)
 	}
 
 	g_free(all_types);
+
+	return SUCCESS;
 }

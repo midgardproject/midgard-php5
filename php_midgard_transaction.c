@@ -142,7 +142,7 @@ ZEND_BEGIN_ARG_INFO(arginfo_midgard_transaction_get_name, 0)
 ZEND_END_ARG_INFO()
 
 
-void php_midgard_transaction_init(int module_number)
+PHP_MINIT_FUNCTION(midgard2_transaction)
 {
 	static function_entry transaction_methods[] = {
 		PHP_ME(midgard_transaction, __construct, arginfo_midgard_transaction___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -155,17 +155,14 @@ void php_midgard_transaction_init(int module_number)
 	};
 
 	static zend_class_entry php_midgard_transaction_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_transaction_class_entry, "midgard_transaction", transaction_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_transaction_class_entry,
-			"midgard_transaction", transaction_methods);
-
-	php_midgard_transaction_class =
-		zend_register_internal_class(&php_midgard_transaction_class_entry TSRMLS_CC);
+	php_midgard_transaction_class = zend_register_internal_class(&php_midgard_transaction_class_entry TSRMLS_CC);
 
 	/* Set function to initialize underlying data */
 	php_midgard_transaction_class->create_object = php_midgard_gobject_new;
 	php_midgard_transaction_class->serialize = NULL; /* FIXME, set (un)serialize for some explicit error if needed */
 	php_midgard_transaction_class->unserialize = NULL;
+
+	return SUCCESS;
 }

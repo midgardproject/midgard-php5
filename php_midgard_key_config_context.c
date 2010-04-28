@@ -78,28 +78,22 @@ ZEND_BEGIN_ARG_INFO(arginfo_midgard_key_config_context_list_key_config, 0)
 ZEND_END_ARG_INFO()
 
 /* Initialize ZEND&PHP class */
-void php_midgard_key_config_context_init(int module_numer)
+PHP_MINIT_FUNCTION(midgard2_key_config_context)
 {
-
 	static function_entry midgard_key_config_context_methods[] = {
-		// PHP_ME(midgard_key_config_context,	__construct,		arginfo_midgard_key_config_context___construct,		ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(midgard_key_config_context,	list_key_config,	arginfo_midgard_key_config_context_list_key_config,	ZEND_ACC_PUBLIC)
+		// PHP_ME(midgard_key_config_context, __construct,     arginfo_midgard_key_config_context___construct,     ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_key_config_context, list_key_config, arginfo_midgard_key_config_context_list_key_config, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_key_config_context_class_entry;
-	TSRMLS_FETCH();
+	INIT_CLASS_ENTRY(php_midgard_key_config_context_class_entry, "midgard_key_config_context", midgard_key_config_context_methods);
 
-	INIT_CLASS_ENTRY(
-			php_midgard_key_config_context_class_entry,
-			"midgard_key_config_context", midgard_key_config_context_methods);
-
-	php_midgard_key_config_context_class =
-		zend_register_internal_class(
-				&php_midgard_key_config_context_class_entry TSRMLS_CC);
+	php_midgard_key_config_context_class = zend_register_internal_class(&php_midgard_key_config_context_class_entry TSRMLS_CC);
 
 	php_midgard_key_config_context_class->ce_flags = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_key_config_context_class->doc_comment = g_strdup(class_doc_comment);
-	/* Set function to initialize underlying data */
 	php_midgard_key_config_context_class->create_object = php_midgard_gobject_new;
+
+	return SUCCESS;
 }
