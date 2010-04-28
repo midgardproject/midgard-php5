@@ -150,7 +150,7 @@ PHP_FUNCTION(_midgard_php_object_update)
 		RETVAL_TRUE;
 }
 
-PHP_FUNCTION(_get_type_by_id)
+PHP_FUNCTION(_midgard_php_object_get_by_id)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -684,12 +684,14 @@ __midgard_php_type_functions[] =
 	},
 
 	{"get_by_id",
-		ZEND_FN(_get_type_by_id),
+		ZEND_FN(_midgard_php_object_get_by_id),
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 1
+		},
+		1,
+		"Get object which is identified by given id"
 	},
 
 	{"get_by_guid",
@@ -700,7 +702,7 @@ __midgard_php_type_functions[] =
 			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0, 0, 0 },
 		}, 
 		1, 
-		"Get object which is identified by given guid"
+		"Load data which is identified by given guid into current object"
 	},
 
 	{"update",
@@ -708,7 +710,9 @@ __midgard_php_type_functions[] =
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 0
+		},
+		0,
+		"Store object-changes into database"
 	},
 
 	{"create",
@@ -716,7 +720,9 @@ __midgard_php_type_functions[] =
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 0
+		},
+		0,
+		"Create object's record in database"
 	},
 
 	{"is_in_parent_tree",
@@ -726,7 +732,9 @@ __midgard_php_type_functions[] =
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 2 },
 			{ "root_id", sizeof("root_id")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 2
+		},
+		2,
+		"Check if object identified by 'id' is descendant of object identified by 'root_id'. Traversing is done using 'parent' markers in schema"
 	},
 
 	{"is_in_tree",
@@ -736,7 +744,9 @@ __midgard_php_type_functions[] =
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 2 },
 			{ "root_id", sizeof("root_id")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 2
+		},
+		2,
+		"Check if object identified by 'id' is descendant of object identified by 'root_id'. Traversing is done using 'up' markers in schema"
 	},
 
 	{"has_dependents",
@@ -752,7 +762,9 @@ __midgard_php_type_functions[] =
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 0
+		},
+		0,
+		"Mark object's record in database as \"deleted\""
 	},
 
 	{"get_parent",
@@ -760,7 +772,9 @@ __midgard_php_type_functions[] =
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 0
+		},
+		0,
+		"returns parent-object, using 'parent' mark in schema"
 	},
 
 	{"list",
@@ -794,7 +808,9 @@ __midgard_php_type_functions[] =
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 0
+		},
+		0,
+		"returns name of class, which is marked as 'parent' in schema"
 	},
 
 	{"has_parameters",

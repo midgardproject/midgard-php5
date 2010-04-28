@@ -18,7 +18,7 @@
 
 PHP_FUNCTION(_midgard_php_object_constructor);
 /* FIXME , change name */
-PHP_FUNCTION(_get_type_by_id);
+PHP_FUNCTION(_midgard_php_object_get_by_id);
 PHP_FUNCTION(_midgard_php_object_get_by_guid);
 PHP_FUNCTION(_midgard_php_object_update);
 PHP_FUNCTION(_midgard_php_object_create);
