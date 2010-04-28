@@ -156,13 +156,17 @@ static PHP_METHOD(php_midgard_reflection_method, getDocComment)
 static PHP_METHOD(php_midgard_reflection_class, __construct)
 {
 	zval *this = getThis();
-	zval *arg1;
+	zval *classname = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &arg1) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &classname) == FAILURE)
 		return;
 
-	zend_call_method_with_1_params(&this, zend_reflection_class_class, &zend_reflection_class_class->constructor, "__construct", NULL, arg1);
+	zend_call_method_with_1_params(&this, zend_reflection_class_class, &zend_reflection_class_class->constructor, "__construct", NULL, classname);
 }
+
+ZEND_BEGIN_ARG_INFO_EX(php_midgard_reflection_class___construct, ZEND_SEND_BY_VAL, ZEND_RETURN_VALUE, 1)
+	ZEND_ARG_INFO(0, classname)
+ZEND_END_ARG_INFO()
 
 static PHP_METHOD(php_midgard_reflection_class, getDocComment)
 {
@@ -214,6 +218,35 @@ static PHP_METHOD(php_midgard_reflection_class, listSignals)
 	g_free(ids);
 }
 
+static PHP_METHOD(php_midgard_reflection_class, getParentClass)
+{
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
+	zval *this = getThis();
+
+	zval *parent_class = NULL;
+	zend_call_method_with_0_params(&this, zend_reflection_class_class, NULL, "getparentclass", &parent_class);
+
+	if (Z_TYPE_P(parent_class) == IS_BOOL) {
+		zval_ptr_dtor(&parent_class);
+		RETURN_FALSE;
+	}
+
+	zval *class_name = NULL;
+	zend_call_method_with_0_params(&parent_class, zend_reflection_class_class, NULL, "getname", &class_name);
+	zval_ptr_dtor(&parent_class);
+
+	object_init_ex(return_value, php_midgard_reflection_class_class);
+	zend_call_method_with_1_params(&return_value,
+	                               php_midgard_reflection_class_class,
+	                               &php_midgard_reflection_class_class->constructor, "__construct",
+	                               NULL, class_name
+	);
+	zval_ptr_dtor(&class_name);
+}
+
 PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 {
 	__initialize_midgard_classes_hash ();
@@ -230,9 +263,10 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 
 	/* Extend ReflectionClass */
 	static function_entry midgard_reflection_class_methods[] = {
-		PHP_ME(php_midgard_reflection_class, __construct,   NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(php_midgard_reflection_class, getDocComment, NULL, ZEND_ACC_PUBLIC)
-		PHP_ME(php_midgard_reflection_class, listSignals,   NULL, ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, __construct,    php_midgard_reflection_class___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(php_midgard_reflection_class, getDocComment,  NULL,                                     ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, listSignals,    NULL,                                     ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, getParentClass, NULL,                                     ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 

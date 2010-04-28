@@ -6,6 +6,8 @@ reflection tests
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+--ENV--
+MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
 $cls = new midgard_reflection_class('midgard_reflection_class');
@@ -40,6 +42,10 @@ var_dump($cls->getDocComment());
 $cls = new midgard_reflection_class('midgard_connection');
 var_dump($cls->listSignals());
 
+$cls = new midgard_reflection_class('atype');
+$parent = $cls->getParentClass();
+var_dump($parent instanceof midgard_reflection_class);
+
 ?>
 ===DONE===
 --EXPECTF--
@@ -66,4 +72,5 @@ array(5) {
   [4]=>
   string(12) "disconnected"
 }
+bool(true)
 ===DONE===
