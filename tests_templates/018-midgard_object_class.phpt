@@ -34,12 +34,28 @@ var_dump(midgard_object_class::get_property_up('atype') === 'up');
 var_dump(midgard_object_class::get_property_up($obj)    === 'up');
 var_dump(midgard_object_class::get_property_up('xtype') === NULL);
 
-// do not leave traces!
+$objx = new xtype();
+
+var_dump(midgard_object_class::get_property_parent('xtype') === 'owner');
+var_dump(midgard_object_class::get_property_parent($objx)   === 'owner');
+var_dump(midgard_object_class::get_property_parent('atype') === NULL);
+
+$guid = $obj->guid;
+$obj->delete();
+
+var_dump(midgard_object_class::undelete($guid));
+
+// cleanup
+$obj = new atype($guid);
 $obj->delete();
 
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)
