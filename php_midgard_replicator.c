@@ -27,7 +27,7 @@ static MidgardObject *_get_object(zval *object)
 	return MIDGARD_OBJECT(__php_gobject_ptr(object));
 }
 
-static ZEND_METHOD(midgard_replicator, serialize)
+static PHP_METHOD(midgard_replicator, serialize)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -55,7 +55,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_serialize, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, object, midgard_dbobject, 0)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_replicator, export)
+static PHP_METHOD(midgard_replicator, export)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -76,7 +76,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_export, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, object, midgard_dbobject, 0)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_replicator, export_by_guid)
+static PHP_METHOD(midgard_replicator, export_by_guid)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -97,7 +97,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_export_by_guid, 0, 0, 1)
 	ZEND_ARG_INFO(0, guid)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_replicator, export_purged)
+static PHP_METHOD(midgard_replicator, export_purged)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -151,7 +151,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_export_purged, 0, 0, 1)
 	ZEND_ARG_INFO(0, enddate)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_replicator, serialize_blob)
+static PHP_METHOD(midgard_replicator, serialize_blob)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -177,7 +177,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_serialize_blob, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, object, midgard_attachment, 0)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_replicator, unserialize)
+static PHP_METHOD(midgard_replicator, unserialize)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -223,7 +223,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_unserialize, 0, 0, 1)
 	ZEND_ARG_INFO(0, force)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_replicator, import_object)
+static PHP_METHOD(midgard_replicator, import_object)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -246,7 +246,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_import_object, 0, 0, 1)
 	ZEND_ARG_INFO(0, force)
 ZEND_END_ARG_INFO()
 
-static ZEND_METHOD(midgard_replicator, import_from_xml)
+static PHP_METHOD(midgard_replicator, import_from_xml)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -269,14 +269,14 @@ ZEND_END_ARG_INFO()
 PHP_MINIT_FUNCTION(midgard2_replicator)
 {
 	static function_entry replicator_methods[] = {
-		ZEND_ME(midgard_replicator, serialize,       arginfo_midgard_replicator_serialize,       ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_replicator, export,          arginfo_midgard_replicator_export,          ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_replicator, export_by_guid,  arginfo_midgard_replicator_export_by_guid,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_replicator, export_purged,   arginfo_midgard_replicator_export_purged,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_replicator, serialize_blob,  arginfo_midgard_replicator_serialize_blob,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_replicator, unserialize,     arginfo_midgard_replicator_unserialize,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_replicator, import_object,   arginfo_midgard_replicator_import_object,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-		ZEND_ME(midgard_replicator, import_from_xml, arginfo_midgard_replicator_import_from_xml, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, serialize,       arginfo_midgard_replicator_serialize,       ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, export,          arginfo_midgard_replicator_export,          ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, export_by_guid,  arginfo_midgard_replicator_export_by_guid,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, export_purged,   arginfo_midgard_replicator_export_purged,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, serialize_blob,  arginfo_midgard_replicator_serialize_blob,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, unserialize,     arginfo_midgard_replicator_unserialize,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, import_object,   arginfo_midgard_replicator_import_object,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, import_from_xml, arginfo_midgard_replicator_import_from_xml, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
