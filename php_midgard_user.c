@@ -70,46 +70,6 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user___construct, 0, 1, 1)
 	ZEND_ARG_INFO(0, properties)
 ZEND_END_ARG_INFO()
 
-static PHP_METHOD(midgard_user, auth)
-{
-	RETVAL_FALSE;
-	CHECK_MGD;
-	const gchar *name, *password, *sitegroup = NULL;
-	gint name_length, password_length, sitegroup_length;
-	zend_bool zbool = FALSE;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|sb",
-				&name, &name_length,
-				&password, &password_length,
-				&sitegroup, &sitegroup_length,
-				&zbool) == FAILURE)
-	{
-		return;
-	}
-
-	MidgardConnection *mgd = mgd_handle();
-	MidgardUser *user = midgard_user_auth(mgd, name, password, sitegroup, zbool);
-
-	if (user == NULL)
-		RETURN_FALSE;
-
-	object_init_ex(return_value, php_midgard_user_class);
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(user));
-	zend_call_method_with_0_params(&return_value, php_midgard_user_class, &php_midgard_user_class->constructor, "__construct", NULL);
-
-	/* 1. Returned midgard_user is kind of reference, so mark it as reference.
-	 * 2. Increase reference count, so object is not destroyed by zend before request end */
-	Z_SET_ISREF_P(return_value);
-	zval_add_ref(&return_value);
-}
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user_auth, 0, 1, 2)
-	ZEND_ARG_INFO(0, username)
-	ZEND_ARG_INFO(0, password)
-	ZEND_ARG_INFO(0, sitegroup)
-	ZEND_ARG_INFO(0, trusted_auth)
-ZEND_END_ARG_INFO()
-
 static PHP_METHOD(midgard_user, set_person)
 {
 	RETVAL_FALSE;
@@ -344,7 +304,6 @@ ZEND_END_ARG_INFO()
 PHP_MINIT_FUNCTION(midgard2_user)
 {
 	static function_entry midgard_user_methods[] = {
-		PHP_ME(midgard_user, auth,        arginfo_midgard_user_auth,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user, get,         arginfo_midgard_user_get,         ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user, query,       arginfo_midgard_user_query,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user, __construct, arginfo_midgard_user___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
