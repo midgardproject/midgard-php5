@@ -205,7 +205,7 @@ static PHP_METHOD(midgard_query_builder, execute)
 	zend_class_entry *ce = php_gobject->user_ce;
 
 	if (ce == NULL) {
-		g_warning("Query Builder instance not associated with any class");
+		php_error(E_WARNING, "Query Builder instance not associated with any class");
 		return;
 	}
 

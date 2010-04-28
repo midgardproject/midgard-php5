@@ -456,8 +456,6 @@ PHP_MINIT_FUNCTION(midgard2)
 
 	/* midgard.http is on so we populate list of all available configs */
 	if (php_midgard_is_http_env()) {
-		g_debug("Found server context. Initialize all configurations");
-
 		if (!php_midgard_initialize_configs()) {
 			php_error(E_WARNING, "[Midgard2 minit] Failed to initialize configs");
 			return FAILURE;

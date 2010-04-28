@@ -111,12 +111,11 @@ static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTabl
 
 	if (mgd != NULL) {
 		if (!midgard_connection_reopen(mgd)) {
-			g_warning("Failed to reopen lost connection");
+			php_error(E_WARNING, "Failed to reopen lost connection");
 			return NULL;
 		}
 
 		mgd_copy = __handle_set(mgd);
-		g_debug("Found connection for given '%s' configuration. Reusing.", config_name);
 		return mgd_copy;
 	}
 
@@ -129,8 +128,7 @@ static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTabl
 	mgd = midgard_connection_new();
 
 	if (!midgard_connection_open_config(mgd, config)) {
-
-		g_warning("Failed to open connection using given '%s' configuration", config_name);
+		php_error(E_WARNING, "Failed to open connection using given '%s' configuration", config_name);
 		g_object_unref(mgd);
 		return NULL;
 	}
@@ -139,8 +137,6 @@ static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTabl
 
 	/* Insert connection in process' pool */
 	g_hash_table_insert(mgh->names, g_strdup(config_name), mgd);
-
-	g_debug("Initialized new connection handle for given '%s' configuration.", config_name);
 
 	return mgd_copy;
 }
@@ -158,12 +154,11 @@ static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *c
 
 	if (mgd != NULL) {
 		if (!midgard_connection_reopen(mgd)) {
-			g_warning("Failed to reopen lost connection");
+			php_error(E_WARNING, "Failed to reopen lost connection");
 			return NULL;
 		}
 
 		mgd_copy = __handle_set(mgd);
-		g_debug("Found connection for given '%s' configuration file. Reusing.", config_path);
 		return mgd_copy;
 	}
 
@@ -172,9 +167,9 @@ static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *c
 	GError *err = NULL;
 
 	if (!midgard_connection_open_from_file(mgd, config_path, &err)) {
-
-		g_warning("Failed to open connection using given '%s' configuration file. %s", 
-				config_path, err && err->message ? err->message : " Unknown reason ");
+		php_error(E_WARNING, "Failed to open connection using given '%s' configuration file: %s", 
+		                     config_path,
+		                     err && err->message ? err->message : "Unknown reason");
 		g_error_free(err);
 		g_object_unref(mgd);
 		return NULL;
@@ -184,8 +179,6 @@ static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *c
 
 	/* Insert connection in process' pool */
 	g_hash_table_insert(mgh->files, g_strdup(config_path), mgd);
-
-	g_debug("Initialized new connection handle for given '%s' configuration file.", config_path);
 
 	return mgd_copy;
 }

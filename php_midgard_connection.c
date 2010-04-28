@@ -238,13 +238,13 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_connection, set_error)
 {
 	CHECK_MGD;
-	gint errcode;
+	long errcode;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &errcode) == FAILURE)
 		return;
 
 	if (errcode > 0) {
-		g_warning("Invalid not negative errcode value");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "errcode must be negative");
 		return;
 	}
 
@@ -371,14 +371,13 @@ ZEND_END_ARG_INFO()
 
 int __serialize_cnc_hook(zval *zobject, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC)
 {
-	g_warning("Unable to serialize midgard_connection object");
+	php_error(E_WARNING, "Unable to serialize midgard_connection object");
 	return FAILURE;
 }
 
 int __unserialize_cnc_hook(zval **zobject, zend_class_entry *ce, const unsigned char *buffer, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC)
 {
-	/* can it happen at all? */
-	g_warning("Unable to unserialize midgard_connection object");
+	php_error(E_WARNING, "Unable to unserialize midgard_connection object");
 	return FAILURE;
 }
 

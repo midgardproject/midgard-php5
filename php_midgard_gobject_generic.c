@@ -119,7 +119,7 @@ static zend_bool php_midgard_gvalue_from_zval(zval *zvalue, GValue *gvalue)
 
 				if (php_gobject && php_gobject->magic == PHP_MIDGARD_GOBJ_MAGIC && php_gobject->gobject) {
 					if (!G_IS_OBJECT(php_gobject->gobject)) {
-						g_warning("zval2gvalue conversion failed");
+						php_error(E_WARNING, "zval2gvalue conversion failed");
 						return FALSE;
 					}
 
@@ -320,7 +320,7 @@ php_midgard_gobject *php_midgard_zend_object_store_get_object(zval *zobject TSRM
 		/* php_error(E_NOTICE, "IMPLICIT %s CONSTRUCTOR", _classname); */
 		php_gobject->gobject = (GObject *)midgard_object_new(mgd_handle(), (const gchar *) _classname, NULL);
 	} else {
-		g_warning("Creating new underlying '%s' GObject. Missed constructor?", g_type_name(class_type));
+		php_error(E_WARNING, "Creating new underlying '%s' GObject. Missed constructor?", g_type_name(class_type));
 		php_gobject->gobject = g_object_new(class_type, NULL);
 	}
 
@@ -337,12 +337,12 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_
 	char *prop_name = Z_STRVAL_P(prop);
 
 	if (prop_name == NULL) {
-		g_warning("Can not check property with NULL name");
+		php_error(E_WARNING, "Can not check property with NULL name");
 		return 0;
 	}
 
 	if (g_str_equal(prop_name, "")) {
-		g_warning("Can not check property with empty name");
+		php_error(E_WARNING, "Can not check property with empty name");
 		return 0;
 	}
 
@@ -1311,7 +1311,7 @@ static void __register_class_closure(const gchar *class_name, const gchar *signa
 	guint signal_id = g_signal_lookup(sname, g_type_from_name(class_name));
 
 	if (signal_id == 0) {
-		g_warning("'%s' is not registered as event for '%s'", sname, class_name);
+		php_error(E_WARNING, "'%s' is not registered as event for '%s'", sname, class_name);
 		g_free(sname);
 		return;
 	}
@@ -1463,7 +1463,7 @@ void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS)
 	GType class_type = g_type_from_name((const gchar *)class_name);
 
 	if (class_type == 0) {
-		g_warning("Class %s is not registered in GType system", class_name);
+		php_error(E_WARNING, "Class %s is not registered in GType system", class_name);
 		return;
 	}
 
@@ -1491,12 +1491,12 @@ void php_midgard_object_connect_class_closures(GObject *object, zval *zobject)
 
 	/* TODO, add error handling , IS_OBJECT , etc */
 	if (zobject == NULL) {
-		g_warning("Connect to class closure: failed to get zend object");
+		php_error(E_WARNING, "Connect to class closure: failed to get zend object");
 		return;
 	}
 
 	if (object == NULL) {
-		g_warning("Connect to class closure: failed to get underlying object");
+		php_error(E_WARNING, "Connect to class closure: failed to get underlying object");
 		return;
 	}
 
@@ -1579,7 +1579,7 @@ GParameter *php_midgard_array_to_gparameter(zval *params, guint *n_params)
 
 			parameters[i].value = gval;
 		} else {
-			g_warning("Parameter key must be valid string!");
+			php_error(E_WARNING, "Parameter key must be valid string!");
 			goto CLEAN_AND_RETURN_NULL;
 		}
 
