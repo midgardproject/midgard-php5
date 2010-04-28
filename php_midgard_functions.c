@@ -10,7 +10,7 @@ PHP_FUNCTION(mgd_version)
 	if (!version)
 		version = "";
 
-	RETURN_STRING((gchar *)version, 1);
+	RETURN_STRING((char *)version, 1);
 }
 
 PHP_FUNCTION(mgd_is_guid)
