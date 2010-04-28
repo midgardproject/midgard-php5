@@ -33,7 +33,4 @@ void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue);
 zval *php_midgard_datetime_object_from_property(zval *object, const gchar *property);
 zval *php_midgard_datetime_get_timestamp(zval *object);
 
-void php_midgard_datetime_object_from_string(const gchar *date, zval *zvalue);
-zval *php_midgard_string_from_datetime_object(zval *object);
-
 #endif /* PHP_MIDGARD_TIMESTAMP_H */

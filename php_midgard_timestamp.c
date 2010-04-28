@@ -400,7 +400,3 @@ zval *php_midgard_datetime_object_from_property(zval *object, const gchar *prope
 
 	return mdate_object;
 }
-
-void php_midgard_datetime_object_from_string(const gchar *date, zval *zvalue);
-zval *php_midgard_string_from_datetime_object(zval *object);
-
