@@ -1024,7 +1024,7 @@ zend_class_entry *php_midgard_get_mgdschema_class_ptr(zend_class_entry *ce)
 		&& tmp->parent != php_midgard_object_class
 		&& tmp->parent != php_midgard_dbobject_class
 	) {
-		tmp = ce->parent;
+		tmp = tmp->parent;
 	}
 
 	return tmp;
