@@ -38,8 +38,6 @@ static PHP_METHOD(midgard_replicator, serialize)
 	if (xml == NULL)
 		RETURN_NULL();
 
-	/* We have to duplicate xml string because Zend seems to ... */
-
 	RETVAL_STRING(xml, 1);
 
 	g_free(xml);
