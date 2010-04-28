@@ -36,8 +36,8 @@ static PHP_METHOD(midgard_collector, __construct)
 	zval *zval_object = getThis();
 	GObject *gobject;
 
-	gchar *classname, *propname;
-	guint classname_length, propname_length;
+	char *classname, *propname;
+	int classname_length, propname_length;
 	zval *value;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssz",
@@ -51,7 +51,7 @@ static PHP_METHOD(midgard_collector, __construct)
 	zend_class_entry *ce = zend_fetch_class(classname, classname_length, ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	if (ce == NULL) {
-		php_error(E_WARNING, "Didn't find %s class", classname);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Didn't find %s class", classname);
 		php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
 	}
 
@@ -59,7 +59,7 @@ static PHP_METHOD(midgard_collector, __construct)
 	GType classtype = g_type_from_name((const gchar *)base_ce->name);
 
 	if (!g_type_is_a(classtype, MIDGARD_TYPE_DBOBJECT)) {
-		php_error(E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
 		php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
 		return;
 	}
@@ -96,16 +96,13 @@ static PHP_METHOD(midgard_collector, set_key_property)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *propname;
-	guint propname_length;
+	char *propname;
+	int propname_length;
 	zval *zvalue;
 	gboolean rv;
 	GValue *gvalue = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z",
-				&propname, &propname_length, &zvalue)
-			== FAILURE)
-	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &propname, &propname_length, &zvalue) == FAILURE) {
 		return;
 	}
 
@@ -125,8 +122,8 @@ static PHP_METHOD(midgard_collector, add_value_property)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *propname;
-	guint propname_length;
+	char *propname;
+	int propname_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &propname, &propname_length) == FAILURE)
 		return;
@@ -144,8 +141,8 @@ static PHP_METHOD(midgard_collector, set)
 {
 	CHECK_MGD;
 	RETVAL_TRUE;
-	gchar *key, *subkey;
-	guint key_length, subkey_length;
+	char *key, *subkey;
+	int key_length, subkey_length;
 	zval *zvalue;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssz",
@@ -193,8 +190,8 @@ static PHP_METHOD(midgard_collector, get)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *key;
-	guint key_length;
+	char *key;
+	int key_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_length) == FAILURE)
 		return;
@@ -218,13 +215,10 @@ static PHP_METHOD(midgard_collector, get_subkey)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	const gchar *key, *subkey;
-	guint key_length, subkey_length;
+	const char *key, *subkey;
+	int key_length, subkey_length;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",
-			&key, &key_length,
-			&subkey, &subkey_length) == FAILURE)
-	{
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &key, &key_length, &subkey, &subkey_length) == FAILURE) {
 		return;
 	}
 
@@ -251,8 +245,8 @@ static PHP_METHOD(midgard_collector, remove_key)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	const gchar *key;
-	guint key_length;
+	const char *key;
+	int key_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_length) == FAILURE)
 		return;
@@ -322,8 +316,8 @@ static PHP_METHOD(midgard_collector, add_constraint)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *name, *op;
-	guint name_length, op_length;
+	char *name, *op;
+	int name_length, op_length;
 	zval *value;
 	gboolean rv;
 
@@ -357,8 +351,8 @@ static PHP_METHOD(midgard_collector, begin_group)
 {
 	CHECK_MGD;
 	RETVAL_FALSE;
-	gchar *type;
-	guint type_length;
+	char *type;
+	int type_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &type, &type_length) != SUCCESS)
 		return;
@@ -389,11 +383,10 @@ static PHP_METHOD(midgard_collector, add_order)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	const gchar *field, *order = "ASC";
-	guint field_length, order_length;
+	const char *field, *order = "ASC";
+	int field_length, order_length;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s",
-				&field, &field_length, &order, &order_length) != SUCCESS)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &field, &field_length, &order, &order_length) != SUCCESS)
 		return;
 
 	_GET_COLLECTOR_OBJECT;

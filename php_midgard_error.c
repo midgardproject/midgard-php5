@@ -38,9 +38,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_error, error)
 {
-	gchar *msg;
-	gboolean tog = FALSE;
-	guint msg_length;
+	char *msg;
+	zend_bool tog = FALSE;
+	int msg_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &msg, &msg_length, &tog) == FAILURE)
 		return;
@@ -56,9 +56,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_error, critical)
 {
-	gchar *msg;
-	gboolean tog = FALSE;
-	guint msg_length;
+	char *msg;
+	zend_bool tog = FALSE;
+	int msg_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &msg, &msg_length, &tog) == FAILURE)
 		return;
@@ -76,12 +76,13 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_error, warning)
 {
-	gchar *msg;
-	gboolean tog = FALSE;
-	guint msg_length;
+	char *msg;
+	zend_bool tog = FALSE;
+	int msg_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &msg, &msg_length, &tog) == FAILURE)
 		return;
+
 	php_midgard_log_enabled = tog;
 	g_warning("%s", msg);
 	php_midgard_log_enabled = TRUE;
@@ -95,9 +96,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_error, message)
 {
-	gchar *msg;
-	gboolean tog = FALSE;
-	guint msg_length;
+	char *msg;
+	zend_bool tog = FALSE;
+	int msg_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &msg, &msg_length, &tog) == FAILURE)
 		return;
@@ -115,9 +116,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_error, info)
 {
-	gchar *msg;
-	gboolean tog = FALSE;
-	guint msg_length;
+	char *msg;
+	zend_bool tog = FALSE;
+	int msg_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &msg, &msg_length, &tog) == FAILURE)
 		return;
@@ -135,9 +136,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_error, debug)
 {
-	gchar *msg;
-	gboolean tog = FALSE;
-	guint msg_length;
+	char *msg;
+	zend_bool tog = FALSE;
+	int msg_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &msg, &msg_length, &tog) == FAILURE)
 		return;

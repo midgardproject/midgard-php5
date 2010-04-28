@@ -30,8 +30,8 @@ static zend_class_entry *php_midgard_key_config_context_class;
 // 	RETVAL_FALSE;
 // 
 // 	zval *object = getThis();
-// 	gchar *path;
-// 	guint path_length;
+// 	char *path;
+// 	int path_length;
 // 
 // 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &path, &path_length) == FAILURE) 
 // 		return;
@@ -65,6 +65,7 @@ static PHP_METHOD(midgard_key_config_context, list_key_config)
 
 	if (!cfgs)
 		return;
+
 	guint i;
 	for (i = 0; i < n_cfgs; i++) {
 

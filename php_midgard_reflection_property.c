@@ -37,8 +37,8 @@ static PHP_METHOD(midgard_reflection_property, __construct)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *classname = NULL;
-	guint classname_length;
+	char *classname = NULL;
+	int classname_length;
 	zend_class_entry *ce_base;
 	zval *zval_object = getThis();
 	GObject *gobject;
@@ -78,8 +78,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_reflection_property, get_midgard_type)
 {
-	gchar *property_name;
-	guint property_name_length;
+	char *property_name;
+	int property_name_length;
 	RETVAL_FALSE;
 	CHECK_MGD;
 
@@ -97,8 +97,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_reflection_property, is_link)
 {
-	gchar *property_name;
-	guint property_name_length;
+	char *property_name;
+	int property_name_length;
 	RETVAL_FALSE;
 	CHECK_MGD;
 
@@ -116,8 +116,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_reflection_property, get_link_name)
 {
-	gchar *property_name;
-	guint property_name_length;
+	char *property_name;
+	int property_name_length;
 	RETVAL_FALSE;
 	CHECK_MGD;
 
@@ -142,8 +142,8 @@ static PHP_METHOD(midgard_reflection_property, get_link_target)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *property_name;
-	guint property_name_length;
+	char *property_name;
+	int property_name_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &property_name, &property_name_length) == FAILURE)
 		return;
@@ -165,8 +165,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_reflection_property, description)
 {
-	gchar *property_name;
-	guint property_name_length;
+	char *property_name;
+	int property_name_length;
 	RETVAL_FALSE;
 	CHECK_MGD;
 
@@ -190,10 +190,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_reflection_property, get_user_value)
 {
-	gchar *property_name;
-	guint property_name_length;
-	gchar *name;
-	guint name_length;
+	char *property_name, *name;
+	int property_name_length, name_length;
 	RETVAL_FALSE;
 	CHECK_MGD;
 
@@ -218,8 +216,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_reflection_property, is_private)
 {
-	gchar *property_name;
-	guint property_name_length;
+	char *property_name;
+	int property_name_length;
 	RETVAL_FALSE;
 	CHECK_MGD;
 

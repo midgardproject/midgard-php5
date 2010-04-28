@@ -24,9 +24,8 @@ static zend_class_entry *php_midgard_dbus_class;
 /* Object constructor */
 static PHP_METHOD(midgard_dbus, __construct)
 {
-	gchar *path;
-	guint path_length;
-	zval *object = getThis();
+	char *path;
+	int path_length;
 	zend_bool use_session = FALSE;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &path, &path_length, &use_session) == FAILURE)
@@ -44,7 +43,7 @@ static PHP_METHOD(midgard_dbus, __construct)
 		return;
 	}
 
-	MGD_PHP_SET_GOBJECT(object, mbus);
+	MGD_PHP_SET_GOBJECT(getThis(), mbus);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_dbus___construct, 0, 0, 1)
@@ -56,8 +55,8 @@ static PHP_METHOD(midgard_dbus, send)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *path, *msg;
-	guint path_length, msg_length;
+	char *path, *msg;
+	int path_length, msg_length;
 	zend_bool use_session = FALSE;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|b", &path, &path_length, &msg, &msg_length, &use_session) == FAILURE)

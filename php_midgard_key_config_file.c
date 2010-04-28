@@ -32,8 +32,8 @@ static PHP_METHOD(midgard_key_config_file, __construct)
 	RETVAL_FALSE;
 
 	zval *object = getThis();
-	gchar *path;
-	guint path_length;
+	char *path;
+	int path_length;
 	zval *ctx_object;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "os", &ctx_object, &path, &path_length) == FAILURE) 

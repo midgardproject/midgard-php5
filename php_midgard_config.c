@@ -45,20 +45,16 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_config, save_file)
 {
 	RETVAL_FALSE;
-	gboolean rv;
 	zend_bool zbool = FALSE;
-	zval *zval_object = getThis();
-
-	gchar *name;
-	guint name_length;
+	char *name;
+	int name_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &name, &name_length, &zbool) == FAILURE) {
 		return;
 	}
 
-	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(zval_object);
-
-	rv = midgard_config_save_file(config ,name, zbool, NULL);
+	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(getThis());
+	gboolean rv = midgard_config_save_file(config ,name, zbool, NULL);
 
 	RETURN_BOOL(rv);
 }
@@ -71,20 +67,16 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_config, read_file)
 {
 	RETVAL_FALSE;
-	gboolean rv;
 	zend_bool zbool = FALSE;
-	zval *zval_object = getThis();
-
-	gchar *name;
-	guint name_length;
+	char *name;
+	int name_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &name, &name_length, &zbool) == FAILURE) {
 		return;
 	}
 
-	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(zval_object);
-
-	rv = midgard_config_read_file(config, name, zbool, NULL);
+	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(getThis());
+	gboolean rv = midgard_config_read_file(config, name, zbool, NULL);
 
 	RETURN_BOOL(rv);
 }
@@ -97,18 +89,15 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_config, read_file_at_path)
 {
 	RETVAL_FALSE;
-	gboolean rv;
-	zval *zval_object = getThis();
-	gchar *path;
-	guint path_length;
+	char *path;
+	int path_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &path, &path_length) == FAILURE) {
 		return;
 	}
 
-	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(zval_object);
-
-	rv = midgard_config_read_file_at_path(config, path, NULL);
+	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(getThis());
+	gboolean rv = midgard_config_read_file_at_path(config, path, NULL);
 
 	RETURN_BOOL(rv);
 }
@@ -120,18 +109,15 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_config, read_data)
 {
 	RETVAL_FALSE;
-	gboolean rv;
-	zval *zval_object = getThis();
-	gchar *data;
-	guint data_length;
+	char *data;
+	int data_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &data, &data_length) == FAILURE) {
 		return;
 	}
 
-	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(zval_object);
-
-	rv = midgard_config_read_data(config, data, NULL);
+	MidgardConfig *config = (MidgardConfig *) __php_gobject_ptr(getThis());
+	gboolean rv = midgard_config_read_data(config, data, NULL);
 
 	RETURN_BOOL(rv);
 }
@@ -163,9 +149,9 @@ static PHP_METHOD(midgard_config, list_files)
 	if (!files)
 		return;
 
-	guint i = 0;
+	size_t i = 0;
 	while (files[i] != NULL) {
-		add_index_string(return_value, i, (gchar *)files[i], 1);
+		add_index_string(return_value, i, files[i], 1);
 		i++;
 	}
 

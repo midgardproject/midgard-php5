@@ -57,8 +57,8 @@ static PHP_METHOD(midgard_object_class, get_object_by_guid)
 	RETVAL_FALSE;
 	CHECK_MGD;
 
-	gchar *guid;
-	guint guid_length;
+	char *guid;
+	int guid_length;
 	const gchar *type_name;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length) == FAILURE)
@@ -172,8 +172,8 @@ static PHP_METHOD(midgard_object_class, undelete)
 {
 	CHECK_MGD;
 
-	gchar *guid;
-	guint guid_length;
+	char *guid;
+	int guid_length;
 	gboolean rv;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length)  == FAILURE) {

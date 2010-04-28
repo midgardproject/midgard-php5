@@ -97,8 +97,8 @@ static PHP_METHOD(midgard_blob, write_content)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *content;
-	guint content_length;
+	char *content;
+	int content_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &content, &content_length) == FAILURE)
 		return;
@@ -136,8 +136,8 @@ static PHP_METHOD(midgard_blob, get_handler)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	gchar *mode = NULL;
-	guint mode_length = 0;
+	char *mode = NULL;
+	int mode_length = 0;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &mode, &mode_length) == FAILURE)
 		return;

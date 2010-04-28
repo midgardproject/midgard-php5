@@ -311,9 +311,7 @@ php_midgard_gobject *php_midgard_zend_object_store_get_object(zval *zobject TSRM
 		ce = ce->parent;
 	}
 
-	guint classname_length = strlen(ce->name);
-	gchar *_classname = g_ascii_strdown(ce->name, classname_length);
-
+	gchar *_classname = g_ascii_strdown(ce->name, ce->name_length);
 	GType class_type = g_type_from_name((const gchar *) _classname);
 
 	if (g_type_parent(class_type) == MIDGARD_TYPE_OBJECT) {
@@ -1441,15 +1439,9 @@ void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS)
 {
 	zend_fcall_info fci;
 	zend_fcall_info_cache fci_cache;
-	gchar *sname = NULL;
-	gchar *class_name = NULL;
-	guint sname_length;
-	guint class_name_length;
-	guint signal_id;
-	zval *zobject = NULL;
+	char *sname = NULL, *class_name = NULL;
+	int sname_length, class_name_length;
 	zval *zval_array = NULL;
-	GQuark signal_detail;
-	GClosure *closure = NULL;
 
 	/* Keep '!' as passed object parameter ( or params array ) can be NULL */
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,  "ssf|a!",
@@ -1468,13 +1460,16 @@ void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS)
 		return;
 	}
 
+	guint signal_id;
+	GQuark signal_detail;
+
 	if (!g_signal_parse_name(sname, class_type, &signal_id, &signal_detail, TRUE)) {
 		php_error(E_WARNING, "%s signal name is invalid", sname);
 		return;
 		/* TODO , should we handle exception here? */
 	}
 
-	closure = php_midgard_closure_new_default(fci, fci_cache, zobject, zval_array TSRMLS_CC);
+	GClosure *closure = php_midgard_closure_new_default(fci, fci_cache, NULL, zval_array TSRMLS_CC);
 
 	if (!closure) {
 		php_error(E_WARNING, "Can not create new closure");
@@ -1483,7 +1478,7 @@ void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS)
 
 	php_mgd_closure *dclosure = (php_mgd_closure *) closure;
 	dclosure->zval_array = zval_array;
-	__register_class_closure(class_name, sname, (php_mgd_closure *)dclosure);
+	__register_class_closure(class_name, sname, dclosure);
 }
 
 void php_midgard_object_connect_class_closures(GObject *object, zval *zobject)

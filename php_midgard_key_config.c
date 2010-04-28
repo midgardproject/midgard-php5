@@ -27,12 +27,8 @@ static zend_class_entry *php_midgard_key_config_class;
 static PHP_METHOD(midgard_key_config, set_value)
 {
 	zval *zval_object = getThis();
-	gchar *group = NULL;
-	guint group_length;
-	gchar *key = NULL;
-	guint key_length;
-	gchar *value = NULL;
-	guint value_length;
+	char *group = NULL, *key = NULL, *value = NULL;
+	int group_length, key_length, value_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss", 
 				&group, &group_length, &key, &key_length, &value, &value_length) == FAILURE) 
@@ -52,10 +48,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_key_config, get_value)
 {
 	zval *zval_object = getThis();
-	gchar *group = NULL;
-	guint group_length;
-	gchar *key = NULL;
-	guint key_length;
+	char *group = NULL, *key = NULL;
+	int group_length, key_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &group, &group_length, &key, &key_length) == FAILURE) 
 		return;
@@ -80,12 +74,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_key_config, set_comment)
 {
 	zval *zval_object = getThis();
-	gchar *group = NULL;
-	guint group_length;
-	gchar *key = NULL;
-	guint key_length;
-	gchar *comment = NULL;
-	guint comment_length;
+	char *group = NULL, *key = NULL, *comment = NULL;
+	int group_length, key_length, comment_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss", 
 				&group, &group_length, &key, &key_length, &comment, &comment_length) == FAILURE) 
@@ -105,10 +95,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_key_config, get_comment)
 {
 	zval *zval_object = getThis();
-	gchar *group = NULL;
-	guint group_length;
-	gchar *key = NULL;
-	guint key_length;
+	char *group = NULL, *key = NULL;
+	int group_length, key_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &group, &group_length, &key, &key_length) == FAILURE) 
 		return;
@@ -163,8 +151,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_key_config, group_exists)
 {
 	zval *zval_object = getThis();
-	gchar *group = NULL;
-	guint group_length;
+	char *group = NULL;
+	int group_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &group, &group_length) == FAILURE) 
 		return;
@@ -181,8 +169,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_key_config, delete_group)
 {
 	zval *zval_object = getThis();
-	gchar *group = NULL;
-	guint group_length;
+	char *group = NULL;
+	int group_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &group, &group_length) == FAILURE) 
 		return;
@@ -236,8 +224,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_key_config, load_from_data)
 {
 	zval *zval_object = getThis();
-	gchar *data = NULL;
-	guint data_length;
+	char *data = NULL;
+	int data_length;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &data, &data_length) == FAILURE) 
 		return;
