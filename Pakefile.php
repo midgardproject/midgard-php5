@@ -67,7 +67,7 @@ function run_clean_tests()
     $src_path = _SRC_DIR_.'/tests_templates';
 
     // clean runtime-generated files
-    $finder = pakeFinder::type('file')->ignore_version_control()->name('*.php', '*.exp', '*.out', '*.log', '*.diff', '*.db');
+    $finder = pakeFinder::type('file')->ignore_version_control()->name('*.php', '*.exp', '*.out', '*.log', '*.diff');
     pake_remove($finder, $path);
 
     // clean "generated" tests
