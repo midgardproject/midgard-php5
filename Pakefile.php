@@ -34,9 +34,6 @@ pakePhpExtensionTask::import_default_tasks();
 
 function run_init_test_db()
 {
-    $dir = _db_dir();
-    pake_mkdirs($dir);
-
     $cfg = _get_midgard_config();
 
     pake_echo_comment('Creating empty database for tests… (be patient, it takes time)');
@@ -70,23 +67,21 @@ function run_clean_tests()
     $src_path = _SRC_DIR_.'/tests_templates';
 
     // clean runtime-generated files
-    $finder = pakeFinder::type('file')->ignore_version_control()->name('*.php', '*.exp', '*.out', '*.log', '*.diff');
+    $finder = pakeFinder::type('file')->ignore_version_control()->name('*.php', '*.exp', '*.out', '*.log', '*.diff', '*.db');
     pake_remove($finder, $path);
 
     // clean "generated" tests
     $_files = pakeFinder::type('file')->ignore_version_control()->relative()->in($src_path);
 
     $finder = pakeFinder::type('file')->ignore_version_control();
-    foreach ($_files as $file) {
-        $finder->name($file);
-    }
+    call_user_func_array(array($finder, 'name'), $_files);
 
     pake_remove($finder, $path);
 }
 
 function run_clean_test_db()
 {
-    $file = _db_dir().'/'._get_midgard_config()->database.'.db';
+    $file = _SRC_DIR_.'/tests/'._get_midgard_config()->database.'.db';
 
     if (file_exists($file))
         pake_remove($file, '');
@@ -108,17 +103,6 @@ function run_enable_midgard()
 }
 
 // Support tools
-
-function _db_dir()
-{
-    if (!isset($_SERVER["HOME"]))
-        throw new LogicException('"HOME" environment-variable is not set');
-
-    if (!is_dir($_SERVER["HOME"]))
-        throw new LogicException('"HOME" environment-variable does not point to the valid directory');
-
-    return $_SERVER["HOME"].'/.midgard2/data';
-}
 
 function _get_midgard_config()
 {
