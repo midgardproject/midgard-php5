@@ -231,13 +231,10 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue)
 					if (!gclass_name)
 						return FALSE;
 
-					const char* php_class_name = g_class_name_to_php_class_name(gclass_name);
+					const char *php_class_name = g_class_name_to_php_class_name(gclass_name);
 
-					/* TODO , check zval ref and alloc */
-					php_midgard_gobject_init(zvalue, php_class_name, gobject_property, TRUE);
-					 /* Add strong reference, we will decrease it zval dtor, so final 
-					  * GObject destructor will be invoked */
 					g_object_ref(gobject_property);
+					php_midgard_gobject_init(zvalue, php_class_name, gobject_property, TRUE);
 
 					return TRUE;
 				} else {
@@ -840,12 +837,10 @@ void php_midgard_init_properties_objects(zval *zobject)
 		if (G_TYPE_FUNDAMENTAL(pspecs[i]->value_type) != G_TYPE_OBJECT)
 			continue;
 
-		zval *prop_zobject;
-		MAKE_STD_ZVAL(prop_zobject);
-
 		GValue oval = {0, };
 		g_value_init(&oval, G_TYPE_OBJECT);
 		g_object_get_property(gobject, pspecs[i]->name, &oval);
+
 		GObject *prop_gobject = g_value_get_object(&oval);
 
 		const char *php_class_name = g_class_name_to_php_class_name(G_OBJECT_TYPE_NAME(prop_gobject));
@@ -857,19 +852,15 @@ void php_midgard_init_properties_objects(zval *zobject)
 			continue;
 		}
 
-		object_init_ex(prop_zobject, ce);
-		zval_add_ref(&prop_zobject);
+		zval *prop_zobject;
+		MAKE_STD_ZVAL(prop_zobject);
 
-		php_midgard_gobject *php_gobject =
-			(php_midgard_gobject *)zend_object_store_get_object(prop_zobject TSRMLS_CC);
-
-		php_gobject->gobject = prop_gobject;
+		php_midgard_gvalue2zval(&oval, prop_zobject);
+		g_value_unset(&oval);
 
 		zend_update_property(Z_OBJCE_P(zobject), zobject,
-      				pspecs[i]->name, strlen(pspecs[i]->name),
-				prop_zobject TSRMLS_CC);
-
-		g_value_unset(&oval);
+                             pspecs[i]->name, strlen(pspecs[i]->name),
+                             prop_zobject TSRMLS_CC);
 	}
 
 	g_free(pspecs);
