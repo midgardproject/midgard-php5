@@ -1,0 +1,1 @@
+GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_cache fci_cache, zval *zobject, zval *zval_array TSRMLS_DC);

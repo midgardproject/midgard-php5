@@ -26,6 +26,12 @@ zend_class_entry *php_date_get_date_ce(void);
 zend_class_entry *php_date_get_timezone_ce(void);
 #endif
 
+#if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3) || PHP_MAJOR_VERSION > 5
+# define MGD_IS_CALLABLE(a, b, c) zend_is_callable(a, b, c TSRMLS_CC)
+#else
+# define MGD_IS_CALLABLE(a, b, c) zend_is_callable(a, b, c)
+#endif
+
 /* This macro frees GParameter structure */
 #define PHP_MGD_FREE_GPARAMETERS(parameters, n_params) \
 { \

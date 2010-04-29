@@ -16,30 +16,13 @@
 
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
+#include "php_midgard_gobject_closures.h"
 #include <TSRM.h>
 #include <zend_interfaces.h>
 #include <locale.h>
 #include "php_midgard_timestamp.h"
 
 #include "php_midgard__helpers.h"
-
-#if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3) || PHP_MAJOR_VERSION > 5
-# define MGD_IS_CALLABLE(a, b, c) zend_is_callable(a, b, c TSRMLS_CC)
-#else
-# define MGD_IS_CALLABLE(a, b, c) zend_is_callable(a, b, c)
-#endif
-
-/* static prototypes */
-
-static void __php_midgard_closure_free(gpointer data);
-
-static void php_midgard_closure_default_marshal(GClosure *closure,
-		GValue *return_value, guint n_param_values,
-		const GValue *param_values, gpointer invocation_hint,
-		gpointer marshal_data);
-static GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_cache fci_cache, zval *zobject, zval *zval_array TSRMLS_DC);
-
-php_midgard_gobject *php_midgard_zend_object_store_get_object(zval *zobject TSRMLS_DC);
 
 /* GVALUE ROUTINES */
 
@@ -115,7 +98,7 @@ static zend_bool php_midgard_gvalue_from_zval(zval *zvalue, GValue *gvalue)
 				g_value_unset(&str_val);
 				zval_dtor(date_zval);
 			} else {
-				php_midgard_gobject *php_gobject = php_midgard_zend_object_store_get_object(zvalue TSRMLS_CC);
+				php_midgard_gobject *php_gobject = __php_objstore_object(zvalue);
 
 				if (php_gobject && php_gobject->magic == PHP_MIDGARD_GOBJ_MAGIC && php_gobject->gobject) {
 					if (!G_IS_OBJECT(php_gobject->gobject)) {
@@ -285,50 +268,10 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue)
 
 /* OBJECTS ROUTINES */
 
-/* getting object-definition struct from zval* */
-php_midgard_gobject *php_midgard_zend_object_store_get_object(zval *zobject TSRMLS_DC)
-{
-	php_midgard_gobject *php_gobject = (php_midgard_gobject *) zend_object_store_get_object(zobject TSRMLS_CC);
-
-	if (!php_gobject)
-		return NULL;
-
-	/* Important! We must ensure we have underlying GObject always! */
-	/* Failed code case: custom construstor wich does not invoke parent's one */
-	/* Or any other behaviour which makes underlying gobject
-	 * not being initialized */
-
-	if (php_gobject->gobject)
-		return php_gobject;
-
-	php_error(E_NOTICE, "Invalid object's constructor (%s)", Z_OBJCE_P(zobject)->name);
-
-	zend_class_entry *ce = Z_OBJCE_P(zobject);
-	while (ce->type != ZEND_INTERNAL_CLASS && ce->parent != NULL) {
-		ce = ce->parent;
-	}
-
-	gchar *_classname = g_ascii_strdown(ce->name, ce->name_length);
-	GType class_type = g_type_from_name((const gchar *) _classname);
-
-	if (g_type_parent(class_type) == MIDGARD_TYPE_OBJECT) {
-		/* php_error(E_NOTICE, "IMPLICIT %s CONSTRUCTOR", _classname); */
-		php_gobject->gobject = (GObject *)midgard_object_new(mgd_handle(), (const gchar *) _classname, NULL);
-	} else {
-		php_error(E_WARNING, "Creating new underlying '%s' GObject. Missed constructor?", g_type_name(class_type));
-		php_gobject->gobject = g_object_new(class_type, NULL);
-	}
-
-	g_free(_classname);
-
-	return php_gobject;
-}
-
 /* check if there is glib-property of object linked to zval */
 int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_DC)
 {
-	php_midgard_gobject *php_gobject = php_midgard_zend_object_store_get_object(zobject TSRMLS_CC);
-	GObject *gobject = G_OBJECT(php_gobject->gobject);
+	GObject *gobject = __php_gobject_ptr(zobject);
 	char *prop_name = Z_STRVAL_P(prop);
 
 	if (prop_name == NULL) {
@@ -406,12 +349,10 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 		php_error(E_ERROR, "Can not read empty property name");
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_gobject_read_property(%s)\n", zobject, propname);
+		printf("[%p] php_midgard_gobject_read_property(%s)\n", zobject, propname);
 	}
 
-	php_midgard_gobject *php_gobject = php_midgard_zend_object_store_get_object(zobject TSRMLS_CC);
-
-	GObject *gobject = G_OBJECT(php_gobject->gobject);
+	GObject *gobject = __php_gobject_ptr(zobject);
 
 	if (gobject && Z_STRVAL_P(prop) != NULL) {
 		klass = G_OBJECT_GET_CLASS(gobject);
@@ -488,7 +429,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			g_value_unset(&pval);	
 
 			if (MGDG(midgard_memory_debug)) {
-				php_printf("[%p] property's tmp-var refcount: %d [%s]\n", zobject, Z_REFCOUNT_P(_retval), propname);
+				printf("[%p] property's tmp-var refcount: %d [%s]\n", zobject, Z_REFCOUNT_P(_retval), propname);
 			}
 		}
 	/* Fallback to zend. */
@@ -508,7 +449,7 @@ zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member TSRML
 {
 	if (MGDG(midgard_memory_debug)) {
 		const gchar *propname = Z_STRVAL_P(member);
-		php_printf("[%p] php_midgard_gobject_get_property_ptr_ptr(%s)\n", object, propname);
+		printf("[%p] php_midgard_gobject_get_property_ptr_ptr(%s)\n", object, propname);
 	}
 
 	// we don't want to provide direct access to underlying properties
@@ -554,12 +495,11 @@ static void _convert_value(zval *value, GType vtype)
 void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC)
 {
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_gobject_write_property()\n", zobject);
+		printf("[%p] php_midgard_gobject_write_property()\n", zobject);
 	}
 
 	zend_object_handlers *std_hnd = zend_get_std_object_handlers();
-	php_midgard_gobject *php_gobject = php_midgard_zend_object_store_get_object(zobject TSRMLS_CC);
-	GObject *gobject = G_OBJECT(php_gobject->gobject);
+	GObject *gobject = __php_gobject_ptr(zobject);
 
 	/* Find GObject property */
 	GParamSpec *pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(gobject), Z_STRVAL_P(prop));
@@ -680,14 +620,17 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 	if (zobject == NULL)
 		return NULL;
 
-	php_midgard_gobject *php_gobject = php_midgard_zend_object_store_get_object(zobject TSRMLS_CC);
+	if (MGDG(midgard_memory_debug)) {
+		printf("[%p] php_midgard_zendobject_get_properties(%s)\n", zobject, Z_OBJCE_P(zobject)->name);
+	}
+
+	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
 
 	if (!G_IS_OBJECT(php_gobject->gobject))
 		php_error(E_ERROR, "Underlying object is not GObject");
-		/* php_error(E_ERROR, "Underlying object(%x) is not GObject", php_gobject->gobject); */
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_zendobject_get_properties()\n", zobject);
+		printf("[%p] ----> gobject: %p\n", zobject, php_gobject->gobject);
 	}
 
 	GObject *gobject = php_gobject->gobject;
@@ -695,7 +638,6 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
 	for (i = 0; i < propn; i++) {
-
 		GValue pval = {0, };
 		g_value_init(&pval, props[i]->value_type);
 		g_object_get_property(gobject, (gchar*)props[i]->name, &pval);
@@ -713,10 +655,12 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 
 	g_free(props);
 
+	if (MGDG(midgard_memory_debug)) {
+		printf("[%p] <= php_midgard_zendobject_get_properties()\n", zobject);
+	}
+
 	return php_gobject->zo.properties;
 }
-
-static void __php_midgard_gobject_dtor(void *object TSRMLS_DC);
 
 static void __object_properties_dtor(zend_object *zo)
 {
@@ -726,7 +670,7 @@ static void __object_properties_dtor(zend_object *zo)
 	TSRMLS_FETCH();
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] __object_properties_dtor()\n", zo);
+		printf("[%p] __object_properties_dtor()\n", zo);
 	}
 
 	zend_hash_internal_pointer_reset_ex(props, &iterator);
@@ -738,7 +682,7 @@ static void __object_properties_dtor(zend_object *zo)
 		zend_hash_get_current_key_ex(props, &str_index, &str_len, &num_index, 0, &iterator);
 
 		if (MGDG(midgard_memory_debug)) {
-			php_printf("[%p] property's [%p] refcount: %d (before) [%s]\n", zo, *zvalue, Z_REFCOUNT_P(*zvalue), str_index);
+			printf("[%p] property's [%p] refcount: %d (before) [%s]\n", zo, *zvalue, Z_REFCOUNT_P(*zvalue), str_index);
 		}
 
 		zend_hash_del(props, str_index, str_len);
@@ -748,7 +692,7 @@ static void __object_properties_dtor(zend_object *zo)
 	}
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] <= __object_properties_dtor()\n", zo);
+		printf("[%p] <= __object_properties_dtor()\n", zo);
 	}
 }
 
@@ -762,7 +706,7 @@ static void __php_midgard_gobject_dtor(void *object TSRMLS_DC)
 
 	if (MGDG(midgard_memory_debug)) {
 		zend_class_entry *obj_ce = php_gobject->zo.ce;
-		php_printf("[%p] __php_midgard_gobject_dtor(%s)\n", php_gobject, obj_ce->name);
+		printf("[%p] __php_midgard_gobject_dtor(%s)\n", php_gobject, obj_ce->name);
 	}
 
 	if (&php_gobject->zo == NULL)
@@ -773,16 +717,16 @@ static void __php_midgard_gobject_dtor(void *object TSRMLS_DC)
 		/* php_error(E_NOTICE, "__php_midgard_gobject_dtor. Underlying GObject is NULL"); */
 	} else if (G_IS_OBJECT(php_gobject->gobject)) {
 		if (MGDG(midgard_memory_debug)) {
-			php_printf("[%p] =========> G_IS_OBJECT\n", object);
+			printf("[%p] =========> G_IS_OBJECT\n", object);
 		}
 
 		if (G_OBJECT_TYPE_NAME(G_OBJECT(php_gobject->gobject)) != NULL) {
 			if (MGDG(midgard_memory_debug)) {
-				php_printf("[%p] =========> ..._TYPE_NAME != NULL\n", object);
+				printf("[%p] =========> ..._TYPE_NAME != NULL\n", object);
 			}
 
 			if (MGDG(midgard_memory_debug)) {
-				php_printf("[%p] =========> gobject's refcount = %d (before unref)\n", object, php_gobject->gobject->ref_count);
+				printf("[%p] =========> gobject's refcount = %d (before unref)\n", object, php_gobject->gobject->ref_count);
 			}
 
 			/*php_error(E_NOTICE, "%s DTOR (%p)", G_OBJECT_TYPE_NAME(G_OBJECT(php_gobject->gobject)), (void*)php_gobject->gobject); */
@@ -800,7 +744,7 @@ static void __php_midgard_gobject_dtor(void *object TSRMLS_DC)
 	efree(php_gobject);
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] <= __php_midgard_gobject_dtor()\n", php_gobject);
+		printf("[%p] <= __php_midgard_gobject_dtor()\n", php_gobject);
 	}
 
 	php_gobject = NULL;
@@ -815,19 +759,19 @@ void php_midgard_init_properties_objects(zval *zobject)
 	TSRMLS_FETCH();
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_init_properties_objects\n", zobject);
+		printf("[%p] php_midgard_init_properties_objects\n", zobject);
 	}
 
-	GObject *gobject = G_OBJECT(__php_gobject_ptr(zobject));
+	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
+	GObject *gobject = php_gobject->gobject;
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] ==> gobject = [%p]\n", zobject, gobject);
+		printf("[%p] ==> gobject = [%p]\n", zobject, gobject);
 	}
 
 	if (!gobject)
 		return;
 
-	php_midgard_gobject *php_gobject = php_midgard_zend_object_store_get_object(zobject TSRMLS_CC);
 	guint propn, i;
 	GParamSpec **pspecs = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
@@ -843,7 +787,7 @@ void php_midgard_init_properties_objects(zval *zobject)
 
 		GObject *prop_gobject = g_value_get_object(&oval);
 		if (!prop_gobject) {
-			g_value_unset (&oval);
+			g_value_unset(&oval);
 			continue;
 		}
 
@@ -872,7 +816,7 @@ void php_midgard_init_properties_objects(zval *zobject)
 	php_gobject->has_properties = TRUE;
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] <= php_midgard_init_properties_objects\n", zobject);
+		printf("[%p] <= php_midgard_init_properties_objects\n", zobject);
 	}
 }
 
@@ -887,7 +831,7 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	zend_object_std_init(&php_gobject->zo, class_type TSRMLS_CC);
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_gobject_new(%s)\n", &php_gobject->zo, class_type->name);
+		printf("[%p] php_midgard_gobject_new(%s)\n", &php_gobject->zo, class_type->name);
 	}
 
 	/* php_error(E_NOTICE, "CONSTRUCTOR %s", class_type->name); */
@@ -913,7 +857,7 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	retval.handlers = &php_midgard_gobject_handlers;
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] <= php_midgard_gobject_new()\n", &php_gobject->zo);
+		printf("[%p] <= php_midgard_gobject_new()\n", &php_gobject->zo);
 	}
 
 	return retval;
@@ -928,7 +872,7 @@ void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *
 		MAKE_STD_ZVAL(zvalue);
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_gobject_init(%s)\n", zvalue, php_classname);
+		printf("[%p] php_midgard_gobject_init(%s)\n", zvalue, php_classname);
 	}
 
 	ce = php_midgard_get_class_ptr_by_name(php_classname);
@@ -946,7 +890,7 @@ void php_midgard_gobject_new_with_gobject(zval *zvalue, zend_class_entry *ce, GO
 	TSRMLS_FETCH();
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_gobject_new_with_gobject(%s)\n", zvalue, ce->name);
+		printf("[%p] php_midgard_gobject_new_with_gobject(%s)\n", zvalue, ce->name);
 	}
 
 	Z_TYPE_P(zvalue) = IS_OBJECT;
@@ -983,6 +927,10 @@ void php_midgard_gobject_new_with_gobject(zval *zvalue, zend_class_entry *ce, GO
 	} else {
 		php_midgard_init_properties_objects(zvalue);
 		/* php_error(E_NOTICE, "IMPLICIT CONSTRUCTOR %s (%p)", ce->name, gobject); */
+	}
+
+	if (MGDG(midgard_memory_debug)) {
+		printf("[%p] <= php_midgard_gobject_new_with_gobject(%s)\n", zvalue, ce->name);
 	}
 }
 
@@ -1135,48 +1083,6 @@ void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, 
 }
 
 /* SIGNALS */
-
-typedef struct {
-	GClosure closure;
-	zend_fcall_info fci;
-	zend_fcall_info_cache fci_cache;
-	zval *args;
-	zval *zval_array;
-	guint argc;
-	guint type;
-	zval *zobject;
-	zval *connected;
-} php_mgd_closure;
-
-static void php_midgard_closure_invalidate(gpointer data, GClosure *closure)
-{
-	TSRMLS_FETCH();
-
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_closure_invalidate(data = %p)\n", closure, data);
-	}
-
-	php_mgd_closure *mgdclosure = (php_mgd_closure *) closure;
-
-	zval_ptr_dtor(&(mgdclosure->fci.function_name));
-
-	if (mgdclosure->args != NULL) {
-		zval_ptr_dtor(&mgdclosure->args);
-		mgdclosure->args = NULL;
-	}
-
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] ----> done with args\n", closure);
-	}
-
-	mgdclosure->zobject = NULL;
-	mgdclosure->connected = NULL;
-
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] <= php_midgard_closure_invalidate()\n", closure);
-	}
-}
-
 void php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAMETERS)
 {
 	zend_fcall_info fci;
@@ -1214,324 +1120,6 @@ void php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAMETERS)
 	}
 
 	g_signal_connect_closure_by_id(object, signal_id, signal_detail, closure, FALSE);
-}
-
-/* CLASS CLOSURES */
-
-/* Workaround, as there's no GLib API to get class default closure by signal name or id */
-
-static GHashTable *__classes_hash = NULL;
-
-void __destroy_hash(gpointer data)
-{
-	if (!data)
-		return;
-
-	GHashTable *hash = (GHashTable*) data;
-
-	g_hash_table_destroy(hash);
-}
-
-void php_midgard_gobject_closure_hash_new()
-{
-	if (__classes_hash == NULL)
-		__classes_hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-}
-
-static php_mgd_closure * __class_closure_lookup(GType class_type, guint signal_id)
-{
-	if (signal_id == 0)
-		return NULL;
-
-	if (__classes_hash == NULL)
-		return NULL;
-
-	GHashTable *closures_hash;
-	closures_hash = g_hash_table_lookup(__classes_hash, g_type_name(class_type));
-
-	if (!closures_hash)
-		return NULL;
-
-	gchar *sname = g_strdup(g_signal_name(signal_id));
-	g_strdelimit (sname, G_STR_DELIMITERS ":^", '_');
-
-	php_mgd_closure *pmc = g_hash_table_lookup(closures_hash, sname);
-	g_free(sname);
-
-	return pmc;
-}
-
-void __php_midgard_closure_free(gpointer data)
-{
-	TSRMLS_FETCH();
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] __php_midgard_closure_free()\n", data);
-	}
-
-	GClosure *closure = (GClosure *) data;
-
-	if (closure) {
-		g_closure_unref(closure);
-	}
-}
-
-void __free_hash_foreach(gpointer key, gpointer val, gpointer ud)
-{
-	GHashTable *hash = (GHashTable *) val;
-
-	if (hash)
-		g_hash_table_destroy(hash);
-}
-
-void php_midgard_gobject_closure_hash_free()
-{
-	if (__classes_hash != NULL) {
-		g_hash_table_foreach(__classes_hash, __free_hash_foreach, NULL);
-		g_hash_table_destroy(__classes_hash);
-		__classes_hash = NULL;
-	}
-
-	return;
-}
-
-static void __register_class_closure(const gchar *class_name, const gchar *signal, php_mgd_closure *closure)
-{
-	if (__classes_hash == NULL)
-		return;
-
-	gchar *sname = g_strdup(signal);
-	g_strdelimit (sname, G_STR_DELIMITERS ":^", '_'); /* FIXME, it should be fast, so no conversion here */
-
-	guint signal_id = g_signal_lookup(sname, g_type_from_name(class_name));
-
-	if (signal_id == 0) {
-		php_error(E_WARNING, "'%s' is not registered as event for '%s'", sname, class_name);
-		g_free(sname);
-		return;
-	}
-
-	GHashTable *closures_hash =
-		g_hash_table_lookup(__classes_hash, class_name);
-
-	if (!closures_hash) {
-		closures_hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, __php_midgard_closure_free);
-	}
-
-	g_hash_table_insert(closures_hash, (gpointer) sname, closure);
-	g_hash_table_insert(__classes_hash, (gpointer) g_strdup(class_name), closures_hash);
-}
-
-static void php_midgard_closure_default_marshal(GClosure *closure,
-		GValue *return_value, guint n_param_values,
-		const GValue *param_values, gpointer invocation_hint,
-		gpointer marshal_data)
-{
-	php_mgd_closure *mgdclosure = (php_mgd_closure *) closure;
-
-	zval *params = NULL;
-	TSRMLS_FETCH();
-
-	if (MGDG(can_deliver_signals) == 0)
-		return; // engine is not in sane state
-
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_closure_default_marshal(args = %p)\n", closure, mgdclosure->args);
-	}
-
-	MAKE_STD_ZVAL(params);
-	array_init(params);
-
-	// "10000" on next line is a HACK. Just took a number which is slightly above normal, but still doesn't look like invalid
-	if (mgdclosure->zobject != NULL && Z_REFCOUNT_P(mgdclosure->zobject) < 10000) {
-		if (MGDG(midgard_memory_debug)) {
-			php_printf("[%p] ---> zobject refcount = %d\n", closure, Z_REFCOUNT_P(mgdclosure->zobject));
-		}
-		zval_add_ref(&(mgdclosure->zobject));
-		zend_hash_next_index_insert(Z_ARRVAL_P(params), &(mgdclosure->zobject), sizeof(zval *), NULL);
-	} else {
-		zval *dummy = NULL;
-		MAKE_STD_ZVAL(dummy);
-		ZVAL_NULL(dummy);
-		zend_hash_next_index_insert(Z_ARRVAL_P(params), &dummy, sizeof(zval *), NULL);
-	}
-
-	if (mgdclosure->args != NULL) {
-		// + params
-		HashTable *args_hash = Z_ARRVAL_P(mgdclosure->args);
-		zend_uint argc = 1 + zend_hash_num_elements(args_hash);
-
-		zend_hash_internal_pointer_reset(args_hash);
-
-		size_t i;
-		for (i = 1; i < argc; i++) {
-			zval **ptr;
-			zend_hash_get_current_data(args_hash, (void **)&ptr);
-			zend_hash_move_forward(args_hash);
-
-			if (MGDG(midgard_memory_debug)) {
-				php_printf("[%p] ----> got ptr = %p, *ptr = %p [refcount = %d]\n", closure, ptr, *ptr, Z_REFCOUNT_P(*ptr));
-			}
-
-			zval_add_ref(ptr);
-			zend_hash_next_index_insert(Z_ARRVAL_P(params), ptr, sizeof(zval *), NULL);
-		}
-	}
-
-	zval *retval = NULL;
-
-	zend_fcall_info_args(&(mgdclosure->fci), params TSRMLS_CC);
-	mgdclosure->fci.retval_ptr_ptr = &retval;
-
-	zend_call_function(&(mgdclosure->fci), &(mgdclosure->fci_cache) TSRMLS_CC);
-	zend_fcall_info_args_clear(&(mgdclosure->fci), 1);
-
-	if (retval)
-		zval_ptr_dtor(&retval);
-
-	zval_ptr_dtor(&params);
-}
-
-static GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_cache fci_cache, zval *zobject, zval *zval_array TSRMLS_DC)
-{
-	GClosure *closure;
-
-	if (zobject == NULL || !g_type_from_name(Z_OBJCE_P(zobject)->name)) {
-		closure = g_closure_new_simple(sizeof(php_mgd_closure), NULL);
-	} else {
-		GObject *object = G_OBJECT(__php_gobject_ptr(zobject));
-		closure = g_closure_new_object(sizeof(php_mgd_closure), object);
-	}
-
-	if (!closure) {
-		php_error(E_ERROR, "Couldn't create new closure");
-		return NULL;
-	}
-
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_closure_new_default(zobject = %p, zval_array = %p)\n", closure, zobject, zval_array);
-	}
-
-	php_mgd_closure *mgdclosure = (php_mgd_closure*) closure;
-	zval_add_ref(&fci.function_name);
-	mgdclosure->fci = fci;
-	mgdclosure->fci_cache = fci_cache;
-	mgdclosure->zobject = zobject; // we do not add reference here, as closure would be destroyed when object destroyed
-
-	mgdclosure->args = NULL;
-
-	if (zval_array) {
-		zval_add_ref(&zval_array);
-		mgdclosure->args = zval_array;
-	}
-
-	g_closure_add_invalidate_notifier(closure, NULL, php_midgard_closure_invalidate);
-	g_closure_set_marshal((GClosure *)mgdclosure, php_midgard_closure_default_marshal);
-
-	return (GClosure *)mgdclosure;
-}
-
-void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS)
-{
-	zend_fcall_info fci;
-	zend_fcall_info_cache fci_cache;
-	char *sname = NULL, *class_name = NULL;
-	int sname_length, class_name_length;
-	zval *zval_array = NULL;
-
-	/* Keep '!' as passed object parameter ( or params array ) can be NULL */
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,  "ssf|a!",
-				&class_name, &class_name_length,
-				&sname, &sname_length,
-				&fci, &fci_cache, &zval_array)
-			== FAILURE)
-	{
-		return;
-	}
-
-	GType class_type = g_type_from_name((const gchar *)class_name);
-
-	if (class_type == 0) {
-		php_error(E_WARNING, "Class %s is not registered in GType system", class_name);
-		return;
-	}
-
-	guint signal_id;
-	GQuark signal_detail;
-
-	if (!g_signal_parse_name(sname, class_type, &signal_id, &signal_detail, TRUE)) {
-		php_error(E_WARNING, "%s signal name is invalid", sname);
-		return;
-		/* TODO , should we handle exception here? */
-	}
-
-	GClosure *closure = php_midgard_closure_new_default(fci, fci_cache, NULL, zval_array TSRMLS_CC);
-
-	if (!closure) {
-		php_error(E_WARNING, "Can not create new closure");
-		return;
-	}
-
-	php_mgd_closure *dclosure = (php_mgd_closure *) closure;
-	dclosure->zval_array = zval_array;
-	__register_class_closure(class_name, sname, dclosure);
-}
-
-void php_midgard_object_connect_class_closures(GObject *object, zval *zobject)
-{
-	php_mgd_closure *closure = NULL;
-
-	/* TODO, add error handling , IS_OBJECT , etc */
-	if (zobject == NULL) {
-		php_error(E_WARNING, "Connect to class closure: failed to get zend object");
-		return;
-	}
-
-	if (object == NULL) {
-		php_error(E_WARNING, "Connect to class closure: failed to get underlying object");
-		return;
-	}
-
-	guint i = 0;
-	guint n_ids, *ids;
-	TSRMLS_FETCH();
-
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] php_midgard_object_connect_class_closures(zobject = %p)\n", object, zobject);
-	}
-
-	/* Use MIDGARD_TYPE_OBJECT type explicitly!
-	 * Ancestor type is not taken into account in GLib's list_ids! */
-	ids = g_signal_list_ids(MIDGARD_TYPE_OBJECT, &n_ids);
-
-	if (n_ids == 0)
-		return;
-
-	for (i = 0; i < n_ids; i++) {
-		closure = __class_closure_lookup(G_OBJECT_TYPE(object), ids[i]);
-
-		if (closure) {
-			if (MGDG(midgard_memory_debug)) {
-				php_printf("[%p] ----> found \"default\" closure = %p\n", object, closure);
-			}
-
-			php_mgd_closure *dclosure = (php_mgd_closure *)
-				php_midgard_closure_new_default(closure->fci, closure->fci_cache, zobject, closure->zval_array TSRMLS_CC);
-
-			if (MGDG(midgard_memory_debug)) {
-				php_printf("[%p] ----> created closure = %p\n", object, dclosure);
-			}
-
-			g_signal_connect_closure(object, g_signal_name(ids[i]), (GClosure *)dclosure, FALSE);
-		}
-	}
-
-	g_free(ids);
-
-	if (MGDG(midgard_memory_debug)) {
-		php_printf("[%p] <= php_midgard_object_connect_class_closures(zobject = %p)\n", object, zobject);
-	}
-
-	return;
 }
 
 GParameter *php_midgard_array_to_gparameter(zval *params, guint *n_params)
