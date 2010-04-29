@@ -1,4 +1,5 @@
 #include "php_midgard.h"
+#include "php_midgard__helpers.h"
 
 PHP_FUNCTION(mgd_version)
 {

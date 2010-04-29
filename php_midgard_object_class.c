@@ -30,12 +30,13 @@ static PHP_METHOD(midgard_object_class, factory)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &class_name, &class_name_length, &zvalue) == FAILURE)
 		return;
 
-	zend_class_entry *ce = zend_fetch_class(class_name, class_name_length, ZEND_FETCH_CLASS_AUTO|ZEND_FETCH_CLASS_SILENT TSRMLS_CC);
-
-	if (ce == NULL) {
+	zend_class_entry **pce = NULL;
+	if (zend_lookup_class_ex(class_name, class_name_length, 1, &pce TSRMLS_CC) == FAILURE) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Can not find %s class", class_name);
 		return;
 	}
+
+	zend_class_entry *ce = *pce;
 
 	object_init_ex(return_value, ce); /* Initialize new object for which QB has been created for */
 
@@ -121,7 +122,7 @@ static PHP_METHOD(midgard_object_class, get_property_up)
 	if (!property_up)
 		RETURN_NULL();
 
-	RETURN_STRING(property_up, 1);
+	RETURN_STRING((char *)property_up, 1);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_class_get_property_up, 0, 0, 1)
