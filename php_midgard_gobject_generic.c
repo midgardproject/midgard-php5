@@ -842,6 +842,10 @@ void php_midgard_init_properties_objects(zval *zobject)
 		g_object_get_property(gobject, pspecs[i]->name, &oval);
 
 		GObject *prop_gobject = g_value_get_object(&oval);
+		if (!prop_gobject) {
+			g_value_unset (&oval);
+			continue;
+		}
 
 		const char *php_class_name = g_class_name_to_php_class_name(G_OBJECT_TYPE_NAME(prop_gobject));
 		zend_class_entry *ce = php_midgard_get_baseclass_ptr_by_name(php_class_name);
