@@ -24,8 +24,6 @@
 
 zend_class_entry *php_midgard_connection_class;
 
-static const gchar *class_doc_comment = "MidgardConnection (midgard_connection) class initializes new Midgard connection and is responsible for holding and setting environmental variables ( like error, authenticated user, debug level, etc ).";
-
 #define PHP_MGD_HASH_UPDATE(k, v) zend_hash_update(Z_ARRVAL_PP(_midgard), k, sizeof(k), v, sizeof(zval *), NULL)
 
 /* Object constructor */
@@ -404,15 +402,12 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 	static zend_class_entry php_midgard_connection_class_entry;
 
 	INIT_CLASS_ENTRY(php_midgard_connection_class_entry, "midgard_connection", connection_methods);
-
 	php_midgard_connection_class = zend_register_internal_class(&php_midgard_connection_class_entry TSRMLS_CC);
 
-	/* Set function to initialize underlying data */
 	php_midgard_connection_class->create_object = php_midgard_gobject_new;
 	php_midgard_connection_class->serialize = __serialize_cnc_hook;
 	php_midgard_connection_class->unserialize = __unserialize_cnc_hook;
-
-	php_midgard_connection_class->doc_comment = g_strdup(class_doc_comment);
+	php_midgard_connection_class->doc_comment = strdup("midgard_connection class represents connection to underlying data-source and is responsible for holding and setting environmental variables (like error, authenticated user, debug level, etc.)");
 
 	zend_declare_property_null(php_midgard_connection_class, "instance", sizeof("instance")-1, ZEND_ACC_PRIVATE|ZEND_ACC_STATIC TSRMLS_CC);
 

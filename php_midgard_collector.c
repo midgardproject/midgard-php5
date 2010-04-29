@@ -493,6 +493,7 @@ PHP_MINIT_FUNCTION(midgard2_collector)
 	/* FIXME, this inheritance should be automatic once we switch to namespaces */
 	php_midgard_collector_class =  zend_register_internal_class_ex (&php_midgard_collector_class_entry, NULL, "midgard_query_builder" TSRMLS_CC);
 	php_midgard_collector_class->create_object = php_midgard_gobject_new;
+	php_midgard_collector_class->doc_comment = strdup("Optimized database query tool, that doesn't return objects");
 
 	return SUCCESS;
 }

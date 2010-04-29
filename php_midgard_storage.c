@@ -125,6 +125,7 @@ PHP_MINIT_FUNCTION(midgard2_storage)
 
 	php_midgard_storage_class = zend_register_internal_class(&php_midgard_storage_class_entry TSRMLS_CC);
 	php_midgard_storage_class->create_object = NULL;
+	php_midgard_storage_class->doc_comment = strdup("Collection of static methods for managing underlying data storage");
 
 	return SUCCESS;
 }

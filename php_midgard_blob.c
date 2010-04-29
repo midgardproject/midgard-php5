@@ -147,9 +147,6 @@ static PHP_METHOD(midgard_blob, get_handler)
 	/* php_streams require paths so no filehandler or channel here */
 	/* GIOChannel *channel = midgard_blob_get_handler(blob); */
 
-	/**
-	 * TODO implement our own stream type, with 'midgard://...' URLs
-	 */
 	php_stream *stream = php_stream_open_wrapper_ex(
 		(char *)path,
 		mode,
@@ -224,6 +221,7 @@ PHP_MINIT_FUNCTION(midgard2_blob)
 
 	php_midgard_blob_class = zend_register_internal_class(&php_midgard_blob_class_entry TSRMLS_CC);
 	php_midgard_blob_class->create_object = php_midgard_gobject_new;
+	php_midgard_blob_class->doc_comment = strdup("Wrapper around midgard_attachment object, which provides high-level API for working with larget binary entities");
 
 	return SUCCESS;
 }

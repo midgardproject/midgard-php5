@@ -20,8 +20,6 @@
 
 #include "php_midgard__helpers.h"
 
-static const gchar *class_doc_comment = "Abstract class for key-value (ini like) configurations";
-
 static zend_class_entry *php_midgard_key_config_class;
 
 static PHP_METHOD(midgard_key_config, set_value)
@@ -263,8 +261,7 @@ PHP_MINIT_FUNCTION(midgard2_key_config)
 	php_midgard_key_config_class = zend_register_internal_class(&php_midgard_key_config_class_entry TSRMLS_CC);
 
 	php_midgard_key_config_class->ce_flags = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
-	php_midgard_key_config_class->doc_comment = g_strdup(class_doc_comment);
-	/* Set function to initialize underlying data */
+	php_midgard_key_config_class->doc_comment = strdup("Abstract class for key-value (ini like) configurations");
 	php_midgard_key_config_class->create_object = php_midgard_gobject_new;
 
 	return SUCCESS;

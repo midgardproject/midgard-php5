@@ -88,9 +88,8 @@ PHP_MINIT_FUNCTION(midgard2_dbus)
 	INIT_CLASS_ENTRY(php_midgard_dbus_class_entry, "midgard_dbus", midgard_dbus_methods);
 
 	php_midgard_dbus_class = zend_register_internal_class(&php_midgard_dbus_class_entry TSRMLS_CC);
-
-	/* Set function to initialize underlying data */
 	php_midgard_dbus_class->create_object = php_midgard_gobject_new;
+	php_midgard_dbus_class->doc_comment = strdup("Sender of DBUS messages");
 
 	return SUCCESS;
 }

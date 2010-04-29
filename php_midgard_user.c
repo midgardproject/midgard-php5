@@ -21,8 +21,6 @@
 
 zend_class_entry *php_midgard_user_class;
 
-static const gchar *class_doc_comment = "<a href=\"http://www.midgard-project.org/api-docs/midgard/core/mjolnir/midgard-user.html\">Core API docs</a>";
-
 #define _GET_USER_OBJECT \
 	zval *zval_object = getThis(); \
 	MidgardUser *user = MIDGARD_USER(__php_gobject_ptr(zval_object)); \
@@ -326,7 +324,7 @@ PHP_MINIT_FUNCTION(midgard2_user)
 
 	/* Set function to initialize underlying data */
 	php_midgard_user_class->create_object = php_midgard_gobject_new;
-	php_midgard_user_class->doc_comment = g_strdup (class_doc_comment);
+	php_midgard_user_class->doc_comment = strdup("Midgard's Authentication API");
 
 	return SUCCESS;
 }

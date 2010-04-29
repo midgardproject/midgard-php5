@@ -24,13 +24,6 @@ static zend_class_entry *php_midgard_error_class;
 /* Object constructor */
 static PHP_METHOD(midgard_error, __construct)
 {
-	RETVAL_FALSE;
-	CHECK_MGD;
-
-	if (zend_parse_parameters_none() == FAILURE)
-		return;
-
-	php_error(E_NOTICE, "midgard_error constructor doesn't make any magic things, do you need this object for sure?");
 }
 
 ZEND_BEGIN_ARG_INFO(arginfo_midgard_error___construct, 0)
@@ -158,7 +151,7 @@ ZEND_END_ARG_INFO()
 PHP_MINIT_FUNCTION(midgard2_error)
 {
 	static function_entry midgard_error_methods[] = {
-		PHP_ME(midgard_error, __construct, arginfo_midgard_error___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_error, __construct, arginfo_midgard_error___construct, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 		PHP_ME(midgard_error, error,       arginfo_midgard_error_error,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_error, critical,    arginfo_midgard_error_critical,    ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_error, warning,     arginfo_midgard_error_warning,     ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -172,6 +165,7 @@ PHP_MINIT_FUNCTION(midgard2_error)
 	INIT_CLASS_ENTRY(php_midgard_error_class_entry, "midgard_error", midgard_error_methods);
 
 	php_midgard_error_class = zend_register_internal_class(&php_midgard_error_class_entry TSRMLS_CC);
+	php_midgard_error_class->doc_comment = strdup("Collection of static methods, which can be used to send core-level log-messages");
 
 	return SUCCESS;
 }

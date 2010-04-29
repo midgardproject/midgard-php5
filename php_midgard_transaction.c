@@ -163,6 +163,7 @@ PHP_MINIT_FUNCTION(midgard2_transaction)
 	php_midgard_transaction_class->create_object = php_midgard_gobject_new;
 	php_midgard_transaction_class->serialize = NULL; /* FIXME, set (un)serialize for some explicit error if needed */
 	php_midgard_transaction_class->unserialize = NULL;
+	php_midgard_transaction_class->doc_comment = strdup("Transaction manager");
 
 	return SUCCESS;
 }
