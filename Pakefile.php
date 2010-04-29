@@ -25,8 +25,8 @@ pake_import('phpExtension', false);
 // -> injecting dependencies
 pakePhpExtensionTask::$tasks['test'][1][] = 'init_tests';
 pakePhpExtensionTask::$tasks['test'][1][] = 'init_test_db';
-pakePhpExtensionTask::$tasks['clean'][1][] = 'clean_tests';
 pakePhpExtensionTask::$tasks['clean'][1][] = 'clean_test_db';
+pakePhpExtensionTask::$tasks['clean'][1][] = 'clean_tests';
 // -> registering tasks
 pakePhpExtensionTask::import_default_tasks();
 // DONE
@@ -41,7 +41,7 @@ function run_init_test_db()
     putenv('MIDGARD_ENV_GLOBAL_SHAREDIR='._SRC_DIR_.'/tests/share'.'');
     putenv('PAKE_MIDGARD_CFG='._SRC_DIR_.'/tests/test.cfg');
 
-    pake_sh(_get_php_executable().' '._SRC_DIR_.'/pake/create_database.php');
+    pake_sh(_get_php_executable().' -c '.escapeshellarg(_SRC_DIR_.'/tests').' '.escapeshellarg(_SRC_DIR_.'/pake/create_database.php'));
 }
 
 function run_init_tests()
@@ -77,6 +77,8 @@ function run_clean_tests()
     call_user_func_array(array($finder, 'name'), $_files);
 
     pake_remove($finder, $path);
+
+    pake_remove(pakeFinder::type('file')->name('tmp-php.ini'), _SRC_DIR_);
 }
 
 function run_clean_test_db()
