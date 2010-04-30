@@ -37,8 +37,8 @@ static PHP_METHOD(midgard_reflection_property, __construct)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
-	char *classname = NULL;
-	int classname_length;
+	char *php_classname = NULL;
+	int php_classname_length;
 	zend_class_entry *ce_base;
 	zval *zval_object = getThis();
 	GObject *gobject;
@@ -46,15 +46,24 @@ static PHP_METHOD(midgard_reflection_property, __construct)
 	gobject = __php_gobject_ptr(zval_object);
 
 	if (!gobject) {
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &classname, &classname_length) == FAILURE)
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &php_classname, &php_classname_length) == FAILURE)
 			return;
 
-		PHP_MIDGARD_PARSE_CLASS_ARGUMENT(classname, MIDGARD_TYPE_DBOBJECT, TRUE, &ce_base);
+		{
+			gboolean __isderived = php_midgard_is_derived_from_class(php_classname, MIDGARD_TYPE_DBOBJECT, TRUE, &ce_base TSRMLS_CC);
 
-		MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(ce_base->name);
+			if (!__isderived) {
+				php_error(E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
+				php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
+				return;
+			}
+		}
+
+		const gchar *g_classname = php_class_name_to_g_class_name(ce_base->name);
+		MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
 
 		if (!klass) {
-			php_error(E_WARNING, "%s is not registered Midgard schema class", ce_base->name);
+			php_error(E_WARNING, "%s is not registered Midgard schema class", g_classname);
 			return;
 		}
 

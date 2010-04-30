@@ -1029,33 +1029,31 @@ zend_class_entry *php_midgard_get_class_ptr_by_name(const char *name)
 	return *ce;
 }
 
-gboolean php_midgard_is_derived_from_class(const gchar *classname, GType basetype,
+gboolean php_midgard_is_derived_from_class(const char *classname, GType basetype,
 		gboolean check_parent, zend_class_entry **base_class TSRMLS_DC)
 {
 	if (classname == NULL || *classname == '\0')
 		return FALSE;
 
-	gboolean isderived = FALSE;
-
 	zend_class_entry *ce = php_midgard_get_baseclass_ptr_by_name(classname);
 
 	if (ce == NULL) {
-
 		php_error(E_WARNING, "Can not find zend class pointer for given %s class name", classname);
-		return isderived;
+		return FALSE;
 	}
 
 	*base_class = ce;
 
-	GType classtype = g_type_from_name((const gchar *)ce->name);
+	const gchar *g_classname = php_class_name_to_g_class_name(ce->name);
+	GType classtype = g_type_from_name(g_classname);
 
 	if (classtype == basetype)
-		isderived = TRUE;
+		return TRUE;
 
 	if (check_parent == TRUE)
-		isderived = g_type_is_a(classtype, basetype);
+		return g_type_is_a(classtype, basetype);
 
-	return isderived;
+	return FALSE;
 }
 
 void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, zval *zarray TSRMLS_DC)

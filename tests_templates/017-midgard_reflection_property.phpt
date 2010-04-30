@@ -37,6 +37,9 @@ var_dump($rp2->get_midgard_type('id') == MGD_TYPE_UINT);
 var_dump($rp2->get_midgard_type('a') == MGD_TYPE_STRING);
 var_dump($rp2->get_midgard_type('b') == MGD_TYPE_STRING);
 
+// testing renamed class
+$rp3 = new midgard_reflection_property('midgard_metadata');
+
 ?>
 ===DONE===
 --EXPECTF--
