@@ -71,10 +71,10 @@ static zend_bool php_midgard_gvalue_from_zval(zval *zvalue, GValue *gvalue)
 			break;
 
 		case IS_DOUBLE:
-			g_value_init(gvalue, G_TYPE_FLOAT);
+			g_value_init(gvalue, G_TYPE_DOUBLE);
 			lstring = setlocale(LC_NUMERIC, "0");
 			setlocale(LC_NUMERIC, "C");
-			g_value_set_float(gvalue, (gfloat)Z_DVAL_P(zvalue));
+			g_value_set_double(gvalue, (gdouble)Z_DVAL_P(zvalue));
 			setlocale(LC_ALL, lstring);
 			break;
 
@@ -177,6 +177,30 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue)
 
 		case G_TYPE_BOOLEAN:
 			ZVAL_BOOL(zvalue, g_value_get_boolean(gvalue));
+			return TRUE;
+			break;
+
+		case G_TYPE_DOUBLE:
+			/* I follow code from PHP_ROUND_WITH_FUZZ macro.
+			 * If You find better way to add double property value,
+			 * fell free to change this code. We do not have to worry
+			 * about locale settings at this point ( I hope so ) */
+			dpval = g_value_get_double(gvalue);
+			tmp_val = dpval;
+
+			f = pow(10.0, (double) 6);
+			tmp_val *= f;
+
+			if (tmp_val >= 0.0) {
+				tmp_val = floor(tmp_val + 0.50000000001);
+			} else {
+				tmp_val = ceil(tmp_val - 0.50000000001);
+			}
+
+			tmp_val /= f;
+			dpval = !zend_isnan(tmp_val) ? tmp_val : dpval;
+
+			ZVAL_DOUBLE(zvalue, dpval);
 			return TRUE;
 			break;
 
@@ -477,6 +501,7 @@ static void _convert_value(zval *value, GType vtype)
 			break;
 
 		case G_TYPE_FLOAT:
+		case G_TYPE_DOUBLE:
 			if (Z_TYPE_P(value) != IS_DOUBLE)
 				convert_to_double(value);
 			break;
@@ -557,37 +582,32 @@ void php_midgard_zendobject_register_properties(zval *zobject, GObject *gobject)
 	const gchar *gclass_name;
 	GValue pval = {0, };
 
-	GParamSpec **props =
-		g_object_class_list_properties(
-				G_OBJECT_GET_CLASS(gobject), &n_prop);
+	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &n_prop);
 	TSRMLS_FETCH();
 
 	for (i = 0; i < n_prop; i++) {
 		switch (props[i]->value_type) {
 			case G_TYPE_STRING:
-				add_property_string(zobject,
-						(gchar*)props[i]->name, "", 1);
+				add_property_string(zobject, (char*)props[i]->name, "", 1);
 				break;
 
 			case G_TYPE_UINT:
 			case G_TYPE_INT:
-				add_property_long(zobject,
-						(gchar*)props[i]->name, 0);
+				add_property_long(zobject, (char*)props[i]->name, 0);
 				break;
 
 			case G_TYPE_BOOLEAN:
-				add_property_bool(zobject,
-						(gchar*)props[i]->name, FALSE);
+				add_property_bool(zobject, (char*)props[i]->name, FALSE);
 				break;
 
 			case G_TYPE_FLOAT:
-				add_property_double(zobject,
-						(gchar*)props[i]->name, 0);
+			case G_TYPE_DOUBLE:
+				add_property_double(zobject, (char*)props[i]->name, 0);
 				break;
 
 			case G_TYPE_OBJECT:
 				g_value_init(&pval, props[i]->value_type);
-				g_object_get_property(gobject, (gchar*)props[i]->name, &pval);
+				g_object_get_property(gobject, (char*)props[i]->name, &pval);
 				gclass_name = g_type_name(G_OBJECT_TYPE(G_OBJECT(g_value_get_object(&pval))));
 
 				if (gclass_name) {
