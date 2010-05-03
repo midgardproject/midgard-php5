@@ -76,11 +76,8 @@ php_stream * php_midgard2stream_opener(php_stream_wrapper *wrapper, char *filena
 		data->buffer = NULL;
 		data->size = 0;
 	} else {
-		GValue pval = {0, };
-		g_value_init(&pval, G_TYPE_STRING);
-
-		g_object_get_property(G_OBJECT(data->obj), "code", &pval);
-		const gchar *tmp_string = g_value_get_string(&pval);
+		const gchar *tmp_string = NULL;
+		g_object_get(data->obj, "code", &tmp_string, NULL);
 
 		data->buffer = estrdup(tmp_string);
 		data->size = strlen(tmp_string);
