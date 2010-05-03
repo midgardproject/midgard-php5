@@ -306,13 +306,17 @@ PHP_FUNCTION(_midgard_php_object_delete)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
+	zend_bool check_dependencies = TRUE;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &check_dependencies) == FAILURE)
+		return;
 
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	g_signal_emit(mobj, MIDGARD_OBJECT_GET_CLASS(mobj)->signal_action_delete_hook, 0);
 	__THROW_EXCEPTION
 
-	if (midgard_object_delete(mobj))
+	if (midgard_object_delete(mobj, check_dependencies))
 		RETVAL_TRUE;
 }
 
@@ -449,8 +453,9 @@ PHP_FUNCTION(_php_midgard_object_purge)
 {
 	RETVAL_FALSE;
 	CHECK_MGD;
+	zend_bool check_dependencies = TRUE;
 
-	if (zend_parse_parameters_none() == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &check_dependencies) == FAILURE)
 		return;
 
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
@@ -458,7 +463,7 @@ PHP_FUNCTION(_php_midgard_object_purge)
 	g_signal_emit(mobj, MIDGARD_OBJECT_GET_CLASS(mobj)->signal_action_purge_hook, 0);
 	__THROW_EXCEPTION
 
-	if (midgard_object_purge(mobj))
+	if (midgard_object_purge(mobj, check_dependencies))
 		RETVAL_TRUE;
 }
 
@@ -762,8 +767,9 @@ __midgard_php_type_functions[] =
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+			{ "check_dependencies", sizeof("check_dependencies")-1, NULL, 0, 0, 0, 0, 0, 0 },
 		},
-		0,
+		1,
 		"Mark object's record in database as \"deleted\""
 	},
 
@@ -958,7 +964,8 @@ __midgard_php_type_functions[] =
 		ZEND_ACC_PUBLIC,
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
-		}, 0
+			{ "check_dependencies", sizeof("check_dependencies")-1, NULL, 0, 0, 0, 0, 0, 0 },
+		}, 1
 	},
 
 	{"undelete",

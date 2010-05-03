@@ -72,6 +72,9 @@ PHP_METHOD(midgard_connection, __construct)
 	/* storing midgard_connection in object's store-structure */
 	MGD_PHP_SET_GOBJECT(getThis(), mgd);
 
+	// explicitly enable replication (to stay compatible with mjölnir)
+	midgard_connection_enable_replication(mgd, TRUE);
+
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("[%p] <= midgard_connection::__construct()\n", getThis());
 	}
