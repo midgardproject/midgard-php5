@@ -11,6 +11,9 @@
         <property name="b" type="string">
             <description>B-field</description>
         </property>
+        <property name="t" type="string">
+            <description>text-field</description>
+        </property>
         <property name="up" type="unsigned integer" link="atype:id" upfield="up">
             <description>parent atype</description>
         </property>

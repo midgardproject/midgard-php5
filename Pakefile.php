@@ -41,7 +41,7 @@ function run_init_test_db()
     putenv('MIDGARD_ENV_GLOBAL_SHAREDIR='._SRC_DIR_.'/tests/share'.'');
     putenv('PAKE_MIDGARD_CFG='._SRC_DIR_.'/tests/test.cfg');
 
-    pake_sh(_get_php_executable().' -c '.escapeshellarg(_SRC_DIR_.'/tests').' '.escapeshellarg(_SRC_DIR_.'/pake/create_database.php'), true);
+    pake_sh(_get_php_executable().' -c '.escapeshellarg(_SRC_DIR_.'/tests').' '.escapeshellarg(_SRC_DIR_.'/pake/create_database.php'), false);
 }
 
 function run_init_tests($task, $args, $long_args)
