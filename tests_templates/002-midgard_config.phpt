@@ -9,11 +9,11 @@ midgard.memory_debug = Off
 --FILE--
 <?php
 $cfg = new midgard_config();
-var_dump($cfg->read_file_at_path(dirname(__FILE__).'/test.cfg'));
+var_dump($cfg->read_file_at_path('[[CFG_FILE]]'));
 
-var_dump($cfg->dbtype === 'SQLite');
-var_dump($cfg->database === 'test');
-var_dump($cfg->logfilename === dirname(__FILE__).'/midgard.log');
+var_dump($cfg->dbtype === '[[DB_TYPE]]');
+var_dump($cfg->database === '[[DB_NAME]]');
+var_dump($cfg->logfilename === '[[PATH]]/midgard.log');
 var_dump($cfg->loglevel === 'debug');
 var_dump($cfg->tablecreate === true);
 var_dump($cfg->tableupdate === true);

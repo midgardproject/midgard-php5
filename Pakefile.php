@@ -41,10 +41,10 @@ function run_init_test_db()
     putenv('MIDGARD_ENV_GLOBAL_SHAREDIR='._SRC_DIR_.'/tests/share'.'');
     putenv('PAKE_MIDGARD_CFG='._SRC_DIR_.'/tests/test.cfg');
 
-    pake_sh(_get_php_executable().' -c '.escapeshellarg(_SRC_DIR_.'/tests').' '.escapeshellarg(_SRC_DIR_.'/pake/create_database.php'));
+    pake_sh(_get_php_executable().' -c '.escapeshellarg(_SRC_DIR_.'/tests').' '.escapeshellarg(_SRC_DIR_.'/pake/create_database.php'), true);
 }
 
-function run_init_tests()
+function run_init_tests($task, $args, $long_args)
 {
     pake_echo_comment('Creating tests from templates');
     $path = _SRC_DIR_.'/tests';
@@ -56,6 +56,20 @@ function run_init_tests()
         'BLOB_PATH'  => $path.'/blobs',
         'CFG_FILE'   => $path.'/test.cfg'
     );
+
+    if (isset($long_args['mysql'])) {
+        $tokens['DB_TYPE'] = 'MySQL';
+        $tokens['DB_NAME'] = pake_input('Database name?', 'midgard');
+        $tokens['DB_USER'] = pake_input('Database user?', 'midgard');
+        $tokens['DB_PASS'] = pake_input('Database password?', 'midgard');
+        $tokens['DB_HOST'] = pake_input('Database host?', 'localhost');
+    } else {
+        $tokens['DB_TYPE'] = 'SQLite';
+        $tokens['DB_NAME'] = 'test';
+        $tokens['DB_USER'] = '';
+        $tokens['DB_PASS'] = '';
+        $tokens['DB_HOST'] = '';
+    }
 
     $files = pakeFinder::type('file')->ignore_version_control()->relative()->in($src_path);
     pake_replace_tokens_to_dir($files, $src_path, $path, '[[', ']]', $tokens);
@@ -81,12 +95,21 @@ function run_clean_tests()
     pake_remove(pakeFinder::type('file')->name('tmp-php.ini'), _SRC_DIR_);
 }
 
-function run_clean_test_db()
+function run_clean_test_db($task, $args, $long_args)
 {
-    $file = _SRC_DIR_.'/tests/'._get_midgard_config()->database.'.db';
+    if (isset($long_args['mysql'])) {
+        $db_name = pake_input('Database name?', 'midgard');
+        $db_user = pake_input('Database user?', 'midgard');
+        $db_pass = pake_input('Database password?', 'midgard');
+        $db_host = pake_input('Database host?', 'localhost');
 
-    if (file_exists($file))
-        pake_remove($file, '');
+        pake_sh("echo 'drop database midgard; create database midgard;' | mysql -u ".$db_user." -p".$db_pass." ".$db_name);
+    } else {
+        $file = _SRC_DIR_.'/tests/'._get_midgard_config()->database.'.db';
+
+        if (file_exists($file))
+            pake_remove($file, '');
+    }
 }
 
 function run_enable_midgard()

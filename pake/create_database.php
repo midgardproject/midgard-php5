@@ -42,6 +42,10 @@ foreach ($re->getClasses() as $class_ref) {
     if (!in_array($parent_class->getName(), array("midgard_dbobject", "midgard_object", "midgard_view")))
         continue;
 
+    // skip abstract classes
+    if (in_array($class_mgd_ref->getName(), array("midgard_dbobject", "midgard_object", "midgard_view")))
+        continue;
+
     $name = $class_mgd_ref->getName();
     echo 'midgard_storage: create_class_storage('.$name.")\n";
     midgard_storage::create_class_storage($name);
