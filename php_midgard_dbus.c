@@ -31,7 +31,7 @@ static PHP_METHOD(midgard_dbus, __construct)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &path, &path_length, &use_session) == FAILURE)
 		return;
 
-	MidgardConnection *connection = mgd_handle();
+	MidgardConnection *connection = mgd_handle(TSRMLS_C);
 	if (NULL == connection) {
 		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to get connection");
 		return;
@@ -62,7 +62,7 @@ static PHP_METHOD(midgard_dbus, send)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|b", &path, &path_length, &msg, &msg_length, &use_session) == FAILURE)
 		return;
 
-	midgard_dbus_send(mgd_handle(), path, msg, (gboolean)use_session);
+	midgard_dbus_send(mgd_handle(TSRMLS_C), path, msg, (gboolean)use_session);
 
 	return;
 }

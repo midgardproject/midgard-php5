@@ -36,7 +36,7 @@ zend_class_entry *php_midgard_object_class = NULL;
 static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php_classname, zval *objid TSRMLS_DC)
 {
 	MidgardObject *gobject = NULL;
-	MidgardConnection *mgd = mgd_handle();
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
 
 	if (objid == NULL) {
@@ -162,7 +162,7 @@ PHP_FUNCTION(_midgard_php_object_get_by_id)
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	if (!midgard_object_get_by_id(mobj, id)) {
-		php_midgard_error_exception_throw(mgd_handle());
+		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 		return;
 	}
 
@@ -184,7 +184,7 @@ PHP_FUNCTION(_midgard_php_object_get_by_guid)
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	if (!midgard_object_get_by_guid(mobj, guid)) {
-		php_midgard_error_exception_throw(mgd_handle());
+		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 		return;
 	}
 
@@ -208,7 +208,7 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 
 	zend_class_entry *zce = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(getThis()));
 
-	MidgardConnection *mgd = mgd_handle();
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	const char *php_classname = zce->name;
 
 	MidgardObject *leaf_obj = NULL, *root_obj = NULL;
@@ -261,7 +261,7 @@ PHP_FUNCTION(_midgard_php_object_is_in_tree)
 
 	zend_class_entry *zce = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(getThis()));
 
-	MidgardConnection *mgd = mgd_handle();
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	const char *php_classname = zce->name;
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
 
@@ -478,7 +478,7 @@ PHP_FUNCTION(_php_midgard_object_undelete)
 		return;
 	}
 
-	RETURN_BOOL(midgard_schema_object_factory_object_undelete(mgd_handle(), (const gchar *)guid));
+	RETURN_BOOL(midgard_schema_object_factory_object_undelete(mgd_handle(TSRMLS_C), (const gchar *)guid));
 }
 
 PHP_FUNCTION(_php_midgard_object_connect)
@@ -494,7 +494,7 @@ PHP_FUNCTION(_php_midgard_new_query_builder)
 
 	char *_class_name = get_active_class_name(NULL TSRMLS_CC);
 
-	MidgardQueryBuilder *builder = midgard_query_builder_new(mgd_handle(), (gchar *)_class_name);
+	MidgardQueryBuilder *builder = midgard_query_builder_new(mgd_handle(TSRMLS_C), (gchar *)_class_name);
 
 	if (!builder)
 		return;
@@ -1123,7 +1123,7 @@ int __unserialize_object_hook(zval **zobject, zend_class_entry *ce, const unsign
 		return FAILURE;
 
 	GObject **objects =
-		midgard_replicator_unserialize(mgd_handle(), (const gchar *)buffer, TRUE);
+		midgard_replicator_unserialize(mgd_handle(TSRMLS_C), (const gchar *)buffer, TRUE);
 
 	if (!objects)
 		return FAILURE;

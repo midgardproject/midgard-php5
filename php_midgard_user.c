@@ -47,12 +47,12 @@ static PHP_METHOD(midgard_user, __construct)
 
 		guint n_params = 0;
 		GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-		MidgardUser *user = midgard_user_new(mgd_handle(), n_params, parameters);
+		MidgardUser *user = midgard_user_new(mgd_handle(TSRMLS_C), n_params, parameters);
 	
 		PHP_MGD_FREE_GPARAMETERS(parameters, n_params);	
 
 		if (!user) {
-			php_midgard_error_exception_throw(mgd_handle());
+			php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 			return;
 		}
 
@@ -157,7 +157,7 @@ static PHP_METHOD(midgard_user, get)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MidgardUser *user = midgard_user_get(mgd_handle(), n_params, parameters);
+	MidgardUser *user = midgard_user_get(mgd_handle(TSRMLS_C), n_params, parameters);
 	
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
 
@@ -191,7 +191,7 @@ static PHP_METHOD(midgard_user, query)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MidgardUser **users = midgard_user_query(mgd_handle(), n_params, parameters);
+	MidgardUser **users = midgard_user_query(mgd_handle(TSRMLS_C), n_params, parameters);
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
 
 	array_init(return_value);

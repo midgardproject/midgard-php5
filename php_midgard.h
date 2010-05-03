@@ -85,7 +85,7 @@ typedef struct _php_midgard2stream_data {
 extern guint global_loghandler;
 extern gboolean php_midgard_log_enabled;
 
-MidgardConnection *mgd_handle();
+MidgardConnection *mgd_handle(TSRMLS_D);
 /* FIXME, is_connected is confusing because it says about connection instance pointer only */
 #define php_midgard_is_connected() (MGDG(connection_established) == TRUE)
 
@@ -175,7 +175,7 @@ gboolean php_midgard_is_derived_from_class(const gchar *classname,
 		php_midgard_is_derived_from_class(__name, __type, __check_parent, __base_ce TSRMLS_CC); \
 	if (!__isderived) { \
 		php_error(E_WARNING, "Expected %s derived class", g_type_name(__type)); \
-		php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT); \
+		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT); \
 		return; \
 	} \
 }
@@ -227,7 +227,7 @@ void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gch
 
 #define CHECK_MGD \
 { \
-	if (!mgd_handle()) \
+	if (!mgd_handle(TSRMLS_C)) \
 		php_error(E_ERROR, "Can not find MidgardConnection"); \
 	gchar *_check_cname_space = NULL; \
 	gchar *_check_class_name = get_active_class_name(&_check_cname_space TSRMLS_CC); \

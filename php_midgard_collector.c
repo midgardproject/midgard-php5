@@ -52,7 +52,7 @@ static PHP_METHOD(midgard_collector, __construct)
 
 	if (ce == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Didn't find %s class", classname);
-		php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
 	}
 
 	zend_class_entry *base_ce = php_midgard_get_baseclass_ptr(ce);
@@ -60,7 +60,7 @@ static PHP_METHOD(midgard_collector, __construct)
 
 	if (!g_type_is_a(classtype, MIDGARD_TYPE_DBOBJECT)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
-		php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
 		return;
 	}
 
@@ -69,7 +69,7 @@ static PHP_METHOD(midgard_collector, __construct)
 	if (!gobject) {
 		GValue *gvalue = php_midgard_zval2gvalue(value);
 
-		MidgardConnection *mgd = mgd_handle();
+		MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 		MidgardCollector *object = midgard_collector_new(mgd, base_ce->name, propname, gvalue);
 
 		if (!object)

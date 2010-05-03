@@ -43,11 +43,11 @@ static PHP_METHOD(midgard_transaction, __construct)
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	trns = midgard_transaction_new(mgd_handle());
+	trns = midgard_transaction_new(mgd_handle(TSRMLS_C));
 
 	if (!trns) {
 
-		php_midgard_error_exception_throw(mgd_handle());
+		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 		return;
 	}
 

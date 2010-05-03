@@ -55,7 +55,7 @@ static PHP_METHOD(midgard_blob, __construct)
 	blob = midgard_blob_new(att, encoding);
 
 	if (!blob) {
-		php_midgard_error_exception_throw(mgd_handle());
+		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 		return;
 	}
 
@@ -82,7 +82,7 @@ static PHP_METHOD(midgard_blob, read_content)
 	content = midgard_blob_read_content(blob, &bytes_read);
 
 	if (content == NULL) {
-		MidgardConnection *mgd = mgd_handle();
+		MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 		php_error(E_WARNING, "Failed to get blob-contents: %s", mgd->errstr);
 		RETURN_NULL();
 	}

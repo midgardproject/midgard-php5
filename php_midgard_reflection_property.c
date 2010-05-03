@@ -54,7 +54,7 @@ static PHP_METHOD(midgard_reflection_property, __construct)
 
 			if (!__isderived) {
 				php_error(E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
-				php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
+				php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
 				return;
 			}
 		}
@@ -71,7 +71,7 @@ static PHP_METHOD(midgard_reflection_property, __construct)
 			midgard_reflection_property_new(MIDGARD_DBOBJECT_CLASS(klass));
 
 		if (!mrp) {
-			php_midgard_error_exception_throw(mgd_handle());
+			php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 			return;
 		}
 

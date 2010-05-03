@@ -65,10 +65,10 @@ static PHP_METHOD(midgard_object_class, get_object_by_guid)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length) == FAILURE)
 		return;
 
-	MidgardObject *object = midgard_schema_object_factory_get_object_by_guid(mgd_handle(), guid);
+	MidgardObject *object = midgard_schema_object_factory_get_object_by_guid(mgd_handle(TSRMLS_C), guid);
 
 	if (!object) {
-		php_midgard_error_exception_throw(mgd_handle());
+		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 		return;
 	}
 
@@ -181,7 +181,7 @@ static PHP_METHOD(midgard_object_class, undelete)
 		return;
 	}
 
-	rv = midgard_schema_object_factory_object_undelete(mgd_handle(), (const gchar *)guid);
+	rv = midgard_schema_object_factory_object_undelete(mgd_handle(TSRMLS_C), (const gchar *)guid);
 	RETURN_BOOL(rv);
 }
 

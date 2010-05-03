@@ -448,7 +448,7 @@ PHP_MSHUTDOWN_FUNCTION(midgard2)
 
 	  } else {
 
-	  MidgardConnection *mgd = mgd_handle();
+	  MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	  if (mgd != NULL)
 	  g_object_unref(mgd);
 	  }*/
@@ -516,8 +516,8 @@ PHP_RSHUTDOWN_FUNCTION(midgard2)
 		g_log_remove_handler(G_LOG_DOMAIN, global_loghandler);
 		global_loghandler = 0;
 		
-		if (mgd_handle())
-			midgard_connection_set_loghandler (mgd_handle(), 0);
+		if (mgd_handle(TSRMLS_C))
+			midgard_connection_set_loghandler (mgd_handle(TSRMLS_C), 0);
 	}
 
 	/* Free all closures
@@ -587,10 +587,9 @@ PHP_MINFO_FUNCTION(midgard2)
 /* Fetch static globals. Unfortunately these need to be here since the
    module globals are declared static by the Zend macros
 */
-MidgardConnection *mgd_handle()
+MidgardConnection *mgd_handle(TSRMLS_D)
 {
 	zval *instance;
-	TSRMLS_FETCH();
 
 	if (!php_midgard_is_connected())
 		return NULL;

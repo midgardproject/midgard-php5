@@ -176,7 +176,7 @@ PHP_FUNCTION(_php_midgard_object_serve_attachment)
 		GValue gval = {0, };
 		g_value_init(&gval, G_TYPE_STRING);
 		g_value_set_string(&gval, guid);
-		att = midgard_object_new(mgd_handle(), "midgard_attachment", &gval);
+		att = midgard_object_new(mgd_handle(TSRMLS_C), "midgard_attachment", &gval);
 	}
 
 	/* error is set by core */
@@ -206,7 +206,7 @@ PHP_FUNCTION(_php_midgard_object_serve_attachment)
 	FILE *fp;
 	if (!(fp = fopen(path, "r"))) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File doesn't exist");
-		MIDGARD_ERRNO_SET(mgd_handle(), MGD_ERR_INTERNAL);
+		MIDGARD_ERRNO_SET(mgd_handle(TSRMLS_C), MGD_ERR_INTERNAL);
 		return;
 	}
 

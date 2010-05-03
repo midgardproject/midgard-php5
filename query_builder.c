@@ -49,7 +49,7 @@ static PHP_METHOD(midgard_query_builder, __construct)
 
 	if (ce == NULL) {
 		php_error(E_WARNING, "Didn't find %s class", classname);
-		php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
 	}
 
 	zend_class_entry *base_ce = php_midgard_get_baseclass_ptr(ce);
@@ -57,17 +57,17 @@ static PHP_METHOD(midgard_query_builder, __construct)
 
 	if (!g_type_is_a(classtype, MIDGARD_TYPE_DBOBJECT)) {
 		php_error(E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
-		php_midgard_error_exception_force_throw(mgd_handle(), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
 		return;
 	}
 
 	gobject = __php_gobject_ptr(zval_object);
 
 	if (!gobject) {
-		MidgardQueryBuilder *builder = midgard_query_builder_new(mgd_handle(), base_ce->name);
+		MidgardQueryBuilder *builder = midgard_query_builder_new(mgd_handle(TSRMLS_C), base_ce->name);
 
 		if (!builder) {
-			php_midgard_error_exception_throw(mgd_handle());
+			php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
 			return;
 		}
 
