@@ -21,33 +21,6 @@
 
 static zend_class_entry *php_midgard_replicator_class;
 
-static PHP_METHOD(midgard_replicator, serialize)
-{
-	RETVAL_FALSE;
-	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
-	CHECK_MGD(mgd);
-
-	gchar *xml;
-	zval *zobject;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zobject) == FAILURE) 
-		return;
-
-	GObject *object = __php_gobject_ptr(zobject);
-	xml = midgard_replicator_serialize(object);
-
-	if (xml == NULL)
-		RETURN_NULL();
-
-	RETVAL_STRING(xml, 1);
-
-	g_free(xml);
-}
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_serialize, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, object, midgard_dbobject, 0)
-ZEND_END_ARG_INFO()
-
 static PHP_METHOD(midgard_replicator, export)
 {
 	RETVAL_FALSE;
@@ -134,6 +107,33 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_export_purged, 0, 0, 1)
 	ZEND_ARG_INFO(0, enddate)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_replicator, serialize)
+{
+	RETVAL_FALSE;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	gchar *xml;
+	zval *zobject;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zobject) == FAILURE) 
+		return;
+
+	GObject *object = __php_gobject_ptr(zobject);
+	xml = midgard_replicator_serialize(object);
+
+	if (xml == NULL)
+		RETURN_NULL();
+
+	RETVAL_STRING(xml, 1);
+
+	g_free(xml);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_serialize, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, object, midgard_dbobject, 0)
+ZEND_END_ARG_INFO()
+
 static PHP_METHOD(midgard_replicator, serialize_blob)
 {
 	RETVAL_FALSE;
@@ -142,7 +142,9 @@ static PHP_METHOD(midgard_replicator, serialize_blob)
 
 	zval *zobject;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zobject) == FAILURE)
+	zend_class_entry *midgard_attachment_ce = zend_fetch_class("midgard_attachment", strlen("midgard_attachment"), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &zobject, midgard_attachment_ce) == FAILURE)
 		return;
 
 	gchar *xml = midgard_replicator_serialize_blob(__midgard_object_get_ptr(zobject));
@@ -251,10 +253,10 @@ ZEND_END_ARG_INFO()
 PHP_MINIT_FUNCTION(midgard2_replicator)
 {
 	static function_entry replicator_methods[] = {
-		PHP_ME(midgard_replicator, serialize,       arginfo_midgard_replicator_serialize,       ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_replicator, export,          arginfo_midgard_replicator_export,          ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_replicator, export_by_guid,  arginfo_midgard_replicator_export_by_guid,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_replicator, export_purged,   arginfo_midgard_replicator_export_purged,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_replicator, serialize,       arginfo_midgard_replicator_serialize,       ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_replicator, serialize_blob,  arginfo_midgard_replicator_serialize_blob,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_replicator, unserialize,     arginfo_midgard_replicator_unserialize,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_replicator, import_object,   arginfo_midgard_replicator_import_object,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
