@@ -1,6 +1,8 @@
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
 
+#include "php_midgard_timestamp.h"
+
 gboolean php_midgard_is_property_timestamp(MidgardDBObjectClass *klass, const gchar *property)
 {
 	g_assert(klass != NULL);
