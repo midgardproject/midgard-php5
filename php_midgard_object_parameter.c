@@ -24,7 +24,9 @@
 PHP_FUNCTION(_php_midgard_object_list_parameters)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *domain = NULL;
 	int domain_length;
 
@@ -46,7 +48,8 @@ PHP_FUNCTION(_php_midgard_object_list_parameters)
 PHP_FUNCTION(php_midgard_object_has_parameters)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -60,7 +63,9 @@ PHP_FUNCTION(php_midgard_object_has_parameters)
 PHP_FUNCTION(_php_midgard_object_delete_parameters)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &params) != SUCCESS) {
@@ -80,7 +85,9 @@ PHP_FUNCTION(_php_midgard_object_delete_parameters)
 PHP_FUNCTION(_php_midgard_object_purge_parameters)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &params) != SUCCESS) {
@@ -100,7 +107,9 @@ PHP_FUNCTION(_php_midgard_object_purge_parameters)
 PHP_FUNCTION(_php_midgard_object_find_parameters)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 	MidgardObject **objects = NULL;
 
@@ -126,7 +135,9 @@ PHP_FUNCTION(_php_midgard_object_find_parameters)
 PHP_FUNCTION(_php_midgard_object_get_parameter)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *domain, *name;
 	int domain_length, name_length;
 	const GValue *gvalue;
@@ -147,7 +158,9 @@ PHP_FUNCTION(_php_midgard_object_get_parameter)
 PHP_FUNCTION(_php_midgard_object_set_parameter)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *domain, *name, *strval;
 	int domain_length, name_length, strval_length;
 	zend_bool zbool = FALSE;
@@ -177,7 +190,9 @@ PHP_FUNCTION(_php_midgard_object_set_parameter)
 PHP_FUNCTION(_php_midgard_object_parameter)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *domain, *name, *strval = NULL;
 	int domain_length, name_length, strval_length;
 	int _args = ZEND_NUM_ARGS();

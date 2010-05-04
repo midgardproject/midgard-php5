@@ -43,7 +43,9 @@ zend_class_entry *php_midgard_view_class = NULL;
 static PHP_FUNCTION(php_midgard_view_constructor)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zval_object = getThis();
 	GObject *gobject;
 
@@ -56,7 +58,7 @@ static PHP_FUNCTION(php_midgard_view_constructor)
 		MidgardView *view = g_object_new(g_type_from_name(Z_OBJCE_P(zval_object)->name), NULL);
 
 		if (!view) {
-			php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+			php_midgard_error_exception_throw(mgd TSRMLS_CC);
 			return;
 		}
 

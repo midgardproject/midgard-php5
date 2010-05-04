@@ -31,7 +31,9 @@ zend_class_entry *php_midgard_user_class;
 static PHP_METHOD(midgard_user, __construct)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zval_object = getThis();
 	GObject *gobject;
 
@@ -47,12 +49,12 @@ static PHP_METHOD(midgard_user, __construct)
 
 		guint n_params = 0;
 		GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-		MidgardUser *user = midgard_user_new(mgd_handle(TSRMLS_C), n_params, parameters);
+		MidgardUser *user = midgard_user_new(mgd, n_params, parameters);
 	
 		PHP_MGD_FREE_GPARAMETERS(parameters, n_params);	
 
 		if (!user) {
-			php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+			php_midgard_error_exception_throw(mgd TSRMLS_CC);
 			return;
 		}
 
@@ -71,7 +73,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, set_person)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zobject;
 	zend_bool rv = FALSE;
 	
@@ -90,7 +94,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, get_person)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	zend_class_entry *person_ce =
 		php_midgard_get_mgdschema_class_ptr_by_name("midgard_person");
@@ -119,7 +124,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, is_user)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -134,7 +140,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, is_admin)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -149,7 +156,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, get)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &params) != SUCCESS) 
@@ -157,7 +166,7 @@ static PHP_METHOD(midgard_user, get)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MidgardUser *user = midgard_user_get(mgd_handle(TSRMLS_C), n_params, parameters);
+	MidgardUser *user = midgard_user_get(mgd, n_params, parameters);
 	
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
 
@@ -183,7 +192,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, query)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &params) != SUCCESS) 
@@ -191,7 +202,7 @@ static PHP_METHOD(midgard_user, query)
 
 	guint n_params = 0;
 	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
-	MidgardUser **users = midgard_user_query(mgd_handle(TSRMLS_C), n_params, parameters);
+	MidgardUser **users = midgard_user_query(mgd, n_params, parameters);
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
 
 	array_init(return_value);
@@ -221,7 +232,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, create)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -236,7 +248,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, update)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -251,7 +264,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, delete)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -266,7 +280,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, login)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -286,7 +301,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_user, logout)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;

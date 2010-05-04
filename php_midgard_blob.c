@@ -32,7 +32,9 @@ static zend_class_entry *php_midgard_blob_class;
 
 static PHP_METHOD(midgard_blob, __construct)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	MidgardBlob *blob = NULL;
 	zval *param_object = NULL;
 	zval *zval_object = getThis();
@@ -55,7 +57,7 @@ static PHP_METHOD(midgard_blob, __construct)
 	blob = midgard_blob_new(att, encoding);
 
 	if (!blob) {
-		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+		php_midgard_error_exception_throw(mgd TSRMLS_CC);
 		return;
 	}
 
@@ -70,7 +72,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_blob, read_content)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	gchar *content;
 	gsize bytes_read = 0;
 
@@ -82,7 +86,6 @@ static PHP_METHOD(midgard_blob, read_content)
 	content = midgard_blob_read_content(blob, &bytes_read);
 
 	if (content == NULL) {
-		MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 		php_error(E_WARNING, "Failed to get blob-contents: %s", mgd->errstr);
 		RETURN_NULL();
 	}
@@ -96,7 +99,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_blob, write_content)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *content;
 	int content_length;
 
@@ -117,7 +122,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_blob, remove_file)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -134,7 +140,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_blob, get_handler)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *mode = "w";
 	int mode_length = 1;
 
@@ -169,7 +177,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_blob, get_path)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -190,7 +199,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_blob, exists)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;

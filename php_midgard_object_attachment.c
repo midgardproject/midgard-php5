@@ -24,7 +24,8 @@
 PHP_FUNCTION(_php_midgard_object_list_attachments)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -43,7 +44,8 @@ PHP_FUNCTION(_php_midgard_object_list_attachments)
 PHP_FUNCTION(php_midgard_object_has_attachments)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -57,7 +59,9 @@ PHP_FUNCTION(php_midgard_object_has_attachments)
 PHP_FUNCTION(_php_midgard_object_delete_attachments)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &params) != SUCCESS) {
@@ -78,7 +82,9 @@ PHP_FUNCTION(_php_midgard_object_delete_attachments)
 PHP_FUNCTION(_php_midgard_object_purge_attachments)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 	zend_bool zbool = TRUE;
 
@@ -100,7 +106,9 @@ PHP_FUNCTION(_php_midgard_object_purge_attachments)
 PHP_FUNCTION(_php_midgard_object_find_attachments)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *params = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a", &params) != SUCCESS) {
@@ -126,7 +134,9 @@ PHP_FUNCTION(_php_midgard_object_find_attachments)
 PHP_FUNCTION(_php_midgard_object_create_attachment)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	const char *name = NULL, *title = NULL, *mimetype = NULL;
 	int name_length, title_length, mimetype_length;
 
@@ -157,7 +167,9 @@ PHP_FUNCTION(_php_midgard_object_create_attachment)
 PHP_FUNCTION(_php_midgard_object_serve_attachment)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	const char *guid;
 	int guid_length;
 
@@ -176,7 +188,7 @@ PHP_FUNCTION(_php_midgard_object_serve_attachment)
 		GValue gval = {0, };
 		g_value_init(&gval, G_TYPE_STRING);
 		g_value_set_string(&gval, guid);
-		att = midgard_object_new(mgd_handle(TSRMLS_C), "midgard_attachment", &gval);
+		att = midgard_object_new(mgd, "midgard_attachment", &gval);
 	}
 
 	/* error is set by core */
@@ -206,7 +218,7 @@ PHP_FUNCTION(_php_midgard_object_serve_attachment)
 	FILE *fp;
 	if (!(fp = fopen(path, "r"))) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File doesn't exist");
-		MIDGARD_ERRNO_SET(mgd_handle(TSRMLS_C), MGD_ERR_INTERNAL);
+		MIDGARD_ERRNO_SET(mgd, MGD_ERR_INTERNAL);
 		return;
 	}
 

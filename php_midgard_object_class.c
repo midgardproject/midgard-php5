@@ -21,7 +21,8 @@ static zend_class_entry *php_midgard_object_class_class;
 
 static PHP_METHOD(midgard_object_class, factory)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *class_name;
 	int class_name_length;
@@ -56,7 +57,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_object_class, get_object_by_guid)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *guid;
 	int guid_length;
@@ -65,10 +67,10 @@ static PHP_METHOD(midgard_object_class, get_object_by_guid)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length) == FAILURE)
 		return;
 
-	MidgardObject *object = midgard_schema_object_factory_get_object_by_guid(mgd_handle(TSRMLS_C), guid);
+	MidgardObject *object = midgard_schema_object_factory_get_object_by_guid(mgd, guid);
 
 	if (!object) {
-		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+		php_midgard_error_exception_throw(mgd TSRMLS_CC);
 		return;
 	}
 
@@ -91,7 +93,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_object_class, get_property_up)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zvalue;
 	MidgardObjectClass *klass = NULL;
 
@@ -131,7 +135,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_object_class, get_property_parent)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zvalue;
 	MidgardObjectClass *klass = NULL;
 
@@ -171,7 +177,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_object_class, undelete)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *guid;
 	int guid_length;
@@ -181,7 +188,7 @@ static PHP_METHOD(midgard_object_class, undelete)
 		return;
 	}
 
-	rv = midgard_schema_object_factory_object_undelete(mgd_handle(TSRMLS_C), (const gchar *)guid);
+	rv = midgard_schema_object_factory_object_undelete(mgd, (const gchar *)guid);
 	RETURN_BOOL(rv);
 }
 
@@ -191,7 +198,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_object_class, connect_default)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
@@ -204,7 +213,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_object_class, has_metadata)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zvalue;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zvalue) == FAILURE) {
@@ -239,7 +250,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_object_class, get_schema_value)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zvalue;
 	char *name;
 	int name_length;

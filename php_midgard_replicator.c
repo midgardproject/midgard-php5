@@ -24,7 +24,8 @@ static zend_class_entry *php_midgard_replicator_class;
 static PHP_METHOD(midgard_replicator, serialize)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	gchar *xml;
 	zval *zobject;
@@ -50,7 +51,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_replicator, export)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	zval *zobject;
 
@@ -68,7 +70,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_replicator, export_by_guid)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *guid;
 	int guid_length;
@@ -76,7 +79,7 @@ static PHP_METHOD(midgard_replicator, export_by_guid)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &guid, &guid_length) == FAILURE) 
 		return;
 
-	gboolean rv = midgard_replicator_export_by_guid(mgd_handle(TSRMLS_C), (const gchar *) guid);
+	gboolean rv = midgard_replicator_export_by_guid(mgd, (const gchar *) guid);
 	RETURN_BOOL(rv);
 }
 
@@ -87,7 +90,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_replicator, export_purged)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *startdate = NULL, *enddate = NULL;
 	int start_length, end_length;
@@ -115,7 +119,7 @@ static PHP_METHOD(midgard_replicator, export_purged)
 		return;
 	}
 
-	char *xml = midgard_replicator_export_purged(mgd_handle(TSRMLS_C), classname, startdate, enddate);
+	char *xml = midgard_replicator_export_purged(mgd, classname, startdate, enddate);
 
 	if (xml == NULL)
 		RETURN_NULL();
@@ -133,7 +137,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_replicator, serialize_blob)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	zval *zobject;
 
@@ -156,7 +161,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_replicator, unserialize)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *xml = NULL;
 	int xml_length;
@@ -167,7 +173,7 @@ static PHP_METHOD(midgard_replicator, unserialize)
 
 	array_init(return_value);
 
-	GObject **objects = midgard_replicator_unserialize(mgd_handle(TSRMLS_C), (const gchar *)xml, (gboolean)zbool);
+	GObject **objects = midgard_replicator_unserialize(mgd, (const gchar *)xml, (gboolean)zbool);
 
 	if (!objects)
 		RETURN_FALSE;
@@ -202,7 +208,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_replicator, import_object)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	zval *zobject;
 	zend_bool zbool = FALSE;
@@ -223,7 +230,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_replicator, import_from_xml)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *xml = NULL;
 	int xml_length;
@@ -232,7 +240,7 @@ static PHP_METHOD(midgard_replicator, import_from_xml)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &xml, &xml_length, &zbool) == FAILURE)
 		return;
 
-	midgard_replicator_import_from_xml(mgd_handle(TSRMLS_C), (const gchar *)xml, zbool);
+	midgard_replicator_import_from_xml(mgd, (const gchar *)xml, zbool);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_import_from_xml, 0, 0, 1)

@@ -32,7 +32,9 @@ zend_class_entry *php_midgard_collector_class;
 static PHP_METHOD(midgard_collector, __construct)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zval *zval_object = getThis();
 	GObject *gobject;
 
@@ -52,7 +54,7 @@ static PHP_METHOD(midgard_collector, __construct)
 
 	if (ce == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Didn't find %s class", classname);
-		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd, MGD_ERR_INVALID_OBJECT TSRMLS_CC);
 	}
 
 	zend_class_entry *base_ce = php_midgard_get_baseclass_ptr(ce);
@@ -60,7 +62,7 @@ static PHP_METHOD(midgard_collector, __construct)
 
 	if (!g_type_is_a(classtype, MIDGARD_TYPE_DBOBJECT)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
-		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd, MGD_ERR_INVALID_OBJECT TSRMLS_CC);
 		return;
 	}
 
@@ -69,7 +71,6 @@ static PHP_METHOD(midgard_collector, __construct)
 	if (!gobject) {
 		GValue *gvalue = php_midgard_zval2gvalue(value);
 
-		MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 		MidgardCollector *object = midgard_collector_new(mgd, base_ce->name, propname, gvalue);
 
 		if (!object)
@@ -95,7 +96,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, set_key_property)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *propname;
 	int propname_length;
 	zval *zvalue;
@@ -121,7 +124,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, add_value_property)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *propname;
 	int propname_length;
 
@@ -139,7 +144,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_collector, set)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_TRUE;
 	char *key, *subkey;
 	int key_length, subkey_length;
@@ -189,7 +196,9 @@ static void __colector_update_zend_hash(GQuark key_id, gpointer data, gpointer u
 static PHP_METHOD(midgard_collector, get)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *key;
 	int key_length;
 
@@ -214,7 +223,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, get_subkey)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	const char *key, *subkey;
 	int key_length, subkey_length;
 
@@ -244,7 +255,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, remove_key)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	const char *key;
 	int key_length;
 
@@ -262,7 +275,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_collector, merge)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 	zval *zobject;
 	zend_bool zbool = FALSE;
@@ -285,7 +300,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, list_keys)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -315,7 +332,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, add_constraint)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *name, *op;
 	int name_length, op_length;
 	zval *value;
@@ -349,7 +368,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_collector, begin_group)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 	char *type;
 	int type_length;
@@ -369,7 +390,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, end_group)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -382,7 +405,9 @@ static PHP_METHOD(midgard_collector, end_group)
 static PHP_METHOD(midgard_collector, add_order)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	const char *field, *order = "ASC";
 	int field_length, order_length;
 
@@ -402,7 +427,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, set_offset)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	long offset;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &offset) != SUCCESS)
@@ -429,7 +456,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, set_limit)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	long limit;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &limit) != SUCCESS)
@@ -455,7 +484,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_collector, execute)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;

@@ -10,8 +10,13 @@ midgard.memory_debug = Off
 MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
-$obj = new atype();
+try {
+    $obj = new atype();
+} catch (midgard_error_exception $e) {
+    echo $e->getMessage()."\n";
+}
 ?>
 ===DONE===
 --EXPECTF--
-Fatal error: Can not find MidgardConnection in %s/004-work_without_connection.php on line %d
+Failed to get connection
+===DONE===

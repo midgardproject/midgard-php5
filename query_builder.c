@@ -35,7 +35,9 @@ zend_class_entry *php_midgard_query_builder_class;
 /* Object constructor */
 static PHP_METHOD(midgard_query_builder, __construct)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *classname;
 	long classname_length;
 	zval *zval_object = getThis();
@@ -49,7 +51,7 @@ static PHP_METHOD(midgard_query_builder, __construct)
 
 	if (ce == NULL) {
 		php_error(E_WARNING, "Didn't find %s class", classname);
-		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd, MGD_ERR_INVALID_OBJECT TSRMLS_CC);
 	}
 
 	zend_class_entry *base_ce = php_midgard_get_baseclass_ptr(ce);
@@ -57,17 +59,17 @@ static PHP_METHOD(midgard_query_builder, __construct)
 
 	if (!g_type_is_a(classtype, MIDGARD_TYPE_DBOBJECT)) {
 		php_error(E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
-		php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
+		php_midgard_error_exception_force_throw(mgd, MGD_ERR_INVALID_OBJECT TSRMLS_CC);
 		return;
 	}
 
 	gobject = __php_gobject_ptr(zval_object);
 
 	if (!gobject) {
-		MidgardQueryBuilder *builder = midgard_query_builder_new(mgd_handle(TSRMLS_C), base_ce->name);
+		MidgardQueryBuilder *builder = midgard_query_builder_new(mgd, base_ce->name);
 
 		if (!builder) {
-			php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+			php_midgard_error_exception_throw(mgd TSRMLS_CC);
 			return;
 		}
 
@@ -89,7 +91,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, add_constraint)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *name, *op;
 	long name_length, op_length;
 	zval *value;
@@ -124,7 +128,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, add_constraint_with_property)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *name_a, *name_b, *op;
 	int name_a_length, name_b_length, op_length;
 	gboolean rv;
@@ -154,7 +160,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, begin_group)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *type = NULL;
 	int type_length;
 	gboolean rv;
@@ -177,7 +185,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, end_group)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	gboolean rv;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -196,7 +206,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, execute)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -242,7 +253,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, add_order)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *field, *order = "ASC";
 	int field_length, order_length;
 	gboolean rv;
@@ -266,7 +279,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, set_limit)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	long limit;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &limit) != SUCCESS) {
@@ -292,7 +307,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, set_offset)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	long offset;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &offset) != SUCCESS) {
@@ -316,7 +333,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_builder, include_deleted)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -335,7 +354,8 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_query_builder, count)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;

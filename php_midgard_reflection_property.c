@@ -36,7 +36,9 @@ zend_class_entry *php_midgard_reflection_property_class;
 static PHP_METHOD(midgard_reflection_property, __construct)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *php_classname = NULL;
 	int php_classname_length;
 	zend_class_entry *ce_base;
@@ -54,7 +56,7 @@ static PHP_METHOD(midgard_reflection_property, __construct)
 
 			if (!__isderived) {
 				php_error(E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
-				php_midgard_error_exception_force_throw(mgd_handle(TSRMLS_C), MGD_ERR_INVALID_OBJECT);
+				php_midgard_error_exception_force_throw(mgd, MGD_ERR_INVALID_OBJECT TSRMLS_CC);
 				return;
 			}
 		}
@@ -71,7 +73,7 @@ static PHP_METHOD(midgard_reflection_property, __construct)
 			midgard_reflection_property_new(MIDGARD_DBOBJECT_CLASS(klass));
 
 		if (!mrp) {
-			php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+			php_midgard_error_exception_throw(mgd TSRMLS_CC);
 			return;
 		}
 
@@ -90,7 +92,8 @@ static PHP_METHOD(midgard_reflection_property, get_midgard_type)
 	char *property_name;
 	int property_name_length;
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &property_name, &property_name_length) == FAILURE)
 		return;
@@ -109,7 +112,8 @@ static PHP_METHOD(midgard_reflection_property, is_link)
 	char *property_name;
 	int property_name_length;
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &property_name, &property_name_length) == FAILURE)
 		return;
@@ -128,7 +132,8 @@ static PHP_METHOD(midgard_reflection_property, get_link_name)
 	char *property_name;
 	int property_name_length;
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &property_name, &property_name_length) == FAILURE)
 		return;
@@ -150,7 +155,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_reflection_property, get_link_target)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *property_name;
 	int property_name_length;
 
@@ -177,7 +184,8 @@ static PHP_METHOD(midgard_reflection_property, description)
 	char *property_name;
 	int property_name_length;
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &property_name, &property_name_length) == FAILURE)
 		return;
@@ -202,7 +210,8 @@ static PHP_METHOD(midgard_reflection_property, get_user_value)
 	char *property_name, *name;
 	int property_name_length, name_length;
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",
 				&property_name, &property_name_length, &name, &name_length) == FAILURE)
@@ -228,7 +237,8 @@ static PHP_METHOD(midgard_reflection_property, is_private)
 	char *property_name;
 	int property_name_length;
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &property_name, &property_name_length) == FAILURE)
 		return;

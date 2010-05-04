@@ -38,7 +38,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_storage, create_class_storage)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	gchar *classname;
 	gint classname_length;
 
@@ -46,7 +48,7 @@ static PHP_METHOD(midgard_storage, create_class_storage)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_create(mgd_handle(TSRMLS_C), classname);
+	zend_bool rv = (zend_bool) midgard_storage_create(mgd, classname);
 	RETURN_BOOL(rv);
 }
 

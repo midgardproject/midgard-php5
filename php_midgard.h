@@ -45,6 +45,7 @@
 #include "php.h"
 #include "php_globals.h"
 #include <zend_interfaces.h>
+#include <Zend/zend_exceptions.h>
 #include "ext/standard/info.h"
 #include "ext/standard/php_var.h"
 #include "SAPI.h"
@@ -219,16 +220,18 @@ zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const char *name);
 zend_class_entry *php_midgard_get_class_ptr_by_name(const char *name);
 
 /* Exceptions */
-gboolean php_midgard_error_exception_throw(MidgardConnection *mgd);
-void php_midgard_error_exception_force_throw(MidgardConnection *mgd, gint errcode);
+gboolean php_midgard_error_exception_throw(MidgardConnection *mgd TSRMLS_DC);
+void php_midgard_error_exception_force_throw(MidgardConnection *mgd, gint errcode TSRMLS_DC);
 
 /* Logging */
 void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gchar *msg, gpointer userdata);
 
-#define CHECK_MGD \
+#define CHECK_MGD(handle) \
 { \
-	if (!mgd_handle(TSRMLS_C)) \
-		php_error(E_ERROR, "Can not find MidgardConnection"); \
+	if (!handle) { \
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to get connection"); \
+		return; \
+	} \
 	gchar *_check_cname_space = NULL; \
 	gchar *_check_class_name = get_active_class_name(&_check_cname_space TSRMLS_CC); \
 	g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, " %s%s%s(...)", \
@@ -237,8 +240,6 @@ void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gch
 
 
 /* RAGNAROEK COMPATIBLE*/
-
-#define php_midgard_error_throw_exception(___mgd) php_midgard_error_exception_throw(___mgd)
 
 extern zend_class_entry *php_midgard_connection_class;
 extern zend_class_entry *php_midgard_config_class;

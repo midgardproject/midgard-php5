@@ -31,13 +31,10 @@ static PHP_METHOD(midgard_dbus, __construct)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &path, &path_length, &use_session) == FAILURE)
 		return;
 
-	MidgardConnection *connection = mgd_handle(TSRMLS_C);
-	if (NULL == connection) {
-		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to get connection");
-		return;
-	}
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
-	MidgardDbus *mbus = midgard_dbus_new(connection, path, (gboolean)use_session);
+	MidgardDbus *mbus = midgard_dbus_new(mgd, path, (gboolean)use_session);
 	if (!mbus) {
 		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to init dbus subsystem");
 		return;
@@ -54,7 +51,9 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_dbus, send)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *path, *msg;
 	int path_length, msg_length;
 	zend_bool use_session = FALSE;
@@ -62,7 +61,7 @@ static PHP_METHOD(midgard_dbus, send)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|b", &path, &path_length, &msg, &msg_length, &use_session) == FAILURE)
 		return;
 
-	midgard_dbus_send(mgd_handle(TSRMLS_C), path, msg, (gboolean)use_session);
+	midgard_dbus_send(mgd, path, msg, (gboolean)use_session);
 
 	return;
 }

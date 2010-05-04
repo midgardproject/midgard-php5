@@ -223,12 +223,12 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_connection, get_error)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
 	long err_code = midgard_connection_get_error(mgd);
 	RETURN_LONG(err_code);
 }
@@ -238,7 +238,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_connection, set_error)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
 	long errcode;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &errcode) == FAILURE)
@@ -249,7 +250,6 @@ static PHP_METHOD(midgard_connection, set_error)
 		return;
 	}
 
-	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
 	midgard_connection_set_error(mgd, errcode);
 }
 
@@ -279,12 +279,11 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_connection, get_user)
 {
 	RETVAL_NULL();
-	CHECK_MGD;
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
-
-	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
 
 	MidgardUser *user = midgard_connection_get_user(mgd);
 
@@ -304,15 +303,15 @@ ZEND_END_ARG_INFO()
 static PHP_METHOD(midgard_connection, set_loglevel)
 {
 	RETVAL_NULL();
-	CHECK_MGD;
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+
 	char *level;
 	int level_length;
 	zval *callback;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &level, &level_length, &callback) == FAILURE)
 		return;
-
-	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
 
 	/* no support for callback atm */
 	gboolean rv = midgard_connection_set_loglevel(mgd, (gchar *)level, php_midgard_log_errors);
@@ -332,7 +331,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_connection, connect)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+
 	php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
@@ -344,27 +345,26 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD (midgard_connection, list_auth_types)
 {
-        CHECK_MGD;
-        array_init (return_value);
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+	array_init (return_value);
 
-        if (zend_parse_parameters_none () == FAILURE)
-	                return;
+	if (zend_parse_parameters_none () == FAILURE)
+		return;
 
-        guint n_types;
-        MidgardConnection *mgd =__midgard_connection_get_ptr (getThis());
-        gchar **auth_types = midgard_connection_list_auth_types (mgd, &n_types);
+	guint n_types;
+	gchar **auth_types = midgard_connection_list_auth_types(mgd, &n_types);
 
-        if (!auth_types)
-	                return;
+	if (!auth_types)
+		return;
 
-        guint i;
+	guint i;
 
-        for (i = 0; i < n_types; i++) {
-		
-		add_next_index_string (return_value, auth_types[i], 1);
+	for (i = 0; i < n_types; i++) {
+		add_next_index_string(return_value, auth_types[i], 1);
 	}
 
-        g_free (auth_types);
+	g_free(auth_types);
 }
 
 ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_list_auth_types, 0)

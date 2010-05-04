@@ -62,6 +62,7 @@ php_stream * php_midgard2stream_opener(php_stream_wrapper *wrapper, char *filena
 
 	const char *path = filename + (strlen(PHP_MIDGARD2_WRAPPER) + 3);
 
+	// TODO: piotras says, that "MidgardQuerySelect in read only mode" can be used for speedup
 	php_midgard2stream_data *data = emalloc(sizeof(php_midgard2stream_data));
 	data->obj = midgard_schema_object_factory_get_object_by_path(mgd_handle(TSRMLS_C), "midgard_snippet", path);
 	data->position = 0;

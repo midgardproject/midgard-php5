@@ -63,17 +63,16 @@ function_entry midgard2_functions[] = {
 	{NULL, NULL, NULL}  /* Must be the last line in midgard2_functions[] */
 };
 
-void php_midgard_error_exception_force_throw(MidgardConnection *mgd, gint errcode)
+void php_midgard_error_exception_force_throw(MidgardConnection *mgd, gint errcode TSRMLS_DC)
 {
 	midgard_connection_set_error(mgd, errcode);
-	php_midgard_error_exception_throw(mgd);
+	php_midgard_error_exception_throw(mgd TSRMLS_CC);
 
 	return;
 }
 
-gboolean php_midgard_error_throw_exception(MidgardConnection *mgd)
+gboolean php_midgard_error_exception_throw(MidgardConnection *mgd TSRMLS_DC)
 {
-	TSRMLS_FETCH();
 	if (mgd->errnum != MGD_ERR_OK) {
 		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, mgd->errstr);
 		return TRUE;

@@ -54,7 +54,7 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php
 			}
 		} else {
 			php_error(E_WARNING, "Wrong id-type for '%s' constructor", php_classname);
-			php_midgard_error_exception_throw(mgd);
+			php_midgard_error_exception_throw(mgd TSRMLS_CC);
 			return FALSE;
 		}
 
@@ -65,7 +65,7 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php
 	}
 
 	if (!gobject) {
-		php_midgard_error_exception_throw(mgd);
+		php_midgard_error_exception_throw(mgd TSRMLS_CC);
 		return FALSE;
 	}
 
@@ -77,7 +77,6 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php
 /* Object constructor */
 PHP_FUNCTION(_midgard_php_object_constructor)
 {
-	CHECK_MGD;
 	RETVAL_FALSE;
 	zval *zval_object = getThis();
 	zend_class_entry *zce = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(zval_object));
@@ -87,6 +86,9 @@ PHP_FUNCTION(_midgard_php_object_constructor)
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("[%p] %s::__construct() \n", zval_object, zend_classname);
 	}
+
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	gobject = __php_gobject_ptr(zval_object);
 
@@ -118,7 +120,9 @@ PHP_FUNCTION(_midgard_php_object_constructor)
 
 PHP_FUNCTION(_midgard_php_object_create)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -136,7 +140,9 @@ PHP_FUNCTION(_midgard_php_object_create)
 PHP_FUNCTION(_midgard_php_object_update)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -153,7 +159,9 @@ PHP_FUNCTION(_midgard_php_object_update)
 PHP_FUNCTION(_midgard_php_object_get_by_id)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	long id;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &id) == FAILURE)
@@ -162,7 +170,7 @@ PHP_FUNCTION(_midgard_php_object_get_by_id)
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	if (!midgard_object_get_by_id(mobj, id)) {
-		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+		php_midgard_error_exception_throw(mgd TSRMLS_CC);
 		return;
 	}
 
@@ -173,7 +181,9 @@ PHP_FUNCTION(_midgard_php_object_get_by_id)
 PHP_FUNCTION(_midgard_php_object_get_by_guid)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *guid;
 	int glen;
 
@@ -184,7 +194,7 @@ PHP_FUNCTION(_midgard_php_object_get_by_guid)
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	if (!midgard_object_get_by_guid(mobj, guid)) {
-		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+		php_midgard_error_exception_throw(mgd TSRMLS_CC);
 		return;
 	}
 
@@ -195,7 +205,9 @@ PHP_FUNCTION(_midgard_php_object_get_by_guid)
 PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	long rootid, id;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &rootid, &id) == FAILURE)
@@ -207,8 +219,6 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 		RETURN_TRUE;
 
 	zend_class_entry *zce = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(getThis()));
-
-	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	const char *php_classname = zce->name;
 
 	MidgardObject *leaf_obj = NULL, *root_obj = NULL;
@@ -253,7 +263,9 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 PHP_FUNCTION(_midgard_php_object_is_in_tree)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	long rootid, id;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &rootid, &id) == FAILURE)
@@ -261,7 +273,6 @@ PHP_FUNCTION(_midgard_php_object_is_in_tree)
 
 	zend_class_entry *zce = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(getThis()));
 
-	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	const char *php_classname = zce->name;
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
 
@@ -305,7 +316,9 @@ PHP_FUNCTION(_midgard_php_object_is_in_tree)
 PHP_FUNCTION(_midgard_php_object_delete)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zend_bool check_dependencies = TRUE;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &check_dependencies) == FAILURE)
@@ -323,7 +336,9 @@ PHP_FUNCTION(_midgard_php_object_delete)
 PHP_FUNCTION(_midgard_php_object_get_parent)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -344,7 +359,9 @@ PHP_FUNCTION(_midgard_php_object_get_parent)
 PHP_FUNCTION(_midgard_php_object_list)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -376,7 +393,9 @@ PHP_FUNCTION(_midgard_php_object_list)
 PHP_FUNCTION(_midgard_php_object_list_children)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *childcname;
 	int ccnl;
 
@@ -410,7 +429,8 @@ PHP_FUNCTION(_midgard_php_object_list_children)
 PHP_FUNCTION(php_midgard_object_has_dependents)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -422,7 +442,9 @@ PHP_FUNCTION(php_midgard_object_has_dependents)
 PHP_FUNCTION(_midgard_php_object_get_by_path)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *path;
 	int pathl;
 
@@ -437,7 +459,8 @@ PHP_FUNCTION(_midgard_php_object_get_by_path)
 PHP_FUNCTION(_midgard_php_object_parent)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -452,7 +475,9 @@ PHP_FUNCTION(_midgard_php_object_parent)
 PHP_FUNCTION(_php_midgard_object_purge)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	zend_bool check_dependencies = TRUE;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &check_dependencies) == FAILURE)
@@ -470,7 +495,9 @@ PHP_FUNCTION(_php_midgard_object_purge)
 PHP_FUNCTION(_php_midgard_object_undelete)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	char *guid;
 	int guid_length;
 
@@ -478,23 +505,26 @@ PHP_FUNCTION(_php_midgard_object_undelete)
 		return;
 	}
 
-	RETURN_BOOL(midgard_schema_object_factory_object_undelete(mgd_handle(TSRMLS_C), (const gchar *)guid));
+	RETURN_BOOL(midgard_schema_object_factory_object_undelete(mgd, (const gchar *)guid));
 }
 
 PHP_FUNCTION(_php_midgard_object_connect)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 // static
 PHP_FUNCTION(_php_midgard_new_query_builder)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *_class_name = get_active_class_name(NULL TSRMLS_CC);
 
-	MidgardQueryBuilder *builder = midgard_query_builder_new(mgd_handle(TSRMLS_C), (gchar *)_class_name);
+	MidgardQueryBuilder *builder = midgard_query_builder_new(mgd, (gchar *)_class_name);
 
 	if (!builder)
 		return;
@@ -517,7 +547,8 @@ PHP_FUNCTION(_php_midgard_new_query_builder)
 
 PHP_FUNCTION(_php_midgard_new_collector)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	zval *propname;
 	zval *zvalue;
@@ -544,7 +575,8 @@ PHP_FUNCTION(_php_midgard_new_collector)
 
 PHP_FUNCTION(_php_midgard_new_reflection_property)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *_class_name = get_active_class_name(NULL TSRMLS_CC);
 
@@ -565,7 +597,8 @@ PHP_FUNCTION(_php_midgard_new_reflection_property)
 
 PHP_FUNCTION(_php_midgard_object_set_guid)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *guid = NULL;
 	int guid_length;
@@ -580,7 +613,8 @@ PHP_FUNCTION(_php_midgard_object_set_guid)
 
 PHP_FUNCTION(_php_midgard_object_emit)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	char *signal_name = NULL;
 	int signal_name_length;
@@ -595,7 +629,9 @@ PHP_FUNCTION(_php_midgard_object_emit)
 
 PHP_FUNCTION(_php_midgard_object_approve)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -607,7 +643,9 @@ PHP_FUNCTION(_php_midgard_object_approve)
 
 PHP_FUNCTION(_php_midgard_object_is_approved)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -619,7 +657,9 @@ PHP_FUNCTION(_php_midgard_object_is_approved)
 
 PHP_FUNCTION(_php_midgard_object_unapprove)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -631,7 +671,9 @@ PHP_FUNCTION(_php_midgard_object_unapprove)
 
 PHP_FUNCTION(_php_midgard_object_lock)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -643,7 +685,9 @@ PHP_FUNCTION(_php_midgard_object_lock)
 
 PHP_FUNCTION(_php_midgard_object_is_locked)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -655,7 +699,9 @@ PHP_FUNCTION(_php_midgard_object_is_locked)
 
 PHP_FUNCTION(_php_midgard_object_unlock)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	RETVAL_FALSE;
 
 	if (zend_parse_parameters_none() == FAILURE)

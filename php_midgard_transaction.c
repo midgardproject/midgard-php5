@@ -36,18 +36,19 @@ static zend_class_entry *php_midgard_transaction_class;
 static PHP_METHOD(midgard_transaction, __construct)
 {
 	RETVAL_FALSE;
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	MidgardTransaction *trns;
 	zval *zval_object = getThis();
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	trns = midgard_transaction_new(mgd_handle(TSRMLS_C));
+	trns = midgard_transaction_new(mgd);
 
 	if (!trns) {
-
-		php_midgard_error_exception_throw(mgd_handle(TSRMLS_C));
+		php_midgard_error_exception_throw(mgd TSRMLS_CC);
 		return;
 	}
 
@@ -59,7 +60,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_transaction, begin)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	gboolean rv;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -76,7 +79,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_transaction, commit)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	gboolean rv;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -93,7 +98,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_transaction, rollback)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	gboolean rv;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -110,7 +117,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_transaction, get_status)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
 	gboolean rv;
 
 	if (zend_parse_parameters_none() == FAILURE)
@@ -127,7 +136,8 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_transaction, get_name)
 {
-	CHECK_MGD;
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
