@@ -69,12 +69,9 @@ static PHP_FUNCTION(php_midgard_view_constructor)
 }
 
 
-static void __register_view_php_classes(const gchar *class_name, zend_class_entry *parent)
+static void __register_view_php_classes(const gchar *class_name, zend_class_entry *parent TSRMLS_DC)
 {
 	zend_class_entry *mgdclass, *mgdclass_ptr;
-	// gint j;
-	// guint _am = 0;
-	TSRMLS_FETCH();
 
 	/* lcn is freed in zend_register_internal_class */
 	gchar *lcn = g_ascii_strdown(class_name, strlen(class_name));
@@ -135,7 +132,7 @@ PHP_MINIT_FUNCTION(midgard2_view)
 
 	for (i = 0; i < n_types; i++) {
 		const gchar *typename = g_type_name(all_types[i]);
-		__register_view_php_classes(typename, php_midgard_view_class);
+		__register_view_php_classes(typename, php_midgard_view_class TSRMLS_CC);
 	}
 
 	g_free(all_types);

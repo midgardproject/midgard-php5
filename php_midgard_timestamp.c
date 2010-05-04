@@ -88,16 +88,12 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_datetime_settimezone, 0, 0, 1)
 	ZEND_ARG_INFO(0, timezone)
 ZEND_END_ARG_INFO()
 
-static void _set_gobject_timestamp_property(zval *zobject)
+static void _set_gobject_timestamp_property(zval *zobject TSRMLS_DC)
 {
 	g_assert(zobject != NULL);
 
-	zval *_object;
-	zval *_propname;
-	TSRMLS_FETCH();
-
-	_object = zend_read_property(php_midgard_datetime_class, zobject, "object", sizeof("object")-1, 0 TSRMLS_CC);
-	_propname = zend_read_property(php_midgard_datetime_class, zobject, "property", sizeof("property")-1, 0 TSRMLS_CC);
+	zval *_object = zend_read_property(php_midgard_datetime_class, zobject, "object", sizeof("object")-1, 0 TSRMLS_CC);
+	zval *_propname = zend_read_property(php_midgard_datetime_class, zobject, "property", sizeof("property")-1, 0 TSRMLS_CC);
 
 	if (Z_TYPE_P(_object) == IS_STRING && Z_STRLEN_P(_object) == 0) {
 		return;
@@ -127,7 +123,6 @@ static void _set_gobject_timestamp_property(zval *zobject)
 
 	/* GObject is found, sets it property */
 	if (gobject) {
-
 		g_object_set(gobject, (const gchar *) Z_STRVAL_P(_propname), Z_STRVAL_P(_retval), NULL);
 	}
 
@@ -150,7 +145,7 @@ static PHP_METHOD(midgard_datetime, setDate)
 
 	zend_call_method_with_3_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "setdate", &retval, arg1, arg2, arg3);
 
-	_set_gobject_timestamp_property(this);
+	_set_gobject_timestamp_property(this TSRMLS_CC);
 
 	RETURN_ZVAL(retval, 1, 1);
 }
@@ -178,7 +173,7 @@ static PHP_METHOD(midgard_datetime, setTime)
 		zend_call_method_with_2_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "settime", &retval, arg1, arg2);
 	}
 
-	_set_gobject_timestamp_property(this);
+	_set_gobject_timestamp_property(this TSRMLS_CC);
 	RETURN_ZVAL(retval, 1, 1);
 }
 
@@ -205,7 +200,7 @@ static PHP_METHOD(midgard_datetime, setISODate)
 		zend_call_method_with_2_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "setisodate", &retval, arg1, arg2);
 	}
 
-	_set_gobject_timestamp_property(this);
+	_set_gobject_timestamp_property(this TSRMLS_CC);
 	RETURN_ZVAL(retval, 1, 1);
 }
 
@@ -228,7 +223,7 @@ static PHP_METHOD(midgard_datetime, modify)
 
 	zend_call_method_with_1_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "modify", &retval, arg1);
 
-	_set_gobject_timestamp_property(this);
+	_set_gobject_timestamp_property(this TSRMLS_CC);
 
 	RETURN_ZVAL(retval, 1, 1);
 }

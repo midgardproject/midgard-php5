@@ -42,18 +42,18 @@ extern zend_object_handlers php_midgard_gobject_handlers;
 zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC);
 
 /* Inititlize new php object for given GObject */
-void php_midgard_gobject_new_with_gobject(zval *zvalue, zend_class_entry *ce, GObject *gobject, gboolean dtor);
+void php_midgard_gobject_new_with_gobject(zval *zvalue, zend_class_entry *ce, GObject *gobject, gboolean dtor TSRMLS_DC);
 
 /* Initialize new php object by classname */
-void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *gobject, gboolean dtor);
+void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *gobject, gboolean dtor TSRMLS_DC);
 
 /* Get base class pointer */
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_mgdschema_class_ptr(zend_class_entry *ce);
-zend_class_entry *php_midgard_get_mgdschema_class_ptr_by_name(const char *name);
+zend_class_entry *php_midgard_get_mgdschema_class_ptr_by_name(const char *name TSRMLS_DC);
 
 /* Initialize all properties of G_TYPE_OBJECT type and add it to zend's objects store */
-void php_midgard_init_properties_objects(zval *zobject);
+void php_midgard_init_properties_objects(zval *zobject TSRMLS_DC);
 
 /* Routines */
 int __serialize_object_hook(zval *zobject,

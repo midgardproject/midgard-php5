@@ -26,9 +26,9 @@ extern zend_class_entry *zend_date_timezone_class_ptr;
 /* ROUTINES */
 gboolean php_midgard_is_property_timestamp(MidgardDBObjectClass *klass, const gchar *property);
 
-void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue);
+void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue TSRMLS_DC);
 
 zval *php_midgard_datetime_object_from_property(zval *object, const gchar *property);
-zval *php_midgard_datetime_get_timestamp(zval *object);
+zval *php_midgard_datetime_get_timestamp(zval *object TSRMLS_DC);
 
 #endif /* PHP_MIDGARD_TIMESTAMP_H */

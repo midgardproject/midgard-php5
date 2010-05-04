@@ -74,7 +74,7 @@ PHP_FUNCTION(_php_midgard_object_delete_parameters)
 
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 
 	zend_bool rv = (zend_bool) midgard_object_delete_parameters(mobj, n_params, parameters);
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
@@ -96,7 +96,7 @@ PHP_FUNCTION(_php_midgard_object_purge_parameters)
 
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 
 	zend_bool rv = (zend_bool) midgard_object_purge_parameters(mobj, n_params, parameters);
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
@@ -121,7 +121,7 @@ PHP_FUNCTION(_php_midgard_object_find_parameters)
 
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 
 	objects = midgard_object_find_parameters(mobj, n_params, parameters);
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
@@ -152,7 +152,7 @@ PHP_FUNCTION(_php_midgard_object_get_parameter)
 	if (gvalue == NULL)
 		RETURN_NULL();
 
-	php_midgard_gvalue2zval((GValue *)gvalue, return_value);
+	php_midgard_gvalue2zval((GValue *)gvalue, return_value TSRMLS_CC);
 }
 
 PHP_FUNCTION(_php_midgard_object_set_parameter)
@@ -214,7 +214,7 @@ PHP_FUNCTION(_php_midgard_object_parameter)
 				const GValue *gvalue = midgard_object_get_parameter(mobj, domain, name);
 
 				if (gvalue != NULL)
-					php_midgard_gvalue2zval((GValue *)gvalue, return_value);
+					php_midgard_gvalue2zval((GValue *)gvalue, return_value TSRMLS_CC);
 				else
 					RETURN_NULL();
 			}

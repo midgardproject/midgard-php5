@@ -157,16 +157,16 @@ PHP_FUNCTION(_php_midgard_object_connect);
 zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRMLS_DC);
 zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member TSRMLS_DC);
 void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC);
-void php_midgard_zendobject_register_properties (zval *zobject, GObject *gobject);
+// void php_midgard_zendobject_register_properties (zval *zobject, GObject *gobject);
 int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_DC);
 HashTable *php_midgard_zendobject_get_properties (zval *zobject TSRMLS_DC);
 
 void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, zval *zarray TSRMLS_DC);
 
-GValue *php_midgard_zval2gvalue(zval *zvalue);
-zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue);
+GValue *php_midgard_zval2gvalue(zval *zvalue TSRMLS_DC);
+zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC);
 
-GParameter *php_midgard_array_to_gparameter(zval *params, guint *n_params);
+GParameter *php_midgard_array_to_gparameter(zval *params, guint *n_params TSRMLS_DC);
 
 gboolean php_midgard_is_derived_from_class(const gchar *classname,
 		GType basetype, gboolean check_parent, zend_class_entry **base_class TSRMLS_DC);
@@ -182,14 +182,10 @@ gboolean php_midgard_is_derived_from_class(const gchar *classname,
 }
 
 /* closures */
-void php_midgard_object_connect_class_closures(GObject *object, zval *zobject);
+void php_midgard_object_connect_class_closures(GObject *object, zval *zobject TSRMLS_DC);
 void php_midgard_gobject_closure_hash_new();
 void php_midgard_gobject_closure_hash_reset();
 void php_midgard_gobject_closure_hash_free();
-
-zend_class_entry *midgard_php_register_internal_class(
-	const gchar *class_name, GType class_type, zend_class_entry ce,
-	function_entry *fe);
 
 /* Midgard core's classes */
 PHP_MINIT_FUNCTION(midgard2_urlwrapper);
@@ -216,8 +212,8 @@ PHP_MINIT_FUNCTION(midgard2_key_config_file);
 PHP_MINIT_FUNCTION(midgard2_reflection_workaround);
 
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
-zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const char *name);
-zend_class_entry *php_midgard_get_class_ptr_by_name(const char *name);
+zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const char *name TSRMLS_DC);
+zend_class_entry *php_midgard_get_class_ptr_by_name(const char *name TSRMLS_DC);
 
 /* Exceptions */
 gboolean php_midgard_error_exception_throw(MidgardConnection *mgd TSRMLS_DC);

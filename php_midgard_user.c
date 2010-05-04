@@ -48,7 +48,7 @@ static PHP_METHOD(midgard_user, __construct)
 		}
 
 		guint n_params = 0;
-		GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+		GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 		MidgardUser *user = midgard_user_new(mgd, n_params, parameters);
 	
 		PHP_MGD_FREE_GPARAMETERS(parameters, n_params);	
@@ -63,7 +63,7 @@ static PHP_METHOD(midgard_user, __construct)
 		// we already have gobject injected
 	}
 
-	php_midgard_init_properties_objects(zval_object);
+	php_midgard_init_properties_objects(zval_object TSRMLS_CC);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user___construct, 0, 1, 1)
@@ -97,8 +97,7 @@ static PHP_METHOD(midgard_user, get_person)
 	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	CHECK_MGD(mgd);
 
-	zend_class_entry *person_ce =
-		php_midgard_get_mgdschema_class_ptr_by_name("midgard_person");
+	zend_class_entry *person_ce = php_midgard_get_mgdschema_class_ptr_by_name("midgard_person" TSRMLS_CC);
 
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
@@ -161,11 +160,11 @@ static PHP_METHOD(midgard_user, get)
 
 	zval *params = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &params) != SUCCESS) 
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &params) != SUCCESS)
 		return;
 
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 	MidgardUser *user = midgard_user_get(mgd, n_params, parameters);
 	
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
@@ -197,11 +196,11 @@ static PHP_METHOD(midgard_user, query)
 
 	zval *params = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &params) != SUCCESS) 
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &params) != SUCCESS)
 		return;
 
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 	MidgardUser **users = midgard_user_query(mgd, n_params, parameters);
 	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
 

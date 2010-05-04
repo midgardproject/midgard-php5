@@ -19,7 +19,7 @@ gboolean php_midgard_is_property_timestamp(MidgardDBObjectClass *klass, const gc
 	return FALSE;
 }
 
-zval *php_midgard_datetime_get_timestamp(zval *object)
+zval *php_midgard_datetime_get_timestamp(zval *object TSRMLS_DC)
 {
 	/* Prepare DateTime::format argument */
 	zval *fmt;
@@ -28,13 +28,12 @@ zval *php_midgard_datetime_get_timestamp(zval *object)
 
 	/* Invoke Datetime::format */
 	zval *_retval;
-	TSRMLS_FETCH();
 	zend_call_method_with_1_params(&object, Z_OBJCE_P(object), NULL, "format", &_retval, fmt);
 
 	return _retval;
 }
 
-void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue)
+void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue TSRMLS_DC)
 {
 	g_assert(gval != NULL);
 	g_assert(zvalue != NULL);
@@ -44,7 +43,6 @@ void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue)
 	g_value_init(&str_val, G_TYPE_STRING);
 	g_value_transform(gval, &str_val);
 	const gchar *timestamp = g_value_get_string(&str_val);
-	TSRMLS_FETCH();
 
 	if (timestamp == NULL)
 		timestamp = g_strdup(MIDGARD_DEFAULT_DATETIME);
@@ -66,15 +64,12 @@ void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue)
 	return;
 }
 
-zval *php_midgard_datetime_object_from_property(zval *object, const gchar *property)
+zval *php_midgard_datetime_object_from_property(zval *object, const gchar *property TSRMLS_DC)
 {
 	g_assert(object != NULL);
 	g_assert(property != NULL);
 
-	const gchar *timestamp;
-	TSRMLS_FETCH();
-
-	GObject *gobject = G_OBJECT(__php_gobject_ptr(object));
+	GObject *gobject = __php_gobject_ptr(object);
 
 	if (gobject == NULL) {
 		php_error(E_ERROR, "Can not find underlying GObject for given %s zend object", Z_OBJCE_P(object)->name);
@@ -88,7 +83,7 @@ zval *php_midgard_datetime_object_from_property(zval *object, const gchar *prope
 	GValue str_val = {0, };
 	g_value_init(&str_val, G_TYPE_STRING);
 	g_value_transform(&tprop, &str_val);
-	timestamp = g_value_get_string(&str_val);
+	const gchar *timestamp = g_value_get_string(&str_val);
 
 	if (timestamp == NULL)
 		timestamp = g_strdup(MIDGARD_DEFAULT_DATETIME);

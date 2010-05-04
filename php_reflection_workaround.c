@@ -306,8 +306,8 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 {
 	__initialize_midgard_classes_hash ();
 
-	zend_reflection_function_class = php_midgard_get_class_ptr_by_name("reflectionmethod");
-	zend_reflection_class_class = php_midgard_get_class_ptr_by_name("reflectionclass");
+	zend_reflection_function_class = php_midgard_get_class_ptr_by_name("reflectionmethod" TSRMLS_CC);
+	zend_reflection_class_class = php_midgard_get_class_ptr_by_name("reflectionclass" TSRMLS_CC);
 
 	/* Extend ReflectionMethod */
 	static function_entry midgard_reflection_method_methods[] = {

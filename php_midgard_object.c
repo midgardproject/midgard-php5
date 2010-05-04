@@ -58,7 +58,7 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php
 			return FALSE;
 		}
 
-		GValue *value = php_midgard_zval2gvalue(objid);
+		GValue *value = php_midgard_zval2gvalue(objid TSRMLS_CC);
 		gobject = midgard_object_new(mgd, (const gchar *) g_classname, value);
 		g_value_unset(value);
 		g_free(value);
@@ -109,8 +109,8 @@ PHP_FUNCTION(_midgard_php_object_constructor)
 		// we already have gobject injected
 	}
 
-	php_midgard_init_properties_objects(zval_object);
-	php_midgard_object_connect_class_closures(G_OBJECT(gobject), zval_object);
+	php_midgard_init_properties_objects(zval_object TSRMLS_CC);
+	php_midgard_object_connect_class_closures(G_OBJECT(gobject), zval_object TSRMLS_CC);
 	g_signal_emit(gobject, MIDGARD_OBJECT_GET_CLASS(gobject)->signal_action_loaded_hook, 0);
 
 	if (MGDG(midgard_memory_debug)) {
@@ -411,7 +411,7 @@ PHP_FUNCTION(_midgard_php_object_list_children)
 	MidgardObject **objects = midgard_schema_object_tree_list_children_objects(mobj, childcname, &n_objects);
 
 	if (objects != NULL) {
-		zend_class_entry *ce = php_midgard_get_mgdschema_class_ptr_by_name(childcname);
+		zend_class_entry *ce = php_midgard_get_mgdschema_class_ptr_by_name(childcname TSRMLS_CC);
 
 		for (i = 0; i < n_objects; i++) {
 			zval *zobject = NULL;
@@ -1184,12 +1184,11 @@ int __unserialize_object_hook(zval **zobject, zend_class_entry *ce, const unsign
 }
 
 
-static void __register_php_classes(const gchar *class_name, zend_class_entry *parent)
+static void __register_php_classes(const gchar *class_name, zend_class_entry *parent TSRMLS_DC)
 {
 	zend_class_entry *mgdclass, *mgdclass_ptr;
 	gint j;
 	guint _am = 0;
-	TSRMLS_FETCH();
 
 	for (j = 0; __midgard_php_type_functions[j].fname; j++) {
 		_am++;
@@ -1282,7 +1281,7 @@ PHP_MINIT_FUNCTION(midgard2_object)
 	for (i = 0; i < n_types; i++) {
 		const gchar *typename = g_class_name_to_php_class_name(g_type_name(all_types[i]));
 
-		__register_php_classes(typename, php_midgard_object_class);
+		__register_php_classes(typename, php_midgard_object_class TSRMLS_CC);
 		__add_method_comments(typename);
 	}
 

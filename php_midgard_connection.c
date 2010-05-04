@@ -40,7 +40,7 @@ PHP_METHOD(midgard_connection, __construct)
 
 	if (MGDG(midgard_http)) {
 		/* trying to reuse saved connection */
-		mgd = php_midgard_handle_lookup(&MGDG(midgard_global_holder), MGDG(all_configs));
+		mgd = php_midgard_handle_lookup(&MGDG(midgard_global_holder), MGDG(all_configs) TSRMLS_CC);
 
 		if (mgd == NULL) {
 			/* @todo throw exception, instead */

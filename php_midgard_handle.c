@@ -18,9 +18,8 @@
 
 /* Get configuration name declared in vhost configuration.
    midgard.configuration = "midgard"; */
-static const gchar *__get_configuration_name()
+static const gchar *__get_configuration_name(TSRMLS_D)
 {
-	TSRMLS_FETCH();
 	const gchar *name = MGDG(midgard_configuration);
 
 	if (!name || *name == '\0')
@@ -31,9 +30,8 @@ static const gchar *__get_configuration_name()
 
 /* Get configuration file path. Shoul dbe declaored in vhost configuration
    midgard.configuration_file = "/home/user/config/midgard.conf" */
-static const gchar *__get_configuration_filepath()
+static const gchar *__get_configuration_filepath(TSRMLS_D)
 {
-	TSRMLS_FETCH();
 	const gchar *path = MGDG(midgard_configuration_file);
 
 	if (!path || *path == '\0')
@@ -78,9 +76,8 @@ void php_midgard_handle_holder_free(MgdGHolder **mgh)
 }
 
 /* Initialize per request copy. Early sets loghandler so we can log messages. */
-MidgardConnection *__handle_set(MidgardConnection *mgd)
+MidgardConnection *__handle_set(MidgardConnection *mgd TSRMLS_DC)
 {
-	TSRMLS_FETCH();
 	g_assert(mgd != NULL);
 
 	MidgardConnection *copy = midgard_connection_copy(mgd);
@@ -95,7 +92,7 @@ MidgardConnection *__handle_set(MidgardConnection *mgd)
 	return copy;
 }
 
-static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTable *global_cfgs, const gchar *config_name)
+static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTable *global_cfgs, const gchar *config_name TSRMLS_DC)
 {
 	if (global_cfgs == NULL)
 		return NULL;
@@ -115,7 +112,7 @@ static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTabl
 			return NULL;
 		}
 
-		mgd_copy = __handle_set(mgd);
+		mgd_copy = __handle_set(mgd TSRMLS_CC);
 		return mgd_copy;
 	}
 
@@ -133,7 +130,7 @@ static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTabl
 		return NULL;
 	}
 
-	mgd_copy = __handle_set(mgd);
+	mgd_copy = __handle_set(mgd TSRMLS_CC);
 
 	/* Insert connection in process' pool */
 	g_hash_table_insert(mgh->names, g_strdup(config_name), mgd);
@@ -141,7 +138,7 @@ static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTabl
 	return mgd_copy;
 }
 
-static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *config_path)
+static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *config_path TSRMLS_DC)
 {
 	/* This is per process connection handler */
 	MidgardConnection *mgd = NULL;
@@ -158,7 +155,7 @@ static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *c
 			return NULL;
 		}
 
-		mgd_copy = __handle_set(mgd);
+		mgd_copy = __handle_set(mgd TSRMLS_CC);
 		return mgd_copy;
 	}
 
@@ -175,7 +172,7 @@ static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *c
 		return NULL;
 	}
 
-	mgd_copy = __handle_set(mgd);
+	mgd_copy = __handle_set(mgd TSRMLS_CC);
 
 	/* Insert connection in process' pool */
 	g_hash_table_insert(mgh->files, g_strdup(config_path), mgd);
@@ -183,15 +180,15 @@ static MidgardConnection *__handle_from_filepath(MgdGHolder *mgh, const gchar *c
 	return mgd_copy;
 }
 
-MidgardConnection *php_midgard_handle_lookup(MgdGHolder **mgh, GHashTable *global_cfgs)
+MidgardConnection *php_midgard_handle_lookup(MgdGHolder **mgh, GHashTable *global_cfgs TSRMLS_DC)
 {
 	if (*mgh == NULL)
 		php_midgard_handle_holder_init(mgh);
 
-	const gchar *config_path = __get_configuration_filepath();
+	const gchar *config_path = __get_configuration_filepath(TSRMLS_C);
 
 	if (config_path != NULL) {
-		MidgardConnection *handle = __handle_from_filepath(*mgh, config_path);
+		MidgardConnection *handle = __handle_from_filepath(*mgh, config_path TSRMLS_CC);
 
 		if (handle != NULL) {
 			return handle;
@@ -200,10 +197,10 @@ MidgardConnection *php_midgard_handle_lookup(MgdGHolder **mgh, GHashTable *globa
 		// handle is NULL. falling back to file-based search of config
 	}
 
-	const gchar *config_name = __get_configuration_name();
+	const gchar *config_name = __get_configuration_name(TSRMLS_C);
 
-	if (config_name != NULL)
-		return __handle_from_global_config(*mgh, global_cfgs, config_name);
+	if (config_name == NULL)
+		return NULL;
 
-	return NULL;
+	return __handle_from_global_config(*mgh, global_cfgs, config_name TSRMLS_CC);
 }

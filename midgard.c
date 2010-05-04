@@ -186,23 +186,19 @@ STD_PHP_INI_BOOLEAN("midgard.superglobals_compat", "0", PHP_INI_SYSTEM, OnUpdate
 // STD_PHP_INI_BOOLEAN("midgard.quota",        "0", PHP_INI_ALL,    OnUpdateBool, midgard_quota,        midgard2_globals *, midgard2_globals)
 PHP_INI_END()
 
-static zend_bool php_midgard_engine_is_enabled()
+static zend_bool php_midgard_engine_is_enabled(TSRMLS_D)
 {
-	TSRMLS_FETCH();
 	return MGDG(midgard_engine);
 }
 
-static zend_bool php_midgard_is_http_env()
+static zend_bool php_midgard_is_http_env(TSRMLS_D)
 {
-	TSRMLS_FETCH();
 	return MGDG(midgard_http);
 }
 
 /* populates global hash with "file => MidgardConfig" pairs. called from MINIT */
-static zend_bool php_midgard_initialize_configs()
+static zend_bool php_midgard_initialize_configs(TSRMLS_D)
 {
-	TSRMLS_FETCH();
-
 	if (MGDG(all_configs) != NULL)
 		return TRUE;
 
@@ -379,8 +375,8 @@ PHP_MINIT_FUNCTION(midgard2)
 	}
 
 	/* midgard.http is on so we populate list of all available configs */
-	if (php_midgard_is_http_env()) {
-		if (!php_midgard_initialize_configs()) {
+	if (php_midgard_is_http_env(TSRMLS_C)) {
+		if (!php_midgard_initialize_configs(TSRMLS_C)) {
 			php_error(E_WARNING, "[Midgard2 minit] Failed to initialize configs");
 			return FAILURE;
 		}
@@ -457,14 +453,14 @@ PHP_MSHUTDOWN_FUNCTION(midgard2)
 
 PHP_RINIT_FUNCTION(midgard2)
 {
-	if (!php_midgard_engine_is_enabled())
+	if (!php_midgard_engine_is_enabled(TSRMLS_C))
 		return FAILURE;
 
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("RINIT\n");
 	}
 
-	if (php_midgard_is_http_env()) {
+	if (php_midgard_is_http_env(TSRMLS_C)) {
 		/* all_configs is set during MINIT */
 		if (MGDG(all_configs) == NULL) {
 			php_error(E_ERROR, "[Midgard2 rinit] Can not handle request without midgard connection");
@@ -599,43 +595,6 @@ MidgardConnection *mgd_handle(TSRMLS_D)
 	MidgardConnection *connection = __midgard_connection_get_ptr(instance);
 	zval_ptr_dtor(&instance);
 	return connection;
-}
-
-zend_class_entry *midgard_php_register_internal_class(const gchar *class_name, GType class_type,
-													  zend_class_entry ce, function_entry *fe)
-{
-	TSRMLS_FETCH();
-
-	g_assert(class_name != NULL);
-	g_assert(&ce != NULL);
-	g_assert(fe != NULL);
-
-	if (class_type == 0) {
-		php_error(E_ERROR, "'%s' class  is not registered in GType system!", class_name);
-		return NULL;
-	}
-
-	if (!G_TYPE_IS_DERIVED(class_type)) {
-		php_error(E_ERROR, "'%s' class doesn't have base-class in GType system!", class_name);
-		return NULL;
-	}
-
-	GType parent_type = g_type_parent(class_type);
-
-	if (parent_type <= 0) {
-		php_error(E_ERROR, "'%s' class has invalid base-class in GType system!", class_name);
-		return NULL;
-	}
-
-	gchar *parent_name = (gchar *) g_type_name(parent_type);
-	zend_class_entry *pce = php_midgard_get_class_ptr_by_name(parent_name);
-
-	if (NULL == pce) {
-		php_error(E_ERROR, "'%s' class's parent '%s' is not registered in php", class_name, parent_name);
-		return NULL;
-	}
-
-	return zend_register_internal_class_ex(&ce , pce, parent_name TSRMLS_CC);
 }
 
 ZEND_GET_MODULE(midgard2)

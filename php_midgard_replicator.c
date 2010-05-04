@@ -33,7 +33,7 @@ static PHP_METHOD(midgard_replicator, serialize)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zobject) == FAILURE) 
 		return;
 	
-	GObject *object = G_OBJECT(__php_gobject_ptr(zobject));
+	GObject *object = __php_gobject_ptr(zobject);
 	xml = midgard_replicator_serialize(object);
 
 	if (xml == NULL)

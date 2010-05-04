@@ -106,7 +106,7 @@ static PHP_METHOD(midgard_query_builder, add_constraint)
 
 	MidgardQueryBuilder *builder = MIDGARD_QUERY_BUILDER(__php_gobject_ptr(zval_object));
 
-	GValue *gvalue = php_midgard_zval2gvalue(value);
+	GValue *gvalue = php_midgard_zval2gvalue(value TSRMLS_CC);
 
 	if (gvalue == NULL)
 		RETURN_FALSE;

@@ -69,7 +69,7 @@ PHP_FUNCTION(_php_midgard_object_delete_attachments)
 	}
 
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	zend_bool rv = (zend_bool) midgard_object_delete_attachments(mobj, n_params, parameters);
@@ -93,7 +93,7 @@ PHP_FUNCTION(_php_midgard_object_purge_attachments)
 	}
 
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	zend_bool rv = (zend_bool) midgard_object_purge_attachments(mobj, (gboolean) zbool, n_params, parameters);
@@ -118,7 +118,7 @@ PHP_FUNCTION(_php_midgard_object_find_attachments)
 	array_init(return_value);
 
 	guint n_params = 0;
-	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params);
+	GParameter *parameters = php_midgard_array_to_gparameter(params, &n_params TSRMLS_CC);
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
 
 	MidgardObject **objects = midgard_object_find_attachments(mobj, n_params, parameters);

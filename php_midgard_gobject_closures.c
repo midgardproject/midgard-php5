@@ -85,9 +85,10 @@ static php_mgd_closure * __class_closure_lookup(GType class_type, guint signal_i
 	return pmc;
 }
 
-void __php_midgard_closure_free(gpointer data)
+static void __php_midgard_closure_free(gpointer data)
 {
 	TSRMLS_FETCH();
+
 	if (MGDG(midgard_memory_debug)) {
 		printf("[%p] __php_midgard_closure_free()\n", data);
 	}
@@ -151,8 +152,6 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 		gpointer marshal_data)
 {
 	php_mgd_closure *mgdclosure = (php_mgd_closure *) closure;
-
-	zval *params = NULL;
 	TSRMLS_FETCH();
 
 	if (MGDG(can_deliver_signals) == 0)
@@ -162,6 +161,7 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 		printf("[%p] php_midgard_closure_default_marshal(args = %p)\n", closure, mgdclosure->args);
 	}
 
+	zval *params = NULL;
 	MAKE_STD_ZVAL(params);
 	array_init(params);
 
@@ -222,8 +222,7 @@ GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_c
 	if (zobject == NULL || !g_type_from_name(Z_OBJCE_P(zobject)->name)) {
 		closure = g_closure_new_simple(sizeof(php_mgd_closure), NULL);
 	} else {
-		GObject *object = G_OBJECT(__php_gobject_ptr(zobject));
-		closure = g_closure_new_object(sizeof(php_mgd_closure), object);
+		closure = g_closure_new_object(sizeof(php_mgd_closure), __php_gobject_ptr(zobject));
 	}
 
 	if (!closure) {
@@ -300,10 +299,8 @@ void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS)
 	__register_class_closure(class_name, sname, dclosure);
 }
 
-void php_midgard_object_connect_class_closures(GObject *object, zval *zobject)
+void php_midgard_object_connect_class_closures(GObject *object, zval *zobject TSRMLS_DC)
 {
-	php_mgd_closure *closure = NULL;
-
 	/* TODO, add error handling , IS_OBJECT , etc */
 	if (zobject == NULL) {
 		php_error(E_WARNING, "Connect to class closure: failed to get zend object");
@@ -315,23 +312,21 @@ void php_midgard_object_connect_class_closures(GObject *object, zval *zobject)
 		return;
 	}
 
-	guint i = 0;
-	guint n_ids, *ids;
-	TSRMLS_FETCH();
-
 	if (MGDG(midgard_memory_debug)) {
 		printf("[%p] php_midgard_object_connect_class_closures(zobject = %p)\n", object, zobject);
 	}
 
 	/* Use MIDGARD_TYPE_OBJECT type explicitly!
 	 * Ancestor type is not taken into account in GLib's list_ids! */
-	ids = g_signal_list_ids(MIDGARD_TYPE_OBJECT, &n_ids);
+	guint n_ids;
+	guint *ids = g_signal_list_ids(MIDGARD_TYPE_OBJECT, &n_ids);
 
 	if (n_ids == 0)
 		return;
 
+	guint i = 0;
 	for (i = 0; i < n_ids; i++) {
-		closure = __class_closure_lookup(G_OBJECT_TYPE(object), ids[i]);
+		php_mgd_closure *closure = __class_closure_lookup(G_OBJECT_TYPE(object), ids[i]);
 
 		if (closure) {
 			if (MGDG(midgard_memory_debug)) {

@@ -69,7 +69,7 @@ static PHP_METHOD(midgard_collector, __construct)
 	gobject = __php_gobject_ptr(zval_object);
 
 	if (!gobject) {
-		GValue *gvalue = php_midgard_zval2gvalue(value);
+		GValue *gvalue = php_midgard_zval2gvalue(value TSRMLS_CC);
 
 		MidgardCollector *object = midgard_collector_new(mgd, base_ce->name, propname, gvalue);
 
@@ -162,7 +162,7 @@ static PHP_METHOD(midgard_collector, set)
 
 	_GET_COLLECTOR_OBJECT;
 
-	GValue *gvalue = php_midgard_zval2gvalue(zvalue);
+	GValue *gvalue = php_midgard_zval2gvalue(zvalue TSRMLS_CC);
 	gboolean rv = midgard_collector_set(collector, key, subkey, gvalue);
 
 	RETURN_BOOL(rv);
@@ -182,10 +182,12 @@ static void __colector_update_zend_hash(GQuark key_id, gpointer data, gpointer u
 	if (gvalue == NULL)
 		return;
 
+	TSRMLS_FETCH();
+
 	zval *zvalue;
 	MAKE_STD_ZVAL(zvalue);
 	/* FIXME, we need to get underlying object here */
-	php_midgard_gvalue2zval(gvalue, zvalue);
+	php_midgard_gvalue2zval(gvalue, zvalue TSRMLS_CC);
 
 	add_assoc_zval(zend_hash,
 			(gchar *)g_quark_to_string(key_id),
@@ -242,7 +244,7 @@ static PHP_METHOD(midgard_collector, get_subkey)
 
 	zval *_ret;
 	MAKE_STD_ZVAL(_ret);
-	php_midgard_gvalue2zval(gvalue, _ret);
+	php_midgard_gvalue2zval(gvalue, _ret TSRMLS_CC);
 
 	RETURN_ZVAL(_ret, 1, 1);
 }
@@ -348,7 +350,7 @@ static PHP_METHOD(midgard_collector, add_constraint)
 		return;
 	}
 
-	GValue *gvalue = php_midgard_zval2gvalue(value);
+	GValue *gvalue = php_midgard_zval2gvalue(value TSRMLS_CC);
 
 	_GET_COLLECTOR_OBJECT;
 

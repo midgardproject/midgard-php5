@@ -19,4 +19,4 @@
 
 void php_midgard_handle_holder_init(MgdGHolder **mgh);
 void php_midgard_handle_holder_free(MgdGHolder **mgh);
-MidgardConnection *php_midgard_handle_lookup(MgdGHolder **mgh, GHashTable *global_cfgs);
+MidgardConnection *php_midgard_handle_lookup(MgdGHolder **mgh, GHashTable *global_cfgs TSRMLS_DC);
