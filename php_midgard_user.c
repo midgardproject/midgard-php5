@@ -83,7 +83,7 @@ static PHP_METHOD(midgard_user, set_person)
 		return;
 
 	_GET_USER_OBJECT;
-	rv = midgard_user_set_person (user, MIDGARD_OBJECT(__php_gobject_ptr(zobject)));
+	rv = midgard_user_set_person(user, __midgard_object_get_ptr(zobject));
 	RETURN_BOOL (rv);
 }
 
@@ -110,7 +110,7 @@ static PHP_METHOD(midgard_user, get_person)
 		RETURN_NULL();
 
 	object_init_ex(return_value, person_ce);
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(person));
+	MGD_PHP_SET_GOBJECT(return_value, person);
 	zend_call_method_with_0_params(&return_value, person_ce, &person_ce->constructor, "__construct", NULL);
 
 	Z_SET_ISREF_P(return_value);
@@ -177,7 +177,7 @@ static PHP_METHOD(midgard_user, get)
 	zend_class_entry *ce = zend_fetch_class(class_name, strlen(class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	object_init_ex(return_value, ce);
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(user));
+	MGD_PHP_SET_GOBJECT(return_value, user);
 	zend_call_method_with_0_params(&return_value, ce, &ce->constructor, "__construct", NULL);
 
 	Z_SET_ISREF_P(return_value);
@@ -215,10 +215,9 @@ static PHP_METHOD(midgard_user, query)
 
 		zval *zobject;
 		MAKE_STD_ZVAL(zobject);
-		object_init_ex(zobject, php_midgard_user_class); 
+		object_init_ex(zobject, php_midgard_user_class);
 
-		php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
-		php_gobject->gobject = G_OBJECT(users[i]);
+		MGD_PHP_SET_GOBJECT(zobject, users[i]);
 
 		zend_hash_next_index_insert(HASH_OF(return_value), &zobject, sizeof(zval *), NULL);
 	}

@@ -83,7 +83,7 @@ static PHP_METHOD(midgard_object_class, get_object_by_guid)
 	}
 
 	object_init_ex(return_value, ce); /* Initialize new object for which QB has been created for */
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(object)); // inject our gobject
+	MGD_PHP_SET_GOBJECT(return_value, object); // inject our gobject
 	zend_call_method_with_0_params(&return_value, ce, &ce->constructor, "__construct", NULL); /* Call class constructor on given instance */
 }
 

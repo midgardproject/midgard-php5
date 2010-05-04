@@ -159,7 +159,7 @@ PHP_FUNCTION(_php_midgard_object_create_attachment)
 	zend_class_entry *ce = zend_fetch_class(type_name, strlen(type_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	object_init_ex(return_value, ce);
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(att));
+	MGD_PHP_SET_GOBJECT(return_value, att);
 	zend_call_method_with_0_params(&return_value, ce, &ce->constructor, "__construct", NULL);
 }
 

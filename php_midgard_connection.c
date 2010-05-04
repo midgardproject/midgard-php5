@@ -293,7 +293,7 @@ static PHP_METHOD(midgard_connection, get_user)
 	g_object_ref(user); // this is a direct-pointer: we need to "ref" it explicitly
 
 	object_init_ex(return_value, php_midgard_user_class);
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(user));
+	MGD_PHP_SET_GOBJECT(return_value, user);
 	zend_call_method_with_0_params(&return_value, php_midgard_user_class, &php_midgard_user_class->constructor, "__construct", NULL);
 }
 

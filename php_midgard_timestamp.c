@@ -99,18 +99,6 @@ static void _set_gobject_timestamp_property(zval *zobject TSRMLS_DC)
 		return;
 	}
 
-	/* Find underlying GObject */
-	php_midgard_gobject *php_gobject = __php_objstore_object(_object);
-	GObject *gobject = NULL;
-
-	if (php_gobject != NULL && php_gobject->gobject != NULL) {
-		/* php_error(E_NOTICE, "GOBJECT %p", php_gobject->gobject); */
-		if (!G_IS_OBJECT(php_gobject->gobject))
-			php_error(E_WARNING, "Underlying GObject pointer is not a GObject type");
-		else
-			gobject = G_OBJECT(php_gobject->gobject);
-	}
-
 	/* Prepare DateTime::format argument */
 	zval *fmt;
 	MAKE_STD_ZVAL(fmt);
@@ -120,6 +108,9 @@ static void _set_gobject_timestamp_property(zval *zobject TSRMLS_DC)
 	zval *_retval;
 	zend_call_method_with_1_params(&zobject, Z_OBJCE_P(zobject), NULL, "format", &_retval, fmt);
 	zval_ptr_dtor(&fmt);
+
+	/* Find underlying GObject */
+	GObject *gobject = __php_gobject_ptr(_object);
 
 	/* GObject is found, sets it property */
 	if (gobject) {

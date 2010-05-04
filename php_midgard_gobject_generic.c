@@ -100,15 +100,8 @@ static zend_bool php_midgard_gvalue_from_zval(zval *zvalue, GValue *gvalue TSRML
 				php_midgard_gobject *php_gobject = __php_objstore_object(zvalue);
 
 				if (php_gobject && php_gobject->magic == PHP_MIDGARD_GOBJ_MAGIC && php_gobject->gobject) {
-					if (!G_IS_OBJECT(php_gobject->gobject)) {
-						php_error(E_WARNING, "zval2gvalue conversion failed");
-						return FALSE;
-					}
-
-					GObject *gobject = G_OBJECT(php_gobject->gobject);
-
 					g_value_init(gvalue, G_TYPE_OBJECT);
-					g_value_set_object(gvalue, gobject);
+					g_value_set_object(gvalue, php_gobject->gobject);
 				} else {
 					// NOT GOBJECT. Don't know what to do with it
 					return FALSE;
@@ -443,13 +436,13 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 
 			GValue pval = {0, };
 			g_value_init(&pval, pspec->value_type);
-			g_object_get_property(G_OBJECT(gobject), Z_STRVAL_P(prop), &pval);
+			g_object_get_property(gobject, Z_STRVAL_P(prop), &pval);
 
 			MAKE_STD_ZVAL(_retval);
 			php_midgard_gvalue2zval(&pval, _retval TSRMLS_CC);
 			Z_DELREF_P(_retval); // we don't have local reference, so need to decrement refcount
 
-			g_value_unset(&pval);	
+			g_value_unset(&pval);
 
 			if (MGDG(midgard_memory_debug)) {
 				printf("[%p] property's tmp-var refcount: %d [%s]\n", zobject, Z_REFCOUNT_P(_retval), propname);
@@ -737,7 +730,7 @@ static void __php_midgard_gobject_dtor(void *object TSRMLS_DC)
 			printf("[%p] =========> G_IS_OBJECT\n", object);
 		}
 
-		if (G_OBJECT_TYPE_NAME(G_OBJECT(php_gobject->gobject)) != NULL) {
+		if (G_OBJECT_TYPE_NAME(php_gobject->gobject) != NULL) {
 			if (MGDG(midgard_memory_debug)) {
 				printf("[%p] =========> ..._TYPE_NAME != NULL\n", object);
 			}
@@ -746,11 +739,11 @@ static void __php_midgard_gobject_dtor(void *object TSRMLS_DC)
 				printf("[%p] =========> gobject's refcount = %d (before unref)\n", object, php_gobject->gobject->ref_count);
 			}
 
-			/*php_error(E_NOTICE, "%s DTOR (%p)", G_OBJECT_TYPE_NAME(G_OBJECT(php_gobject->gobject)), (void*)php_gobject->gobject); */
+			/*php_error(E_NOTICE, "%s DTOR (%p)", G_OBJECT_TYPE_NAME(php_gobject->gobject), (void*)php_gobject->gobject); */
 			/* TODO, find a way to destroy properties of object type.
 			 * Memory usage will be a bit abused, but I really have no idea how it should be implemented */
 			__object_properties_dtor(&php_gobject->zo TSRMLS_CC);
-			g_object_unref(G_OBJECT(php_gobject->gobject));
+			g_object_unref(php_gobject->gobject);
 			php_gobject->gobject = NULL;
 		}
 	}
@@ -1074,7 +1067,7 @@ void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, 
 		MAKE_STD_ZVAL(zobject);
 
 		object_init_ex(zobject, ce);
-		MGD_PHP_SET_GOBJECT(zobject, G_OBJECT(objects[i]));
+		MGD_PHP_SET_GOBJECT(zobject, objects[i]);
 		zend_call_method_with_0_params(&zobject, ce, &ce->constructor, "__construct", NULL);
 
 		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
