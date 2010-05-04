@@ -29,11 +29,20 @@ $attrs = $xml->atype->attributes();
 var_dump($attrs['guid'] == $obj1->guid);
 var_dump($attrs['action'] == 'created');
 
+var_dump($obj1->metadata->exported->format('Y-m-d H:i:s') == '0001-01-01 00:00:00');
+
+var_dump(midgard_replicator::export($obj1));
+// should be real date, a bit in the past
+var_dump($obj1->metadata->exported->format('Y-m-d H:i:s') != '0001-01-01 00:00:00');
+
 $obj1->delete();
 
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)
