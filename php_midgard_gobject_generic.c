@@ -70,10 +70,10 @@ static zend_bool php_midgard_gvalue_from_zval(zval *zvalue, GValue *gvalue TSRML
 			break;
 
 		case IS_DOUBLE:
-			g_value_init(gvalue, G_TYPE_DOUBLE);
+			g_value_init(gvalue, G_TYPE_FLOAT);
 			lstring = setlocale(LC_NUMERIC, "0");
 			setlocale(LC_NUMERIC, "C");
-			g_value_set_double(gvalue, (gdouble)Z_DVAL_P(zvalue));
+			g_value_set_float(gvalue, (gfloat)Z_DVAL_P(zvalue));
 			setlocale(LC_ALL, lstring);
 			break;
 
