@@ -166,17 +166,17 @@ static PHP_METHOD(midgard_replicator, unserialize)
 
 	char *xml = NULL;
 	int xml_length;
-	zend_bool zbool = FALSE;
+	zend_bool force = FALSE;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &xml, &xml_length, &zbool) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|b", &xml, &xml_length, &force) == FAILURE)
 		return;
 
 	array_init(return_value);
 
-	GObject **objects = midgard_replicator_unserialize(mgd, (const gchar *)xml, (gboolean)zbool);
+	GObject **objects = midgard_replicator_unserialize(mgd, (const gchar *)xml, (gboolean)force);
 
 	if (!objects)
-		RETURN_FALSE;
+		return;
 
 	size_t i = 0;
 	zend_class_entry *ce;
@@ -212,12 +212,12 @@ static PHP_METHOD(midgard_replicator, import_object)
 	CHECK_MGD(mgd);
 
 	zval *zobject;
-	zend_bool zbool = FALSE;
+	zend_bool force = FALSE;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o|b", &zobject, &zbool) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o|b", &zobject, &force) == FAILURE)
 		return;
 
-	gboolean imported = midgard_replicator_import_object(__midgard_dbobject_get_ptr(zobject), zbool);
+	gboolean imported = midgard_replicator_import_object(__midgard_dbobject_get_ptr(zobject), force);
 
 	RETURN_BOOL(imported);
 }
@@ -235,12 +235,12 @@ static PHP_METHOD(midgard_replicator, import_from_xml)
 
 	char *xml = NULL;
 	int xml_length;
-	zend_bool zbool = FALSE;
+	zend_bool force = FALSE;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &xml, &xml_length, &zbool) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &xml, &xml_length, &force) == FAILURE)
 		return;
 
-	midgard_replicator_import_from_xml(mgd, (const gchar *)xml, zbool);
+	midgard_replicator_import_from_xml(mgd, (const gchar *)xml, force);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_replicator_import_from_xml, 0, 0, 1)
