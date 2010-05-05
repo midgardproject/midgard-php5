@@ -1,6 +1,6 @@
 <?php
 
-if (version_compare(pakeApp::VERSION, '1.4.0', '<='))
+if (version_compare(pakeApp::VERSION, '1.4.1', '<'))
     throw new pakeException('Pake 1.4.1 or newer is required');
 
 ini_set('display_errors', 'On');
