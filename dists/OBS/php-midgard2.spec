@@ -1,4 +1,4 @@
-%define major_version 9.09.99
+%define major_version 10.05.0
 %define tar_name php5-midgard2
 
 %global php_zendabiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP Extension => //p') | tail -1)
