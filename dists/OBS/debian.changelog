@@ -1,3 +1,9 @@
+php5-midgard2 (10.05.99-1) unstable; urgency=low
+
+  * New upstream 
+
+ -- Piotr Pokora <indeyets@gmail.com>  Thu, 21 may 2010 00:33:00 +0400
+
 php5-midgard2 (10.05.0-1) unstable; urgency=low
 
   * New upstream 
