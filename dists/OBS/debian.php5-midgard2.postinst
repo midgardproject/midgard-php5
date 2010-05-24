@@ -1,9 +1,0 @@
-#!/bin/sh 
-
-set -e
-
-if test "$1" = "configure"; then
-	ucf /usr/share/doc/php5-midgard2/midgard2.ini /etc/php5/conf.d/midgard2.ini
-fi
-
-exit 0
