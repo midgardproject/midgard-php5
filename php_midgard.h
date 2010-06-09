@@ -210,6 +210,7 @@ PHP_MINIT_FUNCTION(midgard2_key_config_file_context);
 PHP_MINIT_FUNCTION(midgard2_key_config);
 PHP_MINIT_FUNCTION(midgard2_key_config_file);
 PHP_MINIT_FUNCTION(midgard2_reflection_workaround);
+PHP_MINIT_FUNCTION(midgard2_query);
 
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const char *name TSRMLS_DC);
