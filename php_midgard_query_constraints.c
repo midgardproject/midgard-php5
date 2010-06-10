@@ -214,7 +214,101 @@ ZEND_END_ARG_INFO()
 
 
 // midgard_query_constraint_group
+static PHP_METHOD(midgard_query_constraint_group, __construct)
+{
+	char *type = "AND";
+	int type_len = 3, num_varargs = 0;
+	zval ***varargs = NULL;
 
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s*", &type, &type_len, &varargs, &num_varargs) == FAILURE) {
+		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to create constraint group");
+	    return;
+	}
+
+	MidgardQueryConstraintSimple **constraints = ecalloc(num_varargs, sizeof(MidgardQueryConstraintSimple *));
+
+	size_t i;
+	for (i = 0; i < num_varargs; i++) {
+		constraints[i] = MIDGARD_QUERY_CONSTRAINT_SIMPLE(__php_gobject_ptr(*varargs[i]));
+	}
+
+	if (varargs) {
+	    efree(varargs);
+	}
+
+	MidgardQueryConstraintGroup *constraint_group = midgard_query_constraint_group_new_with_constraints(type, constraints, num_varargs);
+	efree(constraints);
+
+	if (!constraint_group) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create constraint group");
+		return;
+	}
+
+	MGD_PHP_SET_GOBJECT(getThis(), constraint_group);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_constraint_group___construct, 0, 0, 0)
+	ZEND_ARG_INFO(0, type)
+	ZEND_ARG_OBJ_INFO(0, constraint, midgard_query_constraint_simple, 1)
+	ZEND_ARG_INFO(0, ...)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_constraint_group, get_type)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardQueryConstraintGroup *constraint_group = MIDGARD_QUERY_CONSTRAINT_GROUP(__php_gobject_ptr(getThis()));
+	const gchar *type = midgard_query_constraint_group_get_group_type(constraint_group);
+
+	if (!type) {
+		return;
+	}
+
+	RETURN_STRING(type, 1);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_constraint_group_get_type, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_constraint_group, set_type)
+{
+	char *type = NULL;
+	int type_len = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &type, &type_len) == FAILURE) {
+		return;
+	}
+
+	MidgardQueryConstraintGroup *constraint_group = MIDGARD_QUERY_CONSTRAINT_GROUP(__php_gobject_ptr(getThis()));
+	zend_bool result = midgard_query_constraint_group_set_group_type(constraint_group, type);
+
+	RETURN_BOOL(result);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_constraint_group_set_type, 0, 0, 1)
+	ZEND_ARG_INFO(0, type)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_constraint_group, add_constraint)
+{
+	zval *z_constraint = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &z_constraint, php_midgard_query_constraint_simple_class) == FAILURE) {
+		return;
+	}
+
+	MidgardQueryConstraintGroup *constraint_group = MIDGARD_QUERY_CONSTRAINT_GROUP(__php_gobject_ptr(getThis()));
+	MidgardQueryConstraintSimple *constraint = MIDGARD_QUERY_CONSTRAINT_SIMPLE(__php_gobject_ptr(z_constraint));
+
+	zend_bool result = midgard_query_constraint_group_add_constraint(constraint_group, constraint, NULL);
+
+	RETURN_BOOL(result);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_constraint_group_add_constraint, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, constraint, midgard_query_constraint_simple, 0)
+ZEND_END_ARG_INFO()
 
 
 PHP_MINIT_FUNCTION(midgard2_query_constraints)
@@ -250,6 +344,22 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 	php_midgard_query_constraint_class = zend_register_internal_class_ex(&php_midgard_query_constraint_class_entry, php_midgard_query_constraint_simple_class, "midgard_query_constraint_simple" TSRMLS_CC);
 	php_midgard_query_constraint_class->create_object = php_midgard_gobject_new;
 	php_midgard_query_constraint_class->doc_comment = strdup("Class for holding data-atom in midgard_query");
+
+
+	static function_entry midgard_query_constraint_group_methods[] = {
+		PHP_ME(midgard_query_constraint_group, __construct,          arginfo_midgard_query_constraint_group___construct,          ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_query_constraint_group, get_type,             arginfo_midgard_query_constraint_group_get_type,             ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_constraint_group, set_type,             arginfo_midgard_query_constraint_group_set_type,             ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_constraint_group, add_constraint,       arginfo_midgard_query_constraint_group_add_constraint,       ZEND_ACC_PUBLIC)
+		{NULL, NULL, NULL}
+	};
+
+	static zend_class_entry php_midgard_query_constraint_group_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_query_constraint_group_class_entry, "midgard_query_constraint_group", midgard_query_constraint_group_methods);
+
+	php_midgard_query_constraint_group_class = zend_register_internal_class_ex(&php_midgard_query_constraint_group_class_entry, php_midgard_query_constraint_simple_class, "midgard_query_constraint_group" TSRMLS_CC);
+	php_midgard_query_constraint_group_class->create_object = php_midgard_gobject_new;
+	php_midgard_query_constraint_group_class->doc_comment = strdup("Class for holding group of constraints in midgard_query");
 
 	return SUCCESS;
 }
