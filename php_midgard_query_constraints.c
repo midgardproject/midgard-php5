@@ -96,6 +96,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_constraint, get_storage)
 {
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
 	MidgardQueryConstraint *constraint = MIDGARD_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
 	MidgardQueryStorage *storage = midgard_query_constraint_get_storage(constraint);
 
@@ -133,6 +136,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_constraint, get_property)
 {
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
 	MidgardQueryConstraint *constraint = MIDGARD_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
 	MidgardQueryProperty *property = midgard_query_constraint_get_property(constraint);
 
@@ -170,6 +176,9 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_constraint, get_operator)
 {
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
 	MidgardQueryConstraint *constraint = MIDGARD_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
 
 	const gchar *operator = midgard_query_constraint_get_operator(constraint);
