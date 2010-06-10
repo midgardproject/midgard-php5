@@ -343,7 +343,7 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 
 	php_midgard_query_constraint_class = zend_register_internal_class_ex(&php_midgard_query_constraint_class_entry, php_midgard_query_constraint_simple_class, "midgard_query_constraint_simple" TSRMLS_CC);
 	php_midgard_query_constraint_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_constraint_class->doc_comment = strdup("Class for holding data-atom in midgard_query");
+	php_midgard_query_constraint_class->doc_comment = strdup("Class for holding simple constraint in midgard_query");
 
 
 	static function_entry midgard_query_constraint_group_methods[] = {
