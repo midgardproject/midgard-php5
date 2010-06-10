@@ -54,7 +54,7 @@ if test "$PHP_MIDGARD2" != "no"; then
             php_midgard_view.c php_midgard_storage.c php_reflection_workaround.c php_midgard_key_config_context.c \
             php_midgard_key_config_file_context.c php_midgard_key_config.c php_midgard_key_config_file.c \
             php_midgard_urlwrapper.c \
-            php_midgard_query.c php_midgard_query_storage.c php_midgard_query_holders.c php_midgard_query_constraints.c \
+            php_midgard_query.c php_midgard_query_storage.c php_midgard_query_holders.c php_midgard_query_constraints.c php_midgard_query_executors.c \
             , $ext_shared)
     else
         AC_MSG_ERROR(Ooops ! no pkg-config found .... )
