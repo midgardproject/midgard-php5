@@ -23,7 +23,7 @@ PHP_MINIT_FUNCTION(midgard2_query)
 	PHP_MINIT(midgard2_query_storage)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_query_holders)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_query_constraints)(INIT_FUNC_ARGS_PASSTHRU);
-	// PHP_MINIT(midgard2_query_executors)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_query_executors)(INIT_FUNC_ARGS_PASSTHRU);
 
 	return SUCCESS;
 }
