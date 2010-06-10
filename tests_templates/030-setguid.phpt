@@ -25,6 +25,8 @@ $obj1->create();
 
 var_dump($obj1->guid === $test_guid);
 
+// cleanup
+$obj1->delete();
 ?>
 ===DONE===
 --EXPECTF--
