@@ -26,10 +26,11 @@ $obj1->connect('action-update', 'fun_callback', array());
 
 $obj1->emit('action-update');
 
-$obj1->delete();
+var_dump($obj1->delete());
 
 ?>
 ===DONE===
 --EXPECTF--
 callback
+bool(true)
 ===DONE===

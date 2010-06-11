@@ -45,7 +45,7 @@ $arr = (array)$res[0];
 ksort($arr);
 $string4 = var_export($arr, true);
 
-$obj->delete();
+var_dump($obj->delete());
 
 var_dump($string1 === $string2);
 var_dump($string2 === $string3);
@@ -54,6 +54,7 @@ var_dump($string3 === $string4);
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
 bool(true)
 bool(true)
 bool(true)

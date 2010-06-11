@@ -35,13 +35,17 @@ foreach ($test_strings as $str) {
     var_dump($obj2->t === $str); // check after load from database
 
     // cleanup
-    $obj->delete();
+    var_dump($obj->delete());
     unset($obj2, $obj);
 }
 
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)

@@ -29,10 +29,11 @@ $items = $qb->execute();
 $a3 = $items[0];
 var_dump($a3->flt);
 
-$a->delete();
+var_dump($a->delete());
 ?>
 ===DONE===
 --EXPECTF--
 float(0.12345)
 float(0.12345)
+bool(true)
 ===DONE===
