@@ -36,12 +36,14 @@ var_dump($res[0]->y === $obj2->y);
 var_dump($res[0]->guid === $obj1->guid);
 
 // do not leave traces!
-$obj1->delete();
-$obj2->delete();
+var_dump($obj2->delete());
+var_dump($obj1->delete());
 ?>
 ===DONE===
 --EXPECTF--
 int(1)
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)

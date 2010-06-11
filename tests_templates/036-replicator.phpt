@@ -60,9 +60,10 @@ $attrs = $xml->midgard_blob->attributes();
 var_dump(isset($attrs['guid']));
 var_dump($attrs['guid'] == $att->guid);
 
+echo "==delete==\n";
 $blob->remove_file();
 $att->delete();
-$obj1->delete();
+var_dump($obj1->delete());
 ?>
 ===DONE===
 --EXPECTF--
@@ -75,5 +76,7 @@ bool(true)
 bool(true)
 bool(true)
 bool(true)
+bool(true)
+==delete==
 bool(true)
 ===DONE===

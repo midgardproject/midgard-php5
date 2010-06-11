@@ -29,7 +29,7 @@ var_dump($obj1->is_approved()); // true
 var_dump($obj1->unapprove());   // true (still, admin-user)
 var_dump($obj1->is_approved()); // false
 
-$obj1->delete();
+var_dump($obj1->delete());
 
 ?>
 ===DONE===
@@ -41,4 +41,5 @@ bool(true)
 bool(true)
 bool(true)
 bool(false)
+bool(true)
 ===DONE===

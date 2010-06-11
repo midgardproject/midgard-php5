@@ -27,12 +27,14 @@ var_dump($obj2->get_parent() instanceof atype);
 var_dump($obj2->get_parent()->a == '1');
 
 // cleanup
-$obj1->delete();
-$obj2->delete();
+var_dump($obj2->delete());
+var_dump($obj1->delete());
 
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)

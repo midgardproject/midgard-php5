@@ -81,7 +81,7 @@ foreach ($signals as $s)
 }
 
 echo "== delete() ==\n";
-$t->delete(); // don't leave traces!
+var_dump($t->delete()); // don't leave traces!
 ?>
 ===DONE===
 --EXPECTF--
@@ -111,4 +111,5 @@ bool(true)
 bool(true)
 bool(true)
 == delete() ==
+bool(true)
 ===DONE===

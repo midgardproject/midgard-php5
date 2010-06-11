@@ -21,15 +21,17 @@ $obj1->a = '1';
 var_dump($obj1->set_guid($test_guid));
 var_dump($obj1->guid === $test_guid);
 
-$obj1->create();
+var_dump($obj1->create());
 
 var_dump($obj1->guid === $test_guid);
 
 // cleanup
-$obj1->delete();
+var_dump($obj1->delete());
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)

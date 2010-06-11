@@ -27,11 +27,13 @@ $coll = atype::new_collector('a', 'a');
 $coll->set_key_property('a', 'a');
 var_dump($coll->execute());
 
-$obj->delete();
-$obj2->delete();
+var_dump($obj->delete());
+var_dump($obj2->delete());
 
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
 bool(true)
 ===DONE===

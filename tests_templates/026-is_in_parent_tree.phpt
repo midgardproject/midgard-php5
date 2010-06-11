@@ -26,11 +26,13 @@ $dummy = new xtype();
 var_dump($dummy->is_in_parent_tree($obj1->id, $obj2->id));
 
 // cleanup
-$obj1->delete();
-$obj2->delete();
+var_dump($obj2->delete());
+var_dump($obj1->delete());
 
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
 bool(true)
 ===DONE===
