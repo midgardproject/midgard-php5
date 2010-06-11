@@ -897,47 +897,15 @@ void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *
 
 void php_midgard_gobject_new_with_gobject(zval *zvalue, zend_class_entry *ce, GObject *gobject, gboolean dtor TSRMLS_DC)
 {
-	php_midgard_gobject *php_gobject;
-	zval *tmp;
-
 	if (MGDG(midgard_memory_debug)) {
 		printf("[%p] php_midgard_gobject_new_with_gobject(%s)\n", zvalue, ce->name);
 	}
 
-	Z_TYPE_P(zvalue) = IS_OBJECT;
+	object_init_ex(zvalue, ce);
+	MGD_PHP_SET_GOBJECT(zvalue, gobject);
 
-	php_gobject = ecalloc(1, sizeof(php_midgard_gobject));
-	php_gobject->gobject = gobject;
-	php_gobject->has_properties = FALSE;
-	php_gobject->magic = PHP_MIDGARD_GOBJ_MAGIC;
-
-	zend_object_std_init(&php_gobject->zo, ce TSRMLS_CC);
-
-	zend_hash_copy(php_gobject->zo.properties,
-			&ce->default_properties,
-			(copy_ctor_func_t) zval_add_ref,
-			(void *) &tmp, sizeof(zval *));
-
-	if (dtor) {
-		zvalue->value.obj.handle = zend_objects_store_put(php_gobject,
-			(zend_objects_store_dtor_t)zend_objects_destroy_object,
-			__php_midgard_gobject_dtor,
-			NULL TSRMLS_CC);
-	} else {
-		zvalue->value.obj.handle = zend_objects_store_put(php_gobject,
-			(zend_objects_store_dtor_t)zend_objects_destroy_object,
-			NULL,
-			NULL TSRMLS_CC);
-	}
-
-	Z_OBJ_HT_P(zvalue) = &php_midgard_gobject_handlers;
-
-	if (ce->constructor) {
-		php_printf("\n\nfound constructor\n\n");
+	if (MIDGARD_IS_OBJECT(gobject) && ce->constructor) {
 		zend_call_method_with_0_params(&zvalue, ce, &ce->constructor, "__construct", NULL);
-	} else {
-		php_midgard_init_properties_objects(zvalue TSRMLS_CC);
-		/* php_error(E_NOTICE, "IMPLICIT CONSTRUCTOR %s (%p)", ce->name, gobject); */
 	}
 
 	if (MGDG(midgard_memory_debug)) {
@@ -1185,6 +1153,8 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 		return "midgard_metadata";
 	} else if (strcmp(g_class_name, "MidgardConnection") == 0) {
 		return "midgard_connection";
+	} else if (strcmp(g_class_name, "MidgardQueryStorage") == 0) {
+		return "midgard_query_storage";
 	}
 
 	return g_class_name;
@@ -1196,6 +1166,8 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 		return "MidgardMetadata";
 	} else if (strcmp(php_class_name, "midgard_connection") == 0) {
 		return "MidgardConnection";
+	} else if (strcmp(php_class_name, "midgard_query_storage") == 0) {
+		return "MidgardQueryStorage";
 	}
 
 	return php_class_name;
