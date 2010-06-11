@@ -35,25 +35,27 @@ var_dump(gettype($query->execute()));
 ?>
 ===DONE===
 --EXPECTF--
-Warning: Ignoring a negative query limit in %s on line %d
+Warning: Ignoring a negative query limit in %s
 bool(false)
 
-Warning: Ingoring a negative query offset in %s on line %d
-bool(false)
-bool(true)
-bool(true)
-
-Warning: %s in %s on line %d
-
-Warning: %s in %s on line %d
-bool(false)
-
-Warning: %s in %s on line %d
-
-Warning: %s in %s on line %d
+Warning: Ingoring a negative query offset in %s
 bool(false)
 bool(true)
+bool(true)
+
+Warning: %s in %s on line %d
+
+Warning: %s in %s on line %d
 bool(false)
+
+Warning: %s in %s on line %d
+
+Warning: %s in %s on line %d
+bool(false)
+bool(true)
+bool(false)
+
+Warning: Got resource variable. Can not convert to glib-type in %s
 bool(false)
 bool(true)
 bool(true)

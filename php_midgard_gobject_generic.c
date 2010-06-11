@@ -26,7 +26,7 @@
 
 /* GVALUE ROUTINES */
 
-static zend_bool php_midgard_gvalue_from_zval(zval *zvalue, GValue *gvalue TSRMLS_DC)
+static zend_bool php_midgard_gvalue_from_zval(const zval *zvalue, GValue *gvalue TSRMLS_DC)
 {
 	g_assert(zvalue != NULL);
 
@@ -111,20 +111,25 @@ static zend_bool php_midgard_gvalue_from_zval(zval *zvalue, GValue *gvalue TSRML
 
 		case IS_RESOURCE:
 			/* There's no way to handle resource gracefully */
+			php_error(E_WARNING, "Got resource variable. Can not convert to glib-type");
 			return FALSE;
 			break;
 
-		default:
+		case IS_NULL:
 			/* FIXME, we can not fallback to string type */
-			convert_to_string(zvalue);
 			g_value_init(gvalue, G_TYPE_STRING);
-			g_value_set_string(gvalue, Z_STRVAL_P(zvalue));
+            g_value_set_string(gvalue, "");
+			break;
+
+		default:
+			php_error(E_WARNING, "Got variable of unknown type. Can not convert to glib-type");
+			return FALSE;
 	}
 
 	return TRUE;
 }
 
-GValue *php_midgard_zval2gvalue(zval *zvalue TSRMLS_DC)
+GValue *php_midgard_zval2gvalue(const zval *zvalue TSRMLS_DC)
 {
 	g_assert(zvalue != NULL);
 
