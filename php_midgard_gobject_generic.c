@@ -1155,6 +1155,8 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 		return "midgard_connection";
 	} else if (strcmp(g_class_name, "MidgardQueryStorage") == 0) {
 		return "midgard_query_storage";
+	} else if (strcmp(g_class_name, "MidgardQueryProperty") == 0) {
+		return "midgard_query_property";
 	}
 
 	return g_class_name;
@@ -1168,6 +1170,8 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 		return "MidgardConnection";
 	} else if (strcmp(php_class_name, "midgard_query_storage") == 0) {
 		return "MidgardQueryStorage";
+	} else if (strcmp(php_class_name, "midgard_query_property") == 0) {
+		return "MidgardQueryProperty";
 	}
 
 	return php_class_name;
