@@ -21,7 +21,7 @@ gboolean php_midgard_is_property_timestamp(MidgardDBObjectClass *klass, const gc
 	return FALSE;
 }
 
-zval *php_midgard_datetime_get_timestamp(zval *object TSRMLS_DC)
+zval *php_midgard_datetime_get_timestamp(const zval *object TSRMLS_DC)
 {
 	/* Prepare DateTime::format argument */
 	zval *fmt;
@@ -30,7 +30,7 @@ zval *php_midgard_datetime_get_timestamp(zval *object TSRMLS_DC)
 
 	/* Invoke Datetime::format */
 	zval *_retval;
-	zend_call_method_with_1_params(&object, Z_OBJCE_P(object), NULL, "format", &_retval, fmt);
+	zend_call_method_with_1_params((zval **)&object, Z_OBJCE_P(object), NULL, "format", &_retval, fmt);
 
 	return _retval;
 }

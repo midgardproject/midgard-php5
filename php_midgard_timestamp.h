@@ -29,6 +29,6 @@ gboolean php_midgard_is_property_timestamp(MidgardDBObjectClass *klass, const gc
 void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue TSRMLS_DC);
 
 zval *php_midgard_datetime_object_from_property(zval *object, const gchar *property TSRMLS_DC);
-zval *php_midgard_datetime_get_timestamp(zval *object TSRMLS_DC);
+zval *php_midgard_datetime_get_timestamp(const zval *object TSRMLS_DC);
 
 #endif /* PHP_MIDGARD_TIMESTAMP_H */
