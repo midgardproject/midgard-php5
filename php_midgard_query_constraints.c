@@ -20,7 +20,7 @@
 
 #include "php_midgard__helpers.h"
 
-static void php_midgard_array_from_constraints(MidgardQueryConstraintSimple **objects, zval *zarray TSRMLS_DC);
+static void php_midgard_array_from_constraints(MidgardQueryConstraintSimple **objects, guint n_objects, zval *zarray TSRMLS_DC);
 
 
 zend_class_entry *php_midgard_query_constraint_simple_class;
@@ -41,7 +41,7 @@ static PHP_METHOD(midgard_query_constraint_simple, list_constraints)
 	array_init(return_value);
 
 	if (constraints) {
-		php_midgard_array_from_constraints(constraints, return_value TSRMLS_CC);
+		php_midgard_array_from_constraints(constraints, n_objects, return_value TSRMLS_CC);
         g_free(constraints);
 	}
 }
@@ -370,14 +370,14 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 // = Helper-functions follow =
 // ===========================
 
-static void php_midgard_array_from_constraints(MidgardQueryConstraintSimple **objects, zval *zarray TSRMLS_DC)
+static void php_midgard_array_from_constraints(MidgardQueryConstraintSimple **objects, guint n_objects, zval *zarray TSRMLS_DC)
 {
 	if (!objects)
 		return;
 
-	size_t i = 0;
+	size_t i;
 
-	while (objects[i] != NULL) {
+	for (i = 0; i < n_objects; i++) {
 		MidgardQueryConstraintSimple *constraint = objects[i];
 		zend_class_entry *ce = NULL;
 
@@ -396,9 +396,5 @@ static void php_midgard_array_from_constraints(MidgardQueryConstraintSimple **ob
 		php_midgard_gobject_new_with_gobject(zobject, ce, G_OBJECT(constraint), TRUE TSRMLS_CC);
 
 		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
-
-		i++;
 	}
-
-	return;
 }
