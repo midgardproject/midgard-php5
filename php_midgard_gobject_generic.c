@@ -227,6 +227,7 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 			break;
 
 		case G_TYPE_OBJECT:
+		case G_TYPE_INTERFACE:
 			{
 				GObject *gobject_property = g_value_get_object(gvalue);
 
@@ -1159,6 +1160,8 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 		return "midgard_query_storage";
 	} else if (strcmp(g_class_name, "MidgardQueryProperty") == 0) {
 		return "midgard_query_property";
+	} else if (strcmp(g_class_name, "MidgardQueryValue") == 0) {
+		return "midgard_query_value";
 	}
 
 	return g_class_name;
@@ -1174,6 +1177,8 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 		return "MidgardQueryStorage";
 	} else if (strcmp(php_class_name, "midgard_query_property") == 0) {
 		return "MidgardQueryProperty";
+	} else if (strcmp(php_class_name, "midgard_query_value") == 0) {
+		return "MidgardQueryValue";
 	}
 
 	return php_class_name;
