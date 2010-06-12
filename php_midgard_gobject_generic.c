@@ -905,7 +905,7 @@ void php_midgard_gobject_new_with_gobject(zval *zvalue, zend_class_entry *ce, GO
 	}
 
 	object_init_ex(zvalue, ce);
-	MGD_PHP_SET_GOBJECT(zvalue, gobject);
+	MGD_PHP_SET_GOBJECT_G(zvalue, gobject);
 
 	if (MIDGARD_IS_OBJECT(gobject) && ce->constructor) {
 		zend_call_method_with_0_params(&zvalue, ce, &ce->constructor, "__construct", NULL);
@@ -1042,9 +1042,7 @@ void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, 
 		zval *zobject;
 		MAKE_STD_ZVAL(zobject);
 
-		object_init_ex(zobject, ce);
-		MGD_PHP_SET_GOBJECT(zobject, objects[i]);
-		zend_call_method_with_0_params(&zobject, ce, &ce->constructor, "__construct", NULL);
+		php_midgard_gobject_new_with_gobject(zobject, ce, objects[i], TRUE TSRMLS_CC);
 
 		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
 

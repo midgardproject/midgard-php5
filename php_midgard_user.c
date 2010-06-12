@@ -109,9 +109,7 @@ static PHP_METHOD(midgard_user, get_person)
 	if (person == NULL)
 		RETURN_NULL();
 
-	object_init_ex(return_value, person_ce);
-	MGD_PHP_SET_GOBJECT(return_value, person);
-	zend_call_method_with_0_params(&return_value, person_ce, &person_ce->constructor, "__construct", NULL);
+	php_midgard_gobject_new_with_gobject(return_value, person_ce, G_OBJECT(person), TRUE TSRMLS_CC);
 
 	Z_SET_ISREF_P(return_value);
 	zval_add_ref(&return_value);
@@ -176,9 +174,7 @@ static PHP_METHOD(midgard_user, get)
 	char *class_name = EG(scope)->name;
 	zend_class_entry *ce = zend_fetch_class(class_name, strlen(class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
-	object_init_ex(return_value, ce);
-	MGD_PHP_SET_GOBJECT(return_value, user);
-	zend_call_method_with_0_params(&return_value, ce, &ce->constructor, "__construct", NULL);
+	php_midgard_gobject_new_with_gobject(return_value, ce, G_OBJECT(user), TRUE TSRMLS_CC);
 
 	Z_SET_ISREF_P(return_value);
 	zval_add_ref(&return_value);
