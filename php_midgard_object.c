@@ -350,9 +350,7 @@ PHP_FUNCTION(_midgard_php_object_get_parent)
 		gchar const *type_name = G_OBJECT_TYPE_NAME(pobj);
 		zend_class_entry *pce = zend_fetch_class((char *)type_name, strlen(type_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
-		object_init_ex(return_value, pce);
-		MGD_PHP_SET_GOBJECT(return_value, pobj);
-		zend_call_method_with_0_params(&return_value, pce, &pce->constructor, "__construct", NULL);
+		php_midgard_gobject_new_with_gobject(return_value, pce, pobj, TRUE TSRMLS_CC);
 	}
 }
 
@@ -381,9 +379,7 @@ PHP_FUNCTION(_midgard_php_object_list)
 			zval *zobject = NULL;
 
 			MAKE_STD_ZVAL(zobject);
-			object_init_ex(zobject, ce); /* Initialize new object for which QB has been created for */
-			MGD_PHP_SET_GOBJECT(zobject, objects[i]); // inject our gobject
-			zend_call_method_with_0_params(&zobject, ce, &ce->constructor, "__construct", NULL); /* Call class constructor on given instance */
+			php_midgard_gobject_new_with_gobject(zobject, ce, G_OBJECT(objects[i]), TRUE TSRMLS_CC);
 
 			zend_hash_next_index_insert(HASH_OF(return_value), &zobject, sizeof(zval *), NULL);
 		}
@@ -417,9 +413,7 @@ PHP_FUNCTION(_midgard_php_object_list_children)
 			zval *zobject = NULL;
 
 			MAKE_STD_ZVAL(zobject);
-			object_init_ex(zobject, ce); /* Initialize new object for which QB has been created for */
-			MGD_PHP_SET_GOBJECT(zobject, objects[i]); // inject our gobject
-			zend_call_method_with_0_params(&zobject, ce, &ce->constructor, "__construct", NULL); /* Call class constructor on given instance */
+			php_midgard_gobject_new_with_gobject(zobject, ce, G_OBJECT(objects[i]), TRUE TSRMLS_CC);
 
 			zend_hash_next_index_insert(HASH_OF(return_value), &zobject, sizeof(zval *), NULL);
 		}
@@ -586,13 +580,7 @@ PHP_FUNCTION(_php_midgard_new_reflection_property)
 	if (!mrp)
 		return;
 
-	object_init_ex(return_value, php_midgard_reflection_property_class);
-	MGD_PHP_SET_GOBJECT(return_value, mrp);
-	zend_call_method_with_0_params(
-		&return_value,
-		php_midgard_reflection_property_class, &php_midgard_reflection_property_class->constructor, "__construct",
-		NULL
-	);
+	php_midgard_gobject_new_with_gobject(return_value, php_midgard_reflection_property_class, G_OBJECT(mrp), TRUE TSRMLS_CC);
 }
 
 PHP_FUNCTION(_php_midgard_object_set_guid)
@@ -1172,9 +1160,7 @@ int __unserialize_object_hook(zval **zobject, zend_class_entry *ce, const unsign
 	if (!objects)
 		return FAILURE;
 
-	object_init_ex(*zobject, ce);
-	MGD_PHP_SET_GOBJECT(*zobject, objects[0]);
-	zend_call_method_with_0_params(zobject, ce, &ce->constructor, "__construct", NULL);
+	php_midgard_gobject_new_with_gobject(*zobject, ce, objects[0], TRUE TSRMLS_CC);
 
 	g_free(objects);
 

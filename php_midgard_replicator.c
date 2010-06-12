@@ -190,9 +190,7 @@ static PHP_METHOD(midgard_replicator, unserialize)
 		char *class_name = (char *)G_OBJECT_TYPE_NAME(G_OBJECT(objects[i]));
 		ce = zend_fetch_class(class_name, strlen(class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
-		object_init_ex(zobject, ce);
-		MGD_PHP_SET_GOBJECT(zobject, objects[i]);
-		zend_call_method_with_0_params(&zobject, ce, &ce->constructor, "__construct", NULL);
+		php_midgard_gobject_new_with_gobject(zobject, ce, objects[i], TRUE TSRMLS_CC);
 
 		zend_hash_next_index_insert(HASH_OF(return_value), &zobject, sizeof(zval *), NULL);
 

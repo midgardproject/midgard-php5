@@ -158,9 +158,7 @@ PHP_FUNCTION(_php_midgard_object_create_attachment)
 	char *type_name = (char *)G_OBJECT_TYPE_NAME((GObject*)att);
 	zend_class_entry *ce = zend_fetch_class(type_name, strlen(type_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
-	object_init_ex(return_value, ce);
-	MGD_PHP_SET_GOBJECT(return_value, att);
-	zend_call_method_with_0_params(&return_value, ce, &ce->constructor, "__construct", NULL);
+	php_midgard_gobject_new_with_gobject(return_value, ce, G_OBJECT(att), TRUE TSRMLS_CC);
 }
 
 /* It's not binded from core. This is PHP specific */
