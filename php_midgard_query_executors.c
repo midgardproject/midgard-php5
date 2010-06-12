@@ -21,7 +21,7 @@
 #include "php_midgard__helpers.h"
 
 
-static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, zval *zarray TSRMLS_DC);
+static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, guint n_objects, zval *zarray TSRMLS_DC);
 
 
 zend_class_entry *php_midgard_query_executor_class;
@@ -262,7 +262,7 @@ static PHP_METHOD(midgard_query_select, list_objects)
 	MidgardDBObject **objects = midgard_query_select_list_objects(select, &n_objects);
 
 	array_init(return_value);
-	php_midgard_array_from_unknown_objects(objects, return_value TSRMLS_CC);
+	php_midgard_array_from_unknown_objects(objects, n_objects, return_value TSRMLS_CC);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_select_list_objects, 0, 0, 0)
@@ -316,14 +316,14 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 // = Helper-functions follow =
 // ===========================
 
-static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, zval *zarray TSRMLS_DC)
+static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, guint n_objects, zval *zarray TSRMLS_DC)
 {
 	if (!objects)
 		return;
 
-	size_t i = 0;
+	size_t i;
 
-	while (objects[i] != NULL) {
+	for (i = 0; i < n_objects; i++) {
 		GObject *object = G_OBJECT(objects[i]);
 		GType object_type = G_OBJECT_TYPE(object);
 		const gchar *g_class_name = g_type_name(object_type);
@@ -337,9 +337,5 @@ static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, zv
 		php_midgard_gobject_new_with_gobject(zobject, ce, object, TRUE TSRMLS_CC);
 
 		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
-
-		i++;
 	}
-
-	return;
 }
