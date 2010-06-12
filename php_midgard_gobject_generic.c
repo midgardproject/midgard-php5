@@ -153,7 +153,8 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 	zval *zarr_val;
 
 	/* Generic GValue */
-	switch (G_TYPE_FUNDAMENTAL(G_VALUE_TYPE(gvalue))) {
+	GType g_gtype = G_TYPE_FUNDAMENTAL(G_VALUE_TYPE(gvalue));
+	switch (g_gtype) {
 		case G_TYPE_STRING:
 			tmpstr = (gchar *)g_value_get_string(gvalue);
 			if (!tmpstr)
@@ -280,6 +281,7 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 			break;
 
 		default:
+			php_error(E_WARNING, "Don't know how to handle '%s' type. returning NULL instead", g_type_name(g_gtype));
 			ZVAL_NULL(zvalue);
 			break;
 	}
