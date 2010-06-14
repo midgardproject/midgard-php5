@@ -298,7 +298,9 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_collector)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_connection)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_dbus)(INIT_FUNC_ARGS_PASSTHRU);
+	if (midgard_dbus_is_enabled()) {
+		PHP_MINIT(midgard2_dbus)(INIT_FUNC_ARGS_PASSTHRU);
+	}
 	PHP_MINIT(midgard2_replicator)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_datetime)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_error)(INIT_FUNC_ARGS_PASSTHRU);
