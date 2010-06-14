@@ -1,7 +1,10 @@
 --TEST--
 test of midgard_dbus class
 --SKIPIF--
-<?php if (!extension_loaded("midgard2")) print "skip"; ?>
+<?php
+if (!extension_loaded("midgard2")) die("skip");
+if (!class_exists('midgard_dbus')) die("skip DBus support is not enabled");
+?>
 --INI--
 midgard.engine = On
 midgard.http = Off
