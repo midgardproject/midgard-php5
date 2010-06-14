@@ -225,23 +225,39 @@ static PHP_METHOD(midgard_query_constraint_group, __construct)
 	    return;
 	}
 
-	MidgardQueryConstraintSimple **constraints = ecalloc(num_varargs, sizeof(MidgardQueryConstraintSimple *));
+	MidgardQueryConstraintGroup *constraint_group = NULL;
 
-	size_t i;
-	for (i = 0; i < num_varargs; i++) {
-		constraints[i] = MIDGARD_QUERY_CONSTRAINT_SIMPLE(__php_gobject_ptr(*varargs[i]));
-	}
+	if (num_varargs) {
+		MidgardQueryConstraintSimple **constraints = ecalloc(num_varargs, sizeof(MidgardQueryConstraintSimple *));
 
-	if (varargs) {
-	    efree(varargs);
-	}
+		size_t i;
+		for (i = 0; i < num_varargs; i++) {
+			constraints[i] = MIDGARD_QUERY_CONSTRAINT_SIMPLE(__php_gobject_ptr(*varargs[i]));
+		}
+		efree(varargs);
 
-	MidgardQueryConstraintGroup *constraint_group = midgard_query_constraint_group_new_with_constraints(type, constraints, num_varargs);
-	efree(constraints);
+		constraint_group = midgard_query_constraint_group_new_with_constraints(type, constraints, num_varargs);
+		efree(constraints);
 
-	if (!constraint_group) {
-		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create constraint group");
-		return;
+		if (!constraint_group) {
+			zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create constraint group");
+			return;
+		}
+	} else {
+		constraint_group = midgard_query_constraint_group_new();
+
+		if (!constraint_group) {
+			zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create constraint group");
+			return;
+		}
+
+		zend_bool result = midgard_query_constraint_group_set_group_type(constraint_group, type);
+
+		if (!result) {
+			g_object_unref(constraint_group);
+			zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create constraint group: couldn't set type");
+			return;
+		}
 	}
 
 	MGD_PHP_SET_GOBJECT(getThis(), constraint_group);
