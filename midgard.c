@@ -233,6 +233,61 @@ static zend_bool php_midgard_initialize_configs(TSRMLS_D)
 	return TRUE;
 }
 
+static void php_midgard_initialize_schema(TSRMLS_D)
+{
+	if (midgard_global_schema != NULL) {
+		return;
+	}
+
+	const char *conf_file = MGDG(midgard_configuration_file);
+	const char *conf_name = MGDG(midgard_configuration);
+
+	zend_bool initialized = FALSE;
+	const char *share_dir = NULL;
+
+	// trying midgard.configuration_file
+	if (conf_file && conf_file[0] != '\0') {
+		MidgardConfig *config = midgard_config_new();
+		if (midgard_config_read_file_at_path(config, conf_file, NULL)) {
+			share_dir = g_strdup(config->sharedir);
+
+			if (share_dir) {
+				initialized = TRUE;
+			}
+		}
+		g_object_unref(config);
+	}
+
+	// trying midgard.configuration
+	if (initialized == FALSE && conf_name && conf_name[0] != '\0') {
+		MidgardConfig *config = midgard_config_new();
+		if (midgard_config_read_file(config, conf_name, FALSE, NULL)) {
+			share_dir = g_strdup(config->sharedir);
+
+			if (share_dir) {
+				initialized = TRUE;
+			}
+		}
+		g_object_unref(config);
+	}
+
+	if (initialized == FALSE) {
+		// init from core-defaults
+		midgard_global_schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
+		midgard_schema_init(midgard_global_schema, NULL);
+		midgard_schema_read_dir(midgard_global_schema, NULL);
+	} else {
+		gchar *path = g_build_path(G_DIR_SEPARATOR_S, share_dir, "MidgardObjects.xml", NULL);
+
+		midgard_global_schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
+		midgard_schema_init(midgard_global_schema, path);
+		zend_bool success = midgard_schema_read_dir(midgard_global_schema, share_dir);
+
+		g_free(share_dir);
+		g_free(path);
+	}
+}
+
 PHP_MINIT_FUNCTION(midgard2)
 {
 	if (zend_get_extension("midgard") != NULL) {
@@ -262,12 +317,10 @@ PHP_MINIT_FUNCTION(midgard2)
 
 	midgard_init();
 
+	REGISTER_INI_ENTRIES();
+
 	/* register Gtype types from schemas */
-	if (midgard_global_schema == NULL) {
-		midgard_global_schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
-		midgard_schema_init((MidgardSchema *) midgard_global_schema, NULL);
-		midgard_schema_read_dir((MidgardSchema *) midgard_global_schema, NULL);
-	}
+	php_midgard_initialize_schema(TSRMLS_C);
 
 	/* Initialize handlers */
 	memcpy(&php_midgard_gobject_handlers, zend_get_std_object_handlers(),
@@ -367,8 +420,6 @@ PHP_MINIT_FUNCTION(midgard2)
 
 #undef MGD_PHP_REGISTER_CONSTANT
 
-	REGISTER_INI_ENTRIES();
-
 	if (MGDG(superglobals_compat)) {
 		php_error(E_DEPRECATED, "midgard.superglobals_compat option is deprecated and might be removed in next release");
 
@@ -433,8 +484,10 @@ PHP_MSHUTDOWN_FUNCTION(midgard2)
 	return SUCCESS;
 
 	/* Free schema */
-	if (midgard_global_schema != NULL)
+	if (midgard_global_schema != NULL) {
 		g_object_unref(midgard_global_schema);
+		midgard_global_schema = NULL;
+	}
 
 	/* Free connections */
 	php_midgard_handle_holder_free(&MGDG(midgard_global_holder));

@@ -8,8 +8,6 @@ midgard.http = On
 midgard.memory_debug = Off
 midgard.configuration_file = [[CFG_FILE]]
 report_memleaks = Off
---ENV--
-MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
 $obj = new atype();
