@@ -243,7 +243,7 @@ static void php_midgard_initialize_schema(TSRMLS_D)
 	const char *conf_name = MGDG(midgard_configuration);
 
 	zend_bool initialized = FALSE;
-	const char *share_dir = NULL;
+	gchar *share_dir = NULL;
 
 	// trying midgard.configuration_file
 	if (conf_file && conf_file[0] != '\0') {
