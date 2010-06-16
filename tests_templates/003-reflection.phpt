@@ -50,6 +50,9 @@ var_dump($parent instanceof midgard_reflection_class);
 $methods = $cls->getMethods();
 var_dump($methods[0] instanceof midgard_reflection_method);
 
+var_dump($cls->get_user_value('meta1') == 'value1');
+var_dump($cls->get_user_value('meta2') == 'value2');
+
 ?>
 ===DONE===
 --EXPECTF--
@@ -76,6 +79,8 @@ array(5) {
   [4]=>
   string(12) "disconnected"
 }
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 ===DONE===

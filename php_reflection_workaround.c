@@ -26,8 +26,7 @@
 /* ReflectionMethod::getDocComment workaround */
 static GHashTable *midgard_classes = NULL;
 
-void 
-__initialize_midgard_classes_hash (void)
+void __initialize_midgard_classes_hash (void)
 {
 	if (midgard_classes == NULL)
 		midgard_classes = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)g_hash_table_destroy);
@@ -35,8 +34,7 @@ __initialize_midgard_classes_hash (void)
 	return;
 }
 
-void 
-php_midgard_docs_add_class (const gchar *classname)
+void php_midgard_docs_add_class (const gchar *classname)
 {
 	GHashTable *class_methods = g_hash_table_lookup (midgard_classes, (gpointer) classname);
 
@@ -48,8 +46,7 @@ php_midgard_docs_add_class (const gchar *classname)
 	}
 }
 
-void 
-php_midgard_docs_add_method_comment (const gchar *classname, const gchar *method, const gchar *comment)
+void php_midgard_docs_add_method_comment (const gchar *classname, const gchar *method, const gchar *comment)
 {
 	php_midgard_docs_add_class (classname);
 	
@@ -302,6 +299,29 @@ ZEND_BEGIN_ARG_INFO_EX(php_midgard_reflection_class_getMethods, 0, 0, 0)
 	ZEND_ARG_INFO(0, filter)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(php_midgard_reflection_class, get_user_value)
+{
+	char *field_name = NULL;
+	int field_name_len = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &field_name, &field_name_len) == FAILURE)
+		return;
+
+	zval *this = getThis();
+
+	zval *class_name = NULL;
+	zend_call_method_with_0_params(&this, zend_reflection_class_class, NULL, "getname", &class_name);
+
+	const gchar *value = midgard_reflector_object_get_schema_value(Z_STRVAL_P(class_name), field_name);
+	zval_ptr_dtor(&class_name);
+
+	RETURN_STRING(value, 1);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(php_midgard_reflection_class_get_user_value, 0, 0, 1)
+	ZEND_ARG_INFO(0, fieldname)
+ZEND_END_ARG_INFO()
+
 PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 {
 	__initialize_midgard_classes_hash ();
@@ -318,11 +338,12 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 
 	/* Extend ReflectionClass */
 	static function_entry midgard_reflection_class_methods[] = {
-		PHP_ME(php_midgard_reflection_class, __construct,    php_midgard_reflection_class___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(php_midgard_reflection_class, getDocComment,  NULL,                                     ZEND_ACC_PUBLIC)
-		PHP_ME(php_midgard_reflection_class, listSignals,    NULL,                                     ZEND_ACC_PUBLIC)
-		PHP_ME(php_midgard_reflection_class, getParentClass, NULL,                                     ZEND_ACC_PUBLIC)
-		PHP_ME(php_midgard_reflection_class, getMethods,     php_midgard_reflection_class_getMethods,  ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, __construct,    php_midgard_reflection_class___construct,     ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(php_midgard_reflection_class, getDocComment,  NULL,                                         ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, listSignals,    NULL,                                         ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, getParentClass, NULL,                                         ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, getMethods,     php_midgard_reflection_class_getMethods,      ZEND_ACC_PUBLIC)
+		PHP_ME(php_midgard_reflection_class, get_user_value, php_midgard_reflection_class_get_user_value,  ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
