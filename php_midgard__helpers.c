@@ -4,7 +4,8 @@
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 2
 zend_class_entry *php_date_get_date_ce(void)
 {
-	zend_class_entry *dt_ce = php_midgard_get_baseclass_ptr_by_name("DateTime");
+	TSRMLS_FETCH();
+	zend_class_entry *dt_ce = php_midgard_get_baseclass_ptr_by_name("DateTime" TSRMLS_CC);
 
 	if (dt_ce == NULL) {
 		php_error(E_ERROR, "Can not find DateTime class pointer");
@@ -15,7 +16,8 @@ zend_class_entry *php_date_get_date_ce(void)
 
 zend_class_entry *php_date_get_timezone_ce(void)
 {
-	zend_class_entry *dtz_ce = php_midgard_get_baseclass_ptr_by_name("DateTimeZone");
+	TSRMLS_FETCH();
+	zend_class_entry *dtz_ce = php_midgard_get_baseclass_ptr_by_name("DateTimeZone" TSRMLS_CC);
 
 	if (dtz_ce == NULL) {
 		php_error(E_ERROR, "Can not find DateTimeZone class pointer");

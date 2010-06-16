@@ -20,6 +20,9 @@ ZEND_API zval* zend_call_method__mgd(zval **object_pp, zend_class_entry *obj_ce,
 # define Z_DELREF_PP(pptr) Z_DELREF_P(*(pptr))
 # define zend_parse_parameters_none() zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "")
 
+# define PHP_SORT_DESC 3
+# define PHP_SORT_ASC 4
+
 ZEND_API void zend_fcall_info_args_clear(zend_fcall_info *fci, int free_mem);
 
 zend_class_entry *php_date_get_date_ce(void);
