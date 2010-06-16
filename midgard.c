@@ -263,7 +263,7 @@ PHP_MINIT_FUNCTION(midgard2)
 	midgard_init();
 
 	/* register Gtype types from schemas */
-	if (!g_type_from_name("midgard_language") && midgard_global_schema == NULL) {
+	if (midgard_global_schema == NULL) {
 		midgard_global_schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
 		midgard_schema_init((MidgardSchema *) midgard_global_schema, NULL);
 		midgard_schema_read_dir((MidgardSchema *) midgard_global_schema, NULL);
