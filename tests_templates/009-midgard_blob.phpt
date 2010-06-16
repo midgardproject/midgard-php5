@@ -9,8 +9,6 @@ midgard.memory_debug = Off
 midgard.configuration=
 midgard.configuration_file=[[PATH]]/test.cfg
 report_memleaks = Off
---ENV--
-MIDGARD_ENV_GLOBAL_SHAREDIR=[[SHARE_PATH]]
 --FILE--
 <?php
 $cfg = new midgard_config();
