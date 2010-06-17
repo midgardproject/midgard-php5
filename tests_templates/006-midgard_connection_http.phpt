@@ -14,7 +14,8 @@ $cfg = new midgard_config();
 $cfg->read_file_at_path('[[CFG_FILE]]');
 
 $mgd = midgard_connection::get_instance();
-var_dump($mgd);
+var_dump($mgd instanceof midgard_connection);
+var_dump($mgd->config instanceof midgard_config);
 
 $str1 = var_export($mgd, true);
 $mgd = midgard_connection::get_instance();
@@ -31,8 +32,8 @@ var_dump($mgd->open_config($cfg2)); // false. as this is the other config
 ?>
 ===DONE===
 --EXPECTF--
-object(midgard_connection)#%d (0) {
-}
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(false)
