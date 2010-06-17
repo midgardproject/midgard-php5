@@ -1166,6 +1166,8 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 		return "midgard_view";
 	} else if (strcmp(g_class_name, "MidgardDBObject") == 0) {
 		return "midgard_dbobject";
+	} else if (strcmp(g_class_name, "MidgardConfig") == 0) {
+		return "midgard_config";
 	}
 
 	return g_class_name;
@@ -1189,7 +1191,8 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 		return "MidgardView";
 	} else if (strcmp(php_class_name, "midgard_dbobject") == 0) {
 		return "MidgardDBObject";
+	} else if (strcmp(php_class_name, "midgard_config") == 0) {
+		return "MidgardConfig";
 	}
-
 	return php_class_name;
 }
