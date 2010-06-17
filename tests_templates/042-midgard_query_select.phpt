@@ -50,11 +50,10 @@ var_dump($list[0]->a == 'abc');
 var_dump($list[1]->a == 'abc');
 
 
-$group = new midgard_query_constraint_group(
-    'AND',
-    new midgard_query_constraint(new midgard_query_property('a', $storage), '=', new midgard_query_value('abc')),
-    new midgard_query_constraint(new midgard_query_property('b', $storage), '=', new midgard_query_value('ghi'))
-);
+$group = new midgard_query_constraint_group('AND');
+
+$group->add_constraint(new midgard_query_constraint(new midgard_query_property('a', $storage), '=', new midgard_query_value('abc')));
+$group->add_constraint(new midgard_query_constraint(new midgard_query_property('b', $storage), '=', new midgard_query_value('ghi')));
 
 var_dump($q->set_constraint($group));
 var_dump($q->execute());

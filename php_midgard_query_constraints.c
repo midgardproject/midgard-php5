@@ -220,10 +220,17 @@ static PHP_METHOD(midgard_query_constraint_group, __construct)
 	int type_len = 3, num_varargs = 0;
 	zval ***varargs = NULL;
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 2
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &type, &type_len) == FAILURE) {
+		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to create constraint group");
+	    return;
+	}
+#else
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s*", &type, &type_len, &varargs, &num_varargs) == FAILURE) {
 		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to create constraint group");
 	    return;
 	}
+#endif
 
 	MidgardQueryConstraintGroup *constraint_group = NULL;
 
@@ -265,8 +272,11 @@ static PHP_METHOD(midgard_query_constraint_group, __construct)
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_constraint_group___construct, 0, 0, 0)
 	ZEND_ARG_INFO(0, type)
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 2
+#else
 	ZEND_ARG_OBJ_INFO(0, constraint, midgard_query_constraint_simple, 1)
 	ZEND_ARG_INFO(0, ...)
+#endif
 ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_constraint_group, get_type)
