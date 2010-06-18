@@ -1,4 +1,4 @@
-/* $Id$
+/*
    Copyright (C) 2000 The Midgard Project ry
    Copyright (C) 2005, 2006, 2007, 2008 Piotr Pokora, <piotrek.pokora@gmail.com>
 

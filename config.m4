@@ -1,5 +1,3 @@
-dnl $Id$
-
 dnl  Copyright (C) 2007 Piotr Pokora <piotrek.pokora@gmail.com>
 dnl  Copyright (C) 2010 Alexey Zakhlestin <indeyets@gmail.com>
 dnl 
