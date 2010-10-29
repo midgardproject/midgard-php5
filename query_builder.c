@@ -55,7 +55,9 @@ static PHP_METHOD(midgard_query_builder, __construct)
 	}
 
 	zend_class_entry *base_ce = php_midgard_get_baseclass_ptr(ce);
-	GType classtype = g_type_from_name((const gchar *)base_ce->name);
+	const gchar *g_base_class_name = php_class_name_to_g_class_name(base_ce->name);
+
+	GType classtype = g_type_from_name(g_base_class_name);
 
 	if (!g_type_is_a(classtype, MIDGARD_TYPE_DBOBJECT)) {
 		php_error(E_WARNING, "Expected %s derived class", g_type_name(MIDGARD_TYPE_DBOBJECT));
@@ -66,7 +68,7 @@ static PHP_METHOD(midgard_query_builder, __construct)
 	gobject = __php_gobject_ptr(zval_object);
 
 	if (!gobject) {
-		MidgardQueryBuilder *builder = midgard_query_builder_new(mgd, base_ce->name);
+		MidgardQueryBuilder *builder = midgard_query_builder_new(mgd, g_base_class_name);
 
 		if (!builder) {
 			php_midgard_error_exception_throw(mgd TSRMLS_CC);
