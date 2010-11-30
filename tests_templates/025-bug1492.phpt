@@ -8,7 +8,7 @@ midgard.http = On
 midgard.memory_debug = Off
 midgard.configuration=doesnotexist
 midgard.configuration_file=[[CFG_FILE]]
-report_memleaks = Off
+report_memleaks = On
 --FILE--
 <?php
 $mgd = midgard_connection::get_instance();

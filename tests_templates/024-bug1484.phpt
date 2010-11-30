@@ -8,7 +8,7 @@ midgard.http = On
 midgard.memory_debug = Off
 midgard.configuration=
 midgard.configuration_file=[[CFG_FILE]]
-report_memleaks = Off
+report_memleaks = On
 --FILE--
 <?php
 $a = new atype();
