@@ -825,6 +825,8 @@ void php_midgard_init_properties_objects(zval *zobject TSRMLS_DC)
 		zend_update_property(Z_OBJCE_P(zobject), zobject,
                              pspecs[i]->name, strlen(pspecs[i]->name),
                              prop_zobject TSRMLS_CC);
+
+		Z_DELREF_P(prop_zobject); // property holds reference now. remove local one
 	}
 
 	g_free(pspecs);
