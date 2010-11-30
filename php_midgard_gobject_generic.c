@@ -428,6 +428,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 					/* FIXME, property value (object) seems to be duplicated here */
 					_retval = php_midgard_datetime_object_from_property(zobject, Z_STRVAL_P(prop) TSRMLS_CC);
 					zend_hash_update(Z_OBJPROP_P(zobject), (gchar *) propname, strlen(propname)+1, (void *)&_retval, sizeof(zval *), NULL);
+					Z_DELREF_P(_retval);
 					Z_ADDREF_P(*dtp);
 				} else {
 					_retval = *dtp;
@@ -435,6 +436,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			} else {
 				_retval = php_midgard_datetime_object_from_property(zobject, propname TSRMLS_CC);
 				zend_hash_update(Z_OBJPROP_P(zobject), (gchar *) propname, strlen(propname)+1, (void *)&_retval, sizeof(zval *), NULL);
+				Z_DELREF_P(_retval);
 			}
 		/* Property of generic type. String, int, float, etc */
 		} else {
