@@ -8,7 +8,7 @@ midgard.http = Off
 midgard.memory_debug = Off
 midgard.configuration=
 midgard.configuration_file=[[PATH]]/test.cfg
-report_memleaks = Off
+report_memleaks = On
 --FILE--
 <?php
 $cfg = new midgard_config();
