@@ -368,6 +368,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 	GObjectClass *klass = NULL;
 
 	const gchar *propname = Z_STRVAL_P(prop);
+	int proplen = Z_STRLEN_P(prop) + 1;
 
 	if (propname == NULL || *propname == '\0')
 		php_error(E_ERROR, "Can not read empty property name");
@@ -383,9 +384,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 
 		/* Find GObject property */
 		if (G_IS_OBJECT_CLASS(klass)) {
-			const gchar *propname = Z_STRVAL_P(prop);
-
-			pspec =	g_object_class_find_property(klass, propname);
+			pspec = g_object_class_find_property(klass, propname);
 
 			if (pspec != NULL) {
 				is_native_property = TRUE;
@@ -406,7 +405,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			}
 
 			zval **property;
-			if (zend_hash_find(Z_OBJPROP_P(zobject), Z_STRVAL_P(prop), Z_STRLEN_P(prop)+1 ,(void **) &property) == SUCCESS) {
+			if (zend_hash_find(Z_OBJPROP_P(zobject), propname, proplen, (void **) &property) == SUCCESS) {
 				_retval = *property;
 				// zval_add_ref(property);
 			} else {
@@ -421,13 +420,13 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			}
 
 			zval **dtp;
-			if (zend_hash_find(Z_OBJPROP_P(zobject), Z_STRVAL_P(prop), Z_STRLEN_P(prop)+1 ,(void **) &dtp) == SUCCESS
+			if (zend_hash_find(Z_OBJPROP_P(zobject), propname, proplen ,(void **) &dtp) == SUCCESS
 				&& Z_TYPE_PP(dtp) == IS_OBJECT)
 			{
 				if (Z_REFCOUNT_P(*dtp) < 2) {
 					/* FIXME, property value (object) seems to be duplicated here */
-					_retval = php_midgard_datetime_object_from_property(zobject, Z_STRVAL_P(prop) TSRMLS_CC);
-					zend_hash_update(Z_OBJPROP_P(zobject), (gchar *) propname, strlen(propname)+1, (void *)&_retval, sizeof(zval *), NULL);
+					_retval = php_midgard_datetime_object_from_property(zobject, propname TSRMLS_CC);
+					zend_hash_update(Z_OBJPROP_P(zobject), propname, proplen, (void *)&_retval, sizeof(zval *), NULL);
 					Z_DELREF_P(_retval);
 					Z_ADDREF_P(*dtp);
 				} else {
@@ -435,7 +434,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 				}
 			} else {
 				_retval = php_midgard_datetime_object_from_property(zobject, propname TSRMLS_CC);
-				zend_hash_update(Z_OBJPROP_P(zobject), (gchar *) propname, strlen(propname)+1, (void *)&_retval, sizeof(zval *), NULL);
+				zend_hash_update(Z_OBJPROP_P(zobject), propname, proplen, (void *)&_retval, sizeof(zval *), NULL);
 				Z_DELREF_P(_retval);
 			}
 		/* Property of generic type. String, int, float, etc */
@@ -446,7 +445,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 
 			GValue pval = {0, };
 			g_value_init(&pval, pspec->value_type);
-			g_object_get_property(gobject, Z_STRVAL_P(prop), &pval);
+			g_object_get_property(gobject, propname, &pval);
 
 			MAKE_STD_ZVAL(_retval);
 			php_midgard_gvalue2zval(&pval, _retval TSRMLS_CC);
