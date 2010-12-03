@@ -423,19 +423,20 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			if (zend_hash_find(Z_OBJPROP_P(zobject), propname, proplen ,(void **) &dtp) == SUCCESS
 				&& Z_TYPE_PP(dtp) == IS_OBJECT)
 			{
-				if (Z_REFCOUNT_P(*dtp) < 2) {
-					/* FIXME, property value (object) seems to be duplicated here */
-					_retval = php_midgard_datetime_object_from_property(zobject, propname TSRMLS_CC);
-					zend_hash_update(Z_OBJPROP_P(zobject), propname, proplen, (void *)&_retval, sizeof(zval *), NULL);
-					Z_DELREF_P(_retval);
-					Z_ADDREF_P(*dtp);
-				} else {
-					_retval = *dtp;
+				if (MGDG(midgard_memory_debug)) {
+					printf("[%p] property's tmp-var refcount: %d [%s]\n", zobject, Z_REFCOUNT_P(*dtp), propname);
 				}
+
+				_retval = *dtp;
 			} else {
 				_retval = php_midgard_datetime_object_from_property(zobject, propname TSRMLS_CC);
 				zend_hash_update(Z_OBJPROP_P(zobject), propname, proplen, (void *)&_retval, sizeof(zval *), NULL);
-				Z_DELREF_P(_retval);
+				Z_DELREF_P(_retval); //remove extra reference
+
+				if (MGDG(midgard_memory_debug)) {
+					php_printf("===========> caching\n");
+					printf("[%p] property's tmp-var refcount: %d [%s]\n", zobject, Z_REFCOUNT_P(*dtp), propname);
+				}
 			}
 		/* Property of generic type. String, int, float, etc */
 		} else {
