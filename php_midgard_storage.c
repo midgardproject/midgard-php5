@@ -48,7 +48,7 @@ static PHP_METHOD(midgard_storage, create_class_storage)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_create(mgd, classname);
+	zend_bool rv = (zend_bool) midgard_storage_create(mgd, php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
@@ -66,7 +66,7 @@ static PHP_METHOD(midgard_storage, update_class_storage)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_update(mgd_handle(TSRMLS_C), classname);
+	zend_bool rv = (zend_bool) midgard_storage_update(mgd_handle(TSRMLS_C), php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
@@ -84,7 +84,7 @@ static PHP_METHOD(midgard_storage, delete_class_storage)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_delete(mgd_handle(TSRMLS_C), classname);
+	zend_bool rv = (zend_bool) midgard_storage_delete(mgd_handle(TSRMLS_C), php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
@@ -102,7 +102,7 @@ static PHP_METHOD(midgard_storage, class_storage_exists)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_exists(mgd_handle(TSRMLS_C), classname);
+	zend_bool rv = (zend_bool) midgard_storage_exists(mgd_handle(TSRMLS_C), php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
