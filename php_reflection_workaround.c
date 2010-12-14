@@ -315,7 +315,10 @@ static PHP_METHOD(php_midgard_reflection_class, get_user_value)
 	const gchar *value = midgard_reflector_object_get_schema_value(Z_STRVAL_P(class_name), field_name);
 	zval_ptr_dtor(&class_name);
 
-	RETURN_STRING(value, 1);
+	if (value)
+		RETURN_STRING(value, 1);
+
+	RETURN_NULL();
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_midgard_reflection_class_get_user_value, 0, 0, 1)
