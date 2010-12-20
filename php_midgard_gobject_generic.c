@@ -1174,6 +1174,8 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 		return "midgard_config";
 	} else if (strcmp(g_class_name, "MidgardDbus") == 0) {
 		return "midgard_dbus";
+	} else if (strcmp(g_class_name, "MidgardReflectionProperty") == 0) {
+		return "midgard_reflection_property";
 	}
 
 	return g_class_name;
@@ -1201,6 +1203,9 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 		return "MidgardConfig";
 	} else if (strcmp(php_class_name, "midgard_dbus") == 0) {
 		return "MidgardDbus";
+	} else if (strcmp(php_class_name, "midgard_reflection_property") == 0) {
+		return "MidgardReflectionProperty";
 	}
+
 	return php_class_name;
 }
