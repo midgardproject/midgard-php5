@@ -179,6 +179,23 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_connection_open, 0, 0, 1)
 	ZEND_ARG_INFO(0, name)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_connection, reopen)
+{
+	RETVAL_FALSE;
+	zend_bool rv;
+
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardConnection *mgd = __midgard_connection_get_ptr (getThis());
+	rv = (zend_bool) midgard_connection_reopen (mgd);
+
+	RETURN_BOOL(rv);
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_reopen, 0)
+ZEND_END_ARG_INFO()
+
 static PHP_METHOD(midgard_connection, open_config)
 {
 	RETVAL_FALSE;
