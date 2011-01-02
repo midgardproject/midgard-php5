@@ -187,8 +187,8 @@ static PHP_METHOD(midgard_connection, reopen)
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MidgardConnection *mgd = __midgard_connection_get_ptr (getThis());
-	rv = (zend_bool) midgard_connection_reopen (mgd);
+	MidgardConnection *mgd = __midgard_connection_get_ptr(getThis());
+	rv = (zend_bool) midgard_connection_reopen(mgd);
 
 	RETURN_BOOL(rv);
 }
