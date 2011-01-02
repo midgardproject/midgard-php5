@@ -153,6 +153,7 @@ static PHP_GINIT_FUNCTION(midgard2);
 
 static zend_module_dep midgard2_deps[] = {
 	ZEND_MOD_REQUIRED("date")
+	ZEND_MOD_REQUIRED("spl")
 	{NULL, NULL, NULL}
 };
 
