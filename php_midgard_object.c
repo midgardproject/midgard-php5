@@ -77,7 +77,6 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php
 /* Object constructor */
 PHP_FUNCTION(_midgard_php_object_constructor)
 {
-	RETVAL_FALSE;
 	zval *zval_object = getThis();
 	zend_class_entry *zce = php_midgard_get_mgdschema_class_ptr(Z_OBJCE_P(zval_object));
 	const char *zend_classname = zce->name;
@@ -101,8 +100,6 @@ PHP_FUNCTION(_midgard_php_object_constructor)
 
 		if (init_php_midgard_object_from_id(zval_object, zend_classname, objid TSRMLS_CC) == FALSE)
 			return;
-
-		RETVAL_TRUE;
 
 		gobject = __php_gobject_ptr(zval_object);
 	} else {
