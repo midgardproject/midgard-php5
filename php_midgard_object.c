@@ -23,6 +23,7 @@
 #include "php_midgard__helpers.h"
 
 #include <Zend/zend_exceptions.h>
+#include <spl/spl_exceptions.h>
 
 zend_class_entry *php_midgard_dbobject_class = NULL;
 zend_class_entry *php_midgard_object_class = NULL;
@@ -51,10 +52,12 @@ static zend_bool init_php_midgard_object_from_id(zval *instance, const char *php
 			// if it is short and numeric, then it is id!
 			if (Z_STRLEN_P(objid) < 10 && is_numeric_string(Z_STRVAL_P(objid), Z_STRLEN_P(objid), NULL, NULL, 0)) {
 				convert_to_long(objid);
+			} else if (!midgard_is_guid(Z_STRVAL_P(objid))) {
+				zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0 TSRMLS_CC, "'%s' is not a valid guid", Z_STRVAL_P(objid));
+				return FALSE;
 			}
 		} else {
-			php_error(E_WARNING, "Wrong id-type for '%s' constructor", php_classname);
-			php_midgard_error_exception_throw(mgd TSRMLS_CC);
+			zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0 TSRMLS_CC, "Wrong id-type for '%s' constructor. Expecting number or guid", php_classname);
 			return FALSE;
 		}
 
