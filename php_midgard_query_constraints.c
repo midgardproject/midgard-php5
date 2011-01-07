@@ -419,6 +419,7 @@ static void php_midgard_array_from_constraints(MidgardQueryConstraintSimple **ob
 		zval *zobject;
 		MAKE_STD_ZVAL(zobject);
 
+		g_object_ref(constraint);
 		php_midgard_gobject_new_with_gobject(zobject, ce, G_OBJECT(constraint), TRUE TSRMLS_CC);
 
 		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
