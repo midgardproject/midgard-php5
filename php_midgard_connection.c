@@ -126,13 +126,9 @@ PHP_METHOD(midgard_connection, get_instance)
 		return;
 	}
 
-	instance = zend_read_static_property(php_midgard_connection_class, "instance", sizeof("instance")-1, 1 TSRMLS_CC);
+	instance = zend_read_static_property(php_midgard_connection_class, "instance", sizeof("instance")-1, 0 TSRMLS_CC);
 
-	if (instance == NULL || ZVAL_IS_NULL(instance)) {
-		/* instance is not found. we need to create it */
-		zval_ptr_dtor(&instance);
-		MAKE_STD_ZVAL(instance);
-
+	if (ZVAL_IS_NULL(instance)) {
 		object_init_ex(instance, php_midgard_connection_class);
 		zend_call_method_with_0_params(&instance, php_midgard_connection_class, &php_midgard_connection_class->constructor, "__construct", NULL);
 
