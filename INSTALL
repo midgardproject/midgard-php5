@@ -24,6 +24,8 @@ midgard.http=On
 
 and make sure that extension_dir at least contains the output of `php-config --extension-dir`
 
+Read 'HTTP SERVER NOTES' section for more details.
+
 4 - Stop and start httpd.
 
 You may stop and start httpd server when midgard-data is already configured and 
@@ -40,6 +42,12 @@ midgard.configuration
 	and you can change it later, during runtime. Usable with virtual hosts.
 	( For example: php_admin_value midgard.configuration midgard )
 
+midgard.configuration_file
+	Full path (including file name) to midgard unified configuration file.
+	It's not used if midgard.http is 'Off'. It's set when module is loaded, 
+	and you can change it later, during runtime. Usable with virtual hosts.
+	( For example: php_admin_value midgard.configuration_file /home/john/.midgard2/midgard.conf )
+
 midgard.http
 	Switch which forces midgard module to initialize all system configurations
 	when module is loaded. All connections to all defined databases	are made at once. 
@@ -55,3 +63,20 @@ midgard.quota
 	Disable or enable quota check. Default is 'Off'.
 	You can change it between requests and also use in .htaccess files.
 
+
+########################################################
+#############  HTTP SERVER NOTES  ######################
+########################################################
+
+1. APACHE 
+
+In php.ini or in midgard2.ini configuration file these config keys must be added:
+midgard.http On
+midgard.engine On
+
+In virtual host configuration:
+php_admin_value midgard.configuration 'midgard'
+
+2. LIGHTTPD
+
+3. NGINX
