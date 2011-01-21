@@ -62,8 +62,6 @@ static PHP_METHOD(midgard_user, __construct)
 	} else {
 		// we already have gobject injected
 	}
-
-	php_midgard_init_properties_objects(zval_object TSRMLS_CC);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user___construct, 0, 1, 1)

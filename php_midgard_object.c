@@ -109,7 +109,6 @@ PHP_FUNCTION(_midgard_php_object_constructor)
 		// we already have gobject injected
 	}
 
-	php_midgard_init_properties_objects(zval_object TSRMLS_CC);
 	php_midgard_object_connect_class_closures(gobject, zval_object TSRMLS_CC);
 	g_signal_emit(gobject, MIDGARD_OBJECT_GET_CLASS(gobject)->signal_action_loaded_hook, 0);
 
