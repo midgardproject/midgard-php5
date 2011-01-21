@@ -20,18 +20,12 @@
 #include "php_midgard_timestamp.h"
 #include <zend_interfaces.h>
 #include <date/php_date.h>
+
 #include "php_midgard_gobject.h"
 
 #include "php_midgard__helpers.h"
 
 zend_class_entry *php_midgard_datetime_class;
-
-#define _GET_MIDGARD_DATE_OBJECT { \
-	zval *zval_object = getThis(); \
-	midgard_date_obj *intern = \
-		(midgard_date_obj *)zend_object_store_get_object(zval_object TSRMLS_CC); \
-	if (!intern) \
-		php_error(E_ERROR, "Can not find underlying midgard_datetime object instance"); }
 
 zval * get_UTC_timezone(TSRMLS_D)
 {
@@ -105,7 +99,7 @@ static void _set_gobject_timestamp_property(zval *zobject TSRMLS_DC)
 	ZVAL_STRING(fmt, "c", 1);
 
 	/* Invoke Datetime::format */
-	zval *_retval;
+	zval *_retval = NULL;
 	zend_call_method_with_1_params(&zobject, Z_OBJCE_P(zobject), NULL, "format", &_retval, fmt);
 	zval_ptr_dtor(&fmt);
 
@@ -114,10 +108,13 @@ static void _set_gobject_timestamp_property(zval *zobject TSRMLS_DC)
 
 	/* GObject is found, sets it property */
 	if (gobject) {
-		g_object_set(gobject, (const gchar *) Z_STRVAL_P(_propname), Z_STRVAL_P(_retval), NULL);
+		GValue *prop_val = php_midgard_zval2gvalue(_retval TSRMLS_CC);
+		g_object_set_property(gobject, (const gchar *) Z_STRVAL_P(_propname), prop_val);
+		g_value_unset(prop_val);
+		g_free(prop_val);
 	}
 
-	zval_dtor(_retval);
+	zval_ptr_dtor(&_retval);
 
 	return;
 }
@@ -135,10 +132,11 @@ static PHP_METHOD(midgard_datetime, setDate)
 	this = getThis();
 
 	zend_call_method_with_3_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "setdate", &retval, arg1, arg2, arg3);
+	zval_ptr_dtor(&retval);
 
 	_set_gobject_timestamp_property(this TSRMLS_CC);
 
-	RETURN_ZVAL(retval, 1, 1);
+	RETURN_ZVAL(this, 1, 0);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_datetime_setdate, 0, 0, 3)
@@ -163,9 +161,10 @@ static PHP_METHOD(midgard_datetime, setTime)
 	} else {
 		zend_call_method_with_2_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "settime", &retval, arg1, arg2);
 	}
+	zval_ptr_dtor(&retval);
 
 	_set_gobject_timestamp_property(this TSRMLS_CC);
-	RETURN_ZVAL(retval, 1, 1);
+	RETURN_ZVAL(this, 1, 0);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_datetime_settime, 0, 0, 2)
@@ -190,15 +189,38 @@ static PHP_METHOD(midgard_datetime, setISODate)
 	} else {
 		zend_call_method_with_2_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "setisodate", &retval, arg1, arg2);
 	}
+	zval_ptr_dtor(&retval);
 
 	_set_gobject_timestamp_property(this TSRMLS_CC);
-	RETURN_ZVAL(retval, 1, 1);
+	RETURN_ZVAL(this, 1, 0);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_datetime_setisodate, 0, 0, 2)
 	ZEND_ARG_INFO(0, year)
 	ZEND_ARG_INFO(0, week)
 	ZEND_ARG_INFO(0, day)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_datetime, setTimestamp)
+{
+	zval *this;
+	zval *retval, *arg1 = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &arg1) == FAILURE) {
+		return;
+	}
+
+	this = getThis();
+
+	zend_call_method_with_1_params(&this, zend_datetime_class_ptr, (zend_function **)NULL, "settimestamp", &retval, arg1);
+	zval_ptr_dtor(&retval);
+
+	_set_gobject_timestamp_property(this TSRMLS_CC);
+	RETURN_ZVAL(this, 1, 0);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_datetime_settimestamp, 0, 0, 1)
+	ZEND_ARG_INFO(0, setTimestamp)
 ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_datetime, modify)
@@ -228,17 +250,18 @@ static PHP_METHOD(midgard_datetime, __toString)
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
+	zval *zend_object = getThis();
+
 	/* Prepare DateTime::format argument */
 	zval *fmt;
 	MAKE_STD_ZVAL(fmt);
 	ZVAL_STRING(fmt, "c", 0);
 
 	/* Invoke Datetime::format */
-	zval *zend_object = getThis();
-	zval *strv = NULL;
-	zend_call_method_with_1_params(&zend_object, Z_OBJCE_P(zend_object), NULL, "format", &strv, fmt);
+	zval *retval = NULL;
+	zend_call_method_with_1_params(&zend_object, Z_OBJCE_P(zend_object), NULL, "format", &retval, fmt);
 
-	RETURN_ZVAL(strv, 1, 1);
+	RETURN_ZVAL(retval, 1, 1);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_datetime___tostring, 0, 0, 0)
@@ -247,13 +270,14 @@ ZEND_END_ARG_INFO()
 PHP_MINIT_FUNCTION(midgard2_datetime)
 {
 	static function_entry midgard_datetime_methods[] = {
-		PHP_ME(midgard_datetime, __construct, arginfo_midgard_datetime___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-		PHP_ME(midgard_datetime, setTimezone, arginfo_midgard_datetime_settimezone, ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime, setTime,     arginfo_midgard_datetime_settime,     ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime, setDate,     arginfo_midgard_datetime_setdate,     ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime, setISODate,  arginfo_midgard_datetime_setisodate,  ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime, modify,      arginfo_midgard_datetime_modify,      ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_datetime, __toString,  arginfo_midgard_datetime___tostring,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, __construct,  arginfo_midgard_datetime___construct,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		PHP_ME(midgard_datetime, setTimezone,  arginfo_midgard_datetime_settimezone,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, setTime,      arginfo_midgard_datetime_settime,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, setDate,      arginfo_midgard_datetime_setdate,      ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, setISODate,   arginfo_midgard_datetime_setisodate,   ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, setTimestamp, arginfo_midgard_datetime_settimestamp, ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, modify,       arginfo_midgard_datetime_modify,       ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_datetime, __toString,   arginfo_midgard_datetime___tostring,   ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 

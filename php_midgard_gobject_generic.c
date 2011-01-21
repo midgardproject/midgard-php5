@@ -669,8 +669,8 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
 	for (i = 0; i < propn; i++) {
-		if (G_TYPE_FUNDAMENTAL(props[i]->value_type) == G_TYPE_OBJECT) {
-			if (php_gobject->has_properties) {
+		if (php_gobject->has_properties) {
+			if (G_TYPE_FUNDAMENTAL(props[i]->value_type) == G_TYPE_OBJECT) {
 				// do not reinit objects
 				continue;
 			}
@@ -681,9 +681,15 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 		g_object_get_property(gobject, (gchar*)props[i]->name, &pval);
 
 		zval *tmp;
-		MAKE_STD_ZVAL(tmp);
 
-		php_midgard_gvalue2zval(&pval, tmp TSRMLS_CC);
+		if (props[i]->value_type == MGD_TYPE_TIMESTAMP) {
+			// link it to object
+			tmp = php_midgard_datetime_object_from_property(zobject, props[i]->name TSRMLS_CC);
+		} else {
+			MAKE_STD_ZVAL(tmp);
+			php_midgard_gvalue2zval(&pval, tmp TSRMLS_CC);
+		}
+
 		zend_hash_update(php_gobject->zo.properties,
 				props[i]->name, strlen(props[i]->name)+1,
 				(void *)&tmp, sizeof(zval *), NULL);

@@ -30,5 +30,6 @@ void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue TSRMLS_DC
 
 zval *php_midgard_datetime_object_from_property(zval *object, const gchar *property TSRMLS_DC);
 zval *php_midgard_datetime_get_timestamp(const zval *object TSRMLS_DC);
+zval *php_midgard_datetime_get_timestamp_from_gval(const GValue *gval TSRMLS_DC);
 
 #endif /* PHP_MIDGARD_TIMESTAMP_H */

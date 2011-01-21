@@ -35,11 +35,10 @@ zval *php_midgard_datetime_get_timestamp(const zval *object TSRMLS_DC)
 	return _retval;
 }
 
-void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue TSRMLS_DC)
+zval *php_midgard_datetime_get_timestamp_from_gval(const GValue *gval TSRMLS_DC)
 {
 	g_assert(gval != NULL);
-	g_assert(zvalue != NULL);
-	g_return_if_fail(G_VALUE_HOLDS(gval, MGD_TYPE_TIMESTAMP));
+	g_return_val_if_fail(G_VALUE_HOLDS(gval, MGD_TYPE_TIMESTAMP), NULL);
 
 	GValue str_val = {0, };
 	g_value_init(&str_val, G_TYPE_STRING);
@@ -54,6 +53,17 @@ void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue TSRMLS_DC
 	ZVAL_STRING(date, (gchar *)timestamp, 1);
 
 	g_value_unset(&str_val);
+
+	return date;
+}
+
+void php_midgard_datetime_from_gvalue(const GValue *gval, zval *zvalue TSRMLS_DC)
+{
+	g_assert(gval != NULL);
+	g_assert(zvalue != NULL);
+	g_return_if_fail(G_VALUE_HOLDS(gval, MGD_TYPE_TIMESTAMP));
+
+	zval *date = php_midgard_datetime_get_timestamp_from_gval(gval TSRMLS_CC);
 
 	if (zvalue == NULL)
 		MAKE_STD_ZVAL(zvalue);
@@ -82,19 +92,7 @@ zval *php_midgard_datetime_object_from_property(zval *object, const gchar *prope
 
 	g_object_get_property(gobject, property, &tprop);
 
-	GValue str_val = {0, };
-	g_value_init(&str_val, G_TYPE_STRING);
-	g_value_transform(&tprop, &str_val);
-	const gchar *timestamp = g_value_get_string(&str_val);
-
-	if (timestamp == NULL)
-		timestamp = g_strdup(MIDGARD_DEFAULT_DATETIME);
-
-	zval *date;
-	MAKE_STD_ZVAL(date);
-	ZVAL_STRING(date, (gchar *)timestamp, 1);
-
-	g_value_unset(&str_val);
+	zval *date = php_midgard_datetime_get_timestamp_from_gval(&tprop TSRMLS_CC);
 	g_value_unset(&tprop);
 
 	zval *mdate_object;
