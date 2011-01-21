@@ -115,6 +115,7 @@ ZEND_BEGIN_MODULE_GLOBALS(midgard2)
 	zend_bool midgard_http;
 	zend_bool midgard_memory_debug;
 	zend_bool superglobals_compat;
+	zend_bool valgrind_friendly;
 ZEND_END_MODULE_GLOBALS(midgard2)
 
 ZEND_EXTERN_MODULE_GLOBALS(midgard2)

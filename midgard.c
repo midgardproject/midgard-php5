@@ -183,8 +183,7 @@ STD_PHP_INI_BOOLEAN("midgard.http",                "0", PHP_INI_SYSTEM, OnUpdate
 STD_PHP_INI_BOOLEAN("midgard.engine",              "1", PHP_INI_ALL,    OnUpdateBool,   midgard_engine,             zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.memory_debug",        "0", PHP_INI_ALL,    OnUpdateBool,   midgard_memory_debug,       zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.superglobals_compat", "0", PHP_INI_SYSTEM, OnUpdateBool,   superglobals_compat,        zend_midgard2_globals, midgard2_globals)
-// quota isn't used?
-// STD_PHP_INI_BOOLEAN("midgard.quota",        "0", PHP_INI_ALL,    OnUpdateBool, midgard_quota,        midgard2_globals *, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.valgrind_friendly",   "0", PHP_INI_SYSTEM, OnUpdateBool,   valgrind_friendly,          zend_midgard2_globals, midgard2_globals)
 PHP_INI_END()
 
 static zend_bool php_midgard_engine_is_enabled(TSRMLS_D)
@@ -582,7 +581,7 @@ PHP_RSHUTDOWN_FUNCTION(midgard2)
 	}
 	php_midgard_gobject_closure_hash_free();
 
-	if (MGDG(midgard_memory_debug)) {
+	if (MGDG(valgrind_friendly)) {
 		/* It's not safe, but allow valgrind to print function names.
 		 * It simply forces Zend to not unload midgard module */
 		zend_module_entry *module;
@@ -590,7 +589,6 @@ PHP_RSHUTDOWN_FUNCTION(midgard2)
 								MIDGARD_PACKAGE_NAME, strlen(MIDGARD_PACKAGE_NAME) + 1,
 								(void**)&module);
 		if (rv == SUCCESS) {
-			php_printf("---> disable module handle\n");
 			module->handle = 0;
 		}
 	}
