@@ -48,7 +48,9 @@ foreach ($re->getClasses() as $class_ref) {
 
     $name = $class_mgd_ref->getName();
     echo 'midgard_storage: create_class_storage('.$name.")\n";
-    midgard_storage::create_class_storage($name);
+    if (true !== midgard_storage::create_class_storage($name)) {
+        throw new Exception('Failed to create storage for "'.$name.': "'.midgard_connection::get_instance()->get_error_string());
+    }
 }
 
 exit(0);
