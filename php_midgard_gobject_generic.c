@@ -387,6 +387,14 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			if (pspec != NULL) {
 				is_native_property = TRUE;
 			}
+
+			if (!(pspec->flags & G_PARAM_READABLE)) {
+				MAKE_STD_ZVAL(_retval);
+				ZVAL_NULL(_retval);
+				Z_DELREF_P(_retval); // we don't have local reference, so need to decrement refcount
+
+				return _retval;
+			}
 		}
 	}
 
@@ -669,6 +677,11 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
 	for (i = 0; i < propn; i++) {
+		if (!(props[i]->flags & G_PARAM_READABLE)) {
+			// not readable
+			continue;
+		}
+
 		if (php_gobject->has_properties) {
 			if (G_TYPE_IS_OBJECT(props[i]->value_type) || G_TYPE_IS_INTERFACE(props[i]->value_type)) {
 				// do not reinit objects
