@@ -424,7 +424,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 					printf("[%p] property's tmp-var refcount: %d [%s]\n", zobject, Z_REFCOUNT_P(_retval), propname);
 				}
 			}
-		} else if (G_TYPE_IS_OBJECT(prop_type)) {
+		} else if (G_TYPE_IS_OBJECT(prop_type) || G_TYPE_IS_INTERFACE(prop_type)) {
 			/* Property of object type. $obj->metadata for example. */
 			if (MGDG(midgard_memory_debug)) {
 				php_printf("==========> G_TYPE_OBJECT\n");
@@ -670,7 +670,7 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 
 	for (i = 0; i < propn; i++) {
 		if (php_gobject->has_properties) {
-			if (G_TYPE_FUNDAMENTAL(props[i]->value_type) == G_TYPE_OBJECT) {
+			if (G_TYPE_IS_OBJECT(props[i]->value_type) || G_TYPE_IS_INTERFACE(props[i]->value_type)) {
 				// do not reinit objects
 				continue;
 			}
