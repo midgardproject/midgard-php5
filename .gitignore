@@ -23,3 +23,12 @@ modules/
 pakePhpExtensionTask.yaml
 run-tests.php
 tmp-php.ini
+/tests/midgard.log
+/tests/test.cfg
+/tests/test.db
+/tests/*.sh
+/tests/*.php
+/tests/*.log
+/tests/*.out
+/tests/*.exp
+/tests/*.diff
