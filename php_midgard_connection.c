@@ -142,6 +142,25 @@ PHP_METHOD(midgard_connection, get_instance)
 ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_get_instance, 0)
 ZEND_END_ARG_INFO()
 
+PHP_METHOD(midgard_connection, copy)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardConnection *mgd = __midgard_connection_get_ptr(getThis());
+	MidgardConnection *copy = midgard_connection_copy(mgd);
+
+	guint loghandler = g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_MASK, php_midgard_log_errors, (gpointer)copy);
+	midgard_connection_set_loghandler(copy, loghandler);
+
+	MGD_PHP_SET_GOBJECT(getThis(), copy);
+
+	RETURN_TRUE;
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_copy, 0)
+ZEND_END_ARG_INFO()
+
 static PHP_METHOD(midgard_connection, open)
 {
 	RETVAL_FALSE;
@@ -400,6 +419,7 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 		PHP_ME(midgard_connection, __construct,      arginfo_midgard_connection___construct,      ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 		PHP_ME(midgard_connection, __destruct,       arginfo_midgard_connection___destruct,       ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
 		PHP_ME(midgard_connection, get_instance,     arginfo_midgard_connection_get_instance,     ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_connection, copy,             arginfo_midgard_connection_copy,             ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, open,             arginfo_midgard_connection_open,             ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, reopen,           arginfo_midgard_connection_reopen,           ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, open_config,      arginfo_midgard_connection_open_config,      ZEND_ACC_PUBLIC)
