@@ -72,6 +72,37 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_dbus_send, 0, 0, 2)
 	ZEND_ARG_INFO(0, use_session)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_dbus, connect)
+{
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_dbus_connect, 0, 0, 2)
+	ZEND_ARG_INFO(0, signal)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, user_data)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_dbus, get_message)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardDbus *mbus = MIDGARD_DBUS(__php_gobject_ptr(getThis()));
+	const gchar *msg = midgard_dbus_get_message(mbus);
+
+	if (msg)
+		RETURN_STRING((char*)msg, 1);
+
+	RETURN_NULL();
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_dbus_get_message, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_dbus)
 {
@@ -79,6 +110,8 @@ PHP_MINIT_FUNCTION(midgard2_dbus)
 	static function_entry midgard_dbus_methods[] = {
 		PHP_ME(midgard_dbus, __construct, arginfo_midgard_dbus___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_dbus, send,        arginfo_midgard_dbus_send,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_dbus, connect,	  arginfo_midgard_dbus_connect,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_dbus, get_message, arginfo_midgard_dbus_get_message, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
