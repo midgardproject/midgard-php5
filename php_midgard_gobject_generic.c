@@ -386,14 +386,14 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 
 			if (pspec != NULL) {
 				is_native_property = TRUE;
-			}
 
-			if (!(pspec->flags & G_PARAM_READABLE)) {
-				MAKE_STD_ZVAL(_retval);
-				ZVAL_NULL(_retval);
-				Z_DELREF_P(_retval); // we don't have local reference, so need to decrement refcount
+				if (!(pspec->flags & G_PARAM_READABLE)) {
+					MAKE_STD_ZVAL(_retval);
+					ZVAL_NULL(_retval);
+					Z_DELREF_P(_retval); // we don't have local reference, so need to decrement refcount
 
-				return _retval;
+					return _retval;
+				}
 			}
 		}
 	}
