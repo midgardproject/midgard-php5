@@ -330,32 +330,24 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_
 
 	int _retval = 0;
 
-	switch (pspec->value_type) {
-		case G_TYPE_STRING:
-		{
-			const gchar *emptystr = g_value_get_string(&pval);
+	if (pspec->value_type == G_TYPE_STRING) {
+		const gchar *emptystr = g_value_get_string(&pval);
 
-			_retval = 1;
-			if (!emptystr || *emptystr == '\0' || (*emptystr == '0' && *++emptystr == '\0'))
-				_retval = 0;
+		_retval = 1;
+		if (!emptystr || *emptystr == '\0' || (*emptystr == '0' && *++emptystr == '\0'))
+			_retval = 0;
+	} else if (pspec->value_type == G_TYPE_INT) {
+		_retval = (g_value_get_int(&pval) != 0);
+	} else if (pspec->value_type == G_TYPE_UINT) {
+		_retval = (g_value_get_uint(&pval) != 0);
+	} else if (G_TYPE_IS_OBJECT(pspec->value_type) || G_TYPE_IS_INTERFACE(pspec->value_type)) {
+		GObject *ptr = g_value_get_object(&pval);
+		if (MGDG(midgard_memory_debug)) {
+			printf("[%p] ----> property gobject: %p, ref_count = %d\n", zobject, ptr, ptr->ref_count);
 		}
-			break;
-
-		case G_TYPE_INT:
-			_retval = (g_value_get_int(&pval) != 0);
-			break;
-
-		case G_TYPE_UINT:
-			_retval = (g_value_get_uint(&pval) != 0);
-			break;
-
-		case G_TYPE_OBJECT:
-			_retval = (NULL != g_value_get_object(&pval));
-			break;
-
-		default:
-			_retval = 1;
-			break;
+		_retval = (NULL != ptr);
+	} else {
+		_retval = 1;
 	}
 
 	g_value_unset(&pval);
