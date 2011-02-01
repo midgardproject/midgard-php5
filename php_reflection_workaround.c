@@ -186,24 +186,27 @@ static PHP_METHOD(php_midgard_reflection_class, listSignals)
 	}
 
 	_GET_RC_CE;
-	array_init(return_value);
 
 	if (ce == NULL)
 		return;
 
+	array_init(return_value);
+
 	GType classtype = g_type_from_name(php_class_name_to_g_class_name(ce->name));
-	guint *ids;
-	guint n_ids;
-	guint i;
 
-	if (!classtype)
+	if (!classtype) {
 		return;
+	}
 
-	ids = g_signal_list_ids(classtype, &n_ids);
 
-	if (ids == NULL)
+	guint n_ids = 0;
+	guint *ids = g_signal_list_ids(classtype, &n_ids);
+
+	if (ids == NULL) {
 		return;
+	}
 
+	size_t i;
 	for (i = 0; i < n_ids; i++) {
 
 		zval *signalname;
