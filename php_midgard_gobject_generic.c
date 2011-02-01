@@ -1032,6 +1032,10 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 {
 	if (strcmp(g_class_name, "MidgardMetadata") == 0) {
 		return "midgard_metadata";
+	} else if (strcmp(g_class_name, "MidgardDBObject") == 0) {
+		return "midgard_dbobject";
+	} else if (strcmp(g_class_name, "MidgardObject") == 0) {
+		return "midgard_object";
 	} else if (strcmp(g_class_name, "MidgardConnection") == 0) {
 		return "midgard_connection";
 	} else if (strcmp(g_class_name, "MidgardQueryStorage") == 0) {
@@ -1067,6 +1071,10 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 {
 	if (strcmp(php_class_name, "midgard_metadata") == 0) {
 		return "MidgardMetadata";
+	} else if (strcmp(php_class_name, "midgard_dbobject") == 0) {
+		return "MidgardDBObject";
+	} else if (strcmp(php_class_name, "midgard_object") == 0) {
+		return "MidgardObject";
 	} else if (strcmp(php_class_name, "midgard_connection") == 0) {
 		return "MidgardConnection";
 	} else if (strcmp(php_class_name, "midgard_query_storage") == 0) {

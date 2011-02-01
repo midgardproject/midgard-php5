@@ -42,7 +42,11 @@ var_dump($cls->getDocComment());
 $cls = new midgard_reflection_class('midgard_connection');
 var_dump($cls->listSignals());
 
+$cls = new midgard_reflection_class('midgard_object');
+var_dump(count($cls->listSignals()) > 0);
+
 $cls = new midgard_reflection_class('atype');
+var_dump(count($cls->listSignals()) == 0);
 
 $parent = $cls->getParentClass();
 var_dump($parent instanceof midgard_reflection_class);
@@ -79,6 +83,8 @@ array(5) {
   [4]=>
   string(12) "disconnected"
 }
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)
