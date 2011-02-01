@@ -293,7 +293,7 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 /* OBJECTS ROUTINES */
 
 /* check if there is glib-property of object linked to zval */
-int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_DC)
+int php_midgard_gobject_has_property(zval *zobject, zval *prop, int has_set_exists TSRMLS_DC)
 {
 	GObject *gobject = __php_gobject_ptr(zobject);
 	char *prop_name = Z_STRVAL_P(prop);
@@ -313,45 +313,30 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_
 		printf("[%p] ----> gobject: %p, ref_count = %d\n", zobject, gobject, gobject->ref_count);
 	}
 
-	GParamSpec *pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(gobject), prop_name);
+	zval *value = php_midgard_gobject_read_property(zobject, prop, has_set_exists TSRMLS_CC);
 
-	if (!pspec) {
-		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
-		return std_hnd->has_property(zobject, prop, BP_VAR_NA TSRMLS_CC);
+	if (MGDG(midgard_memory_debug)) {
+		printf("[%p] ----> property: %p, ref_count = %d\n", zobject, value, Z_REFCOUNT_P(value));
 	}
 
-	if (type == 2) {
-		return 1;
+	int result;
+
+	switch (has_set_exists) {
+	case 0:
+		result = (Z_TYPE_P(value) != IS_NULL);
+		break;
+	default:
+		result = zend_is_true(value);
+		break;
+	case 2:
+		result = 1;
+		break;
 	}
 
-	GValue pval = {0, };
-	g_value_init(&pval, pspec->value_type);
-	g_object_get_property(gobject, prop_name, &pval);
+	Z_ADDREF_P(value);
+	zval_ptr_dtor(&value);
 
-	int _retval = 0;
-
-	if (pspec->value_type == G_TYPE_STRING) {
-		const gchar *emptystr = g_value_get_string(&pval);
-
-		_retval = 1;
-		if (!emptystr || *emptystr == '\0' || (*emptystr == '0' && *++emptystr == '\0'))
-			_retval = 0;
-	} else if (pspec->value_type == G_TYPE_INT) {
-		_retval = (g_value_get_int(&pval) != 0);
-	} else if (pspec->value_type == G_TYPE_UINT) {
-		_retval = (g_value_get_uint(&pval) != 0);
-	} else if (G_TYPE_IS_OBJECT(pspec->value_type) || G_TYPE_IS_INTERFACE(pspec->value_type)) {
-		GObject *ptr = g_value_get_object(&pval);
-		if (MGDG(midgard_memory_debug)) {
-			printf("[%p] ----> property gobject: %p, ref_count = %d\n", zobject, ptr, ptr->ref_count);
-		}
-		_retval = (NULL != ptr);
-	} else {
-		_retval = 1;
-	}
-
-	g_value_unset(&pval);
-	return _retval;
+	return result;
 }
 
 /* Read Zend object property using underlying GObject's one */
