@@ -578,68 +578,6 @@ void php_midgard_gobject_unset_property(zval *object, zval *member TSRMLS_DC)
 	zval_ptr_dtor(&member);
 }
 
-/* "Register" object's properties ( constructor time ) */
-// void php_midgard_zendobject_register_properties(zval *zobject, GObject *gobject TSRMLS_DC)
-// {
-// 	if (gobject == NULL)
-// 		return;
-// 
-// 	guint n_prop, i;
-// 	zval *tmp_object;
-// 	const gchar *gclass_name;
-// 	GValue pval = {0, };
-// 
-// 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &n_prop);
-// 
-// 	for (i = 0; i < n_prop; i++) {
-// 		switch (props[i]->value_type) {
-// 			case G_TYPE_STRING:
-// 				add_property_string(zobject, (char*)props[i]->name, "", 1);
-// 				break;
-// 
-// 			case G_TYPE_UINT:
-// 			case G_TYPE_INT:
-// 				add_property_long(zobject, (char*)props[i]->name, 0);
-// 				break;
-// 
-// 			case G_TYPE_BOOLEAN:
-// 				add_property_bool(zobject, (char*)props[i]->name, FALSE);
-// 				break;
-// 
-// 			case G_TYPE_FLOAT:
-// 			case G_TYPE_DOUBLE:
-// 				add_property_double(zobject, (char*)props[i]->name, 0);
-// 				break;
-// 
-// 			case G_TYPE_OBJECT:
-// 				g_value_init(&pval, props[i]->value_type);
-// 				g_object_get_property(gobject, (char*)props[i]->name, &pval);
-// 				gclass_name = g_type_name(G_OBJECT_TYPE(G_OBJECT(g_value_get_object(&pval))));
-// 
-// 				if (gclass_name) {
-// 					const char *php_class_name = g_class_name_to_php_class_name(gclass_name);
-// 					zend_class_entry *ce = php_midgard_get_class_ptr_by_name(php_class_name TSRMLS_CC);
-// 
-// 					if (NULL != ce) {
-// 						MAKE_STD_ZVAL(tmp_object);
-// 						object_init_ex(tmp_object, ce);
-// 						php_midgard_zendobject_register_properties(tmp_object, G_OBJECT(g_value_get_object(&pval) TSRMLS_CC));
-// 						add_property_zval(zobject, (gchar*)props[i]->name, tmp_object);
-// 					}
-// 				}
-// 				break;
-// 
-// 			default:
-// 				add_property_unset(zobject, (gchar*)props[i]->name);
-// 				break;
-// 		}
-// 	}
-// 
-// 	g_free(props);
-// 
-// 	return;
-// }
-
 /* Get object's properties */
 HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 {
