@@ -308,6 +308,11 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_
 		return 0;
 	}
 
+	if (MGDG(midgard_memory_debug)) {
+		printf("[%p] php_midgard_gobject_has_property(%s). object's refcount=%d\n", zobject, prop_name, Z_REFCOUNT_P(zobject));
+		printf("[%p] ----> gobject: %p, ref_count = %d\n", zobject, gobject, gobject->ref_count);
+	}
+
 	GParamSpec *pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(gobject), prop_name);
 
 	if (!pspec) {
