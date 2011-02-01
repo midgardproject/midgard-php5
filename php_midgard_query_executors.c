@@ -268,6 +268,17 @@ static PHP_METHOD(midgard_query_select, list_objects)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_select_list_objects, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_query_select, connect)
+{
+	php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_select_connect, 0, 0, 2)
+	ZEND_ARG_INFO(0, signal)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, user_data)
+ZEND_END_ARG_INFO()
+
 
 PHP_MINIT_FUNCTION(midgard2_query_executors)
 {
@@ -295,7 +306,8 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 		PHP_ME(midgard_query_select, __construct,      arginfo_midgard_query_select___construct,      ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_query_select, toggle_readonly,  arginfo_midgard_query_select_toggle_readonly,  ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_select, include_deleted,  arginfo_midgard_query_select_include_deleted,  ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_select, list_objects,     arginfo_midgard_query_select_list_objects,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_select, list_objects,     arginfo_midgard_query_select_list_objects,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_select, connect,          arginfo_midgard_query_select_connect,          ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
