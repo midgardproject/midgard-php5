@@ -18,6 +18,7 @@ $obj = new atype($a->guid);
 
 var_dump(isset($obj->metadata));
 var_dump(property_exists($obj->metadata, 'schedulestart'));
+var_dump(property_exists($obj->metadata, 'does_not_exist'));
 
 // cleanup
 $a->delete();
@@ -27,4 +28,5 @@ $a->delete();
 --EXPECTF--
 bool(true)
 bool(true)
+bool(false)
 ===DONE===

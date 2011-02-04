@@ -293,9 +293,9 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 /* OBJECTS ROUTINES */
 
 /* check if there is glib-property of object linked to zval */
-int php_midgard_gobject_has_property(zval *zobject, zval *prop, int has_set_exists TSRMLS_DC)
+int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type TSRMLS_DC)
 {
-	GObject *gobject = __php_gobject_ptr(zobject);
+	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
 	char *prop_name = Z_STRVAL_P(prop);
 
 	if (prop_name == NULL) {
@@ -309,32 +309,43 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int has_set_exis
 	}
 
 	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] php_midgard_gobject_has_property(%s). object's refcount=%d\n", zobject, prop_name, Z_REFCOUNT_P(zobject));
-		printf("[%p] ----> gobject: %p, ref_count = %d\n", zobject, gobject, gobject->ref_count);
+		printf("[%p] php_midgard_gobject_has_property(%s, check_type=%d). object's refcount=%d\n", zobject, prop_name, check_type, Z_REFCOUNT_P(zobject));
+		printf("[%p] ----> gobject: %p, ref_count = %d\n", zobject, php_gobject, php_gobject->gobject->ref_count);
 	}
 
-	zval *value = php_midgard_gobject_read_property(zobject, prop, has_set_exists TSRMLS_CC);
+	GObjectClass *klass = G_OBJECT_GET_CLASS(php_gobject->gobject);
+	GParamSpec *pspec = g_object_class_find_property(klass, prop_name);
 
-	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] ----> property: %p, ref_count = %d\n", zobject, value, Z_REFCOUNT_P(value));
+	int result = -1;
+
+	if (check_type == 2) {
+		// key exists, value is not important
+		if (pspec != NULL) {
+			return TRUE;
+		}
+	} else {
+		zval *value = php_midgard_gobject_read_property(zobject, prop, BP_VAR_IS TSRMLS_CC);
+		Z_ADDREF_P(value);
+
+		if (MGDG(midgard_memory_debug)) {
+			printf("[%p] ----> property: %p, ref_count = %d\n", zobject, value, Z_REFCOUNT_P(value));
+		}
+
+		if (check_type == 0) {
+			// value is not null
+			result = (Z_TYPE_P(value) != IS_NULL);
+		} else {
+			// value can be casted to TRUE
+			result = zend_is_true(value);
+		}
+
+		zval_ptr_dtor(&value);
 	}
 
-	int result;
-
-	switch (has_set_exists) {
-	case 0:
-		result = (Z_TYPE_P(value) != IS_NULL);
-		break;
-	default:
-		result = zend_is_true(value);
-		break;
-	case 2:
-		result = 1;
-		break;
+	if (-1 == result) {
+		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+		result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
 	}
-
-	Z_ADDREF_P(value);
-	zval_ptr_dtor(&value);
 
 	return result;
 }
@@ -346,6 +357,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 	gboolean is_native_property = FALSE;
 	GParamSpec *pspec = NULL;
 	GObjectClass *klass = NULL;
+	int silent = (type == BP_VAR_IS);
 
 	const gchar *propname = Z_STRVAL_P(prop);
 	int proplen = Z_STRLEN_P(prop) + 1;
@@ -455,7 +467,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 		 * of BP_VAR_NA. The point is to throw warning when property
 		 * is not registered for (sub)class. */
 		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
-		_retval = std_hnd->read_property(zobject, prop, BP_VAR_NA TSRMLS_CC);
+		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA TSRMLS_CC);
 	}
 
 	return _retval;
