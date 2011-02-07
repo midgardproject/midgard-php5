@@ -19,7 +19,6 @@ $user = new midgard_user();
 $user->login = 'hi';
 $user->authtype = 'Plaintext';
 $user->active = true;
-$user->usertype = 1;
 $user->set_person($person);
 unset($person);
 
