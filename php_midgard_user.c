@@ -112,9 +112,6 @@ static PHP_METHOD(midgard_user, get_person)
 
 	g_object_ref(person); // we need to keep additional reference, because midgard_user_get_person doesn't transfer
 	php_midgard_gobject_new_with_gobject(return_value, person_ce, G_OBJECT(person), TRUE TSRMLS_CC);
-
-	Z_SET_ISREF_P(return_value);
-	zval_add_ref(&return_value);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user_get_person, 0, 1, 0)
