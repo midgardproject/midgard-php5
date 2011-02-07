@@ -81,7 +81,10 @@ static PHP_METHOD(midgard_user, set_person)
 		return;
 
 	_GET_USER_OBJECT;
-	rv = midgard_user_set_person(user, __midgard_object_get_ptr(zobject));
+	MidgardObject *person = __midgard_object_get_ptr(zobject);
+
+	g_object_ref(person); // we need to keep additional reference, because midgard_user_set_person takes ownership
+	rv = midgard_user_set_person(user, person);
 	RETURN_BOOL (rv);
 }
 
@@ -102,11 +105,12 @@ static PHP_METHOD(midgard_user, get_person)
 
 	_GET_USER_OBJECT;
 
-	const MidgardObject *person = midgard_user_get_person(user);
+	MidgardObject *person = midgard_user_get_person(user);
 
 	if (person == NULL)
 		RETURN_NULL();
 
+	g_object_ref(person); // we need to keep additional reference, because midgard_user_get_person doesn't transfer
 	php_midgard_gobject_new_with_gobject(return_value, person_ce, G_OBJECT(person), TRUE TSRMLS_CC);
 
 	Z_SET_ISREF_P(return_value);
