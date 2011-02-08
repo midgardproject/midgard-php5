@@ -13,4 +13,16 @@
         <property name="y" use="xtype:y" />
     </view>
 
+    <view name="noguidview" table="atype">
+        <join type="left" class="xtype">
+            <condition left="atype:id" right="xtype:owner" />
+        </join>
+
+        <property name="id" use="atype:id" />
+        <property name="a" use="atype:a" />
+        <property name="b" use="atype:b" />
+        <property name="x" use="xtype:x" />
+        <property name="y" use="xtype:y" />
+    </view>
+
 </Schema>
