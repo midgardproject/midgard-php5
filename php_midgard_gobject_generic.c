@@ -606,6 +606,11 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 				// do not reinit objects
 				continue;
 			}
+
+			if (props[i]->value_type == MGD_TYPE_TIMESTAMP) {
+				// do not reinit datetime objects (to keep var_dump() happy)
+				continue;
+			}
 		}
 
 		GValue pval = {0, };
