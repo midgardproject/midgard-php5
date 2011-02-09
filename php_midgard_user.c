@@ -172,9 +172,6 @@ static PHP_METHOD(midgard_user, get)
 	zend_class_entry *ce = zend_fetch_class(class_name, strlen(class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	php_midgard_gobject_new_with_gobject(return_value, ce, G_OBJECT(user), TRUE TSRMLS_CC);
-
-	Z_SET_ISREF_P(return_value);
-	zval_add_ref(&return_value);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user_get, 0, 1, 1)
