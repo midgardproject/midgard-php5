@@ -144,10 +144,16 @@ PHP_METHOD(midgard_connection, get_instance)
 	}
 
 	Z_ADDREF_P(instance);
-	RETURN_ZVAL(instance, 1, 1);
+
+	if (MGDG(midgard_memory_debug)) {
+		php_printf(":: ==> refcount=%d\n", Z_REFCOUNT_P(instance));
+	}
+
+	zval_ptr_dtor(return_value_ptr);
+	*return_value_ptr = instance;
 }
 
-ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_get_instance, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_connection_get_instance, 0, 1, 0)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(midgard_connection, copy)
