@@ -76,6 +76,7 @@ PHP_METHOD(midgard_connection, __construct)
 	midgard_connection_enable_replication(mgd, TRUE);
 
 	if (MGDG(midgard_memory_debug)) {
+		php_printf("[%p] --> glib refcount=%d\n", getThis(), ((GObject *) mgd)->ref_count);
 		php_printf("[%p] <= midgard_connection::__construct()\n", getThis());
 	}
 }
