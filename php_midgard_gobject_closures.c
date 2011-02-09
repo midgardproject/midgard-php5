@@ -171,7 +171,7 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 		if (MGDG(midgard_memory_debug)) {
 			printf("[%p] ---> zobject refcount = %d\n", closure, Z_REFCOUNT_P(mgdclosure->zobject));
 		}
-		zval_add_ref(&(mgdclosure->zobject));
+		Z_ADDREF_P(mgdclosure->zobject);
 		zend_hash_next_index_insert(Z_ARRVAL_P(params), &(mgdclosure->zobject), sizeof(zval *), NULL);
 	} else {
 		zval *dummy = NULL;
@@ -197,7 +197,7 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 				printf("[%p] ----> got ptr = %p, *ptr = %p [refcount = %d]\n", closure, ptr, *ptr, Z_REFCOUNT_P(*ptr));
 			}
 
-			zval_add_ref(ptr);
+			Z_ADDREF_PP(ptr);
 			zend_hash_next_index_insert(Z_ARRVAL_P(params), ptr, sizeof(zval *), NULL);
 		}
 	}
@@ -236,7 +236,7 @@ GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_c
 	}
 
 	php_mgd_closure *mgdclosure = (php_mgd_closure*) closure;
-	zval_add_ref(&fci.function_name);
+	Z_ADDREF_P(fci.function_name);
 	mgdclosure->fci = fci;
 	mgdclosure->fci_cache = fci_cache;
 	mgdclosure->zobject = zobject; // we do not add reference here, as closure would be destroyed when object destroyed
@@ -244,7 +244,7 @@ GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_c
 	mgdclosure->args = NULL;
 
 	if (zval_array) {
-		zval_add_ref(&zval_array);
+		Z_ADDREF_P(zval_array);
 		mgdclosure->args = zval_array;
 	}
 

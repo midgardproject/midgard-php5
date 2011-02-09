@@ -135,7 +135,7 @@ PHP_METHOD(midgard_connection, get_instance)
 		MGDG(connection_established) = TRUE;
 	}
 
-	zval_add_ref(&instance);
+	Z_ADDREF_P(instance);
 	RETURN_ZVAL(instance, 1, 1);
 }
 
@@ -226,7 +226,7 @@ static PHP_METHOD(midgard_connection, open_config)
 	rv = (zend_bool) midgard_connection_open_config(mgd, config);
 
 	// if (rv) {
-	// 	zval_add_ref(&cnf_object);
+	// 	Z_ADDREF_P(cnf_object);
 	// }
 
 	RETURN_BOOL(rv);
