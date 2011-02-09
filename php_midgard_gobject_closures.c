@@ -220,7 +220,7 @@ GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_c
 {
 	GClosure *closure;
 
-	if (zobject == NULL || !g_type_from_name(Z_OBJCE_P(zobject)->name)) {
+	if (zobject == NULL || !g_type_from_name(php_class_name_to_g_class_name(Z_OBJCE_P(zobject)->name))) {
 		closure = g_closure_new_simple(sizeof(php_mgd_closure), NULL);
 	} else {
 		closure = g_closure_new_object(sizeof(php_mgd_closure), __php_gobject_ptr(zobject));
