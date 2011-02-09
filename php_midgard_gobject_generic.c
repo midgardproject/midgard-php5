@@ -524,7 +524,8 @@ static void _convert_value(zval *value, GType vtype)
 void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC)
 {
 	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] php_midgard_gobject_write_property()\n", zobject);
+		const gchar *propname = Z_STRVAL_P(prop);
+		printf("[%p] php_midgard_gobject_write_property(%s)\n", zobject, propname);
 	}
 
 	zend_object_handlers *std_hnd = zend_get_std_object_handlers();

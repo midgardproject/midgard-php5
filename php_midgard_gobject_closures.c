@@ -169,7 +169,7 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 	// "10000" on next line is a HACK. Just took a number which is slightly above normal, but still doesn't look like invalid
 	if (mgdclosure->zobject != NULL && Z_REFCOUNT_P(mgdclosure->zobject) < 10000) {
 		if (MGDG(midgard_memory_debug)) {
-			printf("[%p] ---> zobject refcount = %d\n", closure, Z_REFCOUNT_P(mgdclosure->zobject));
+			printf("[%p] ---> zobject (%p) refcount = %d\n", closure, mgdclosure->zobject, Z_REFCOUNT_P(mgdclosure->zobject));
 		}
 		Z_ADDREF_P(mgdclosure->zobject);
 		zend_hash_next_index_insert(Z_ARRVAL_P(params), &(mgdclosure->zobject), sizeof(zval *), NULL);

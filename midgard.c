@@ -531,6 +531,9 @@ PHP_RINIT_FUNCTION(midgard2)
 		zval *instance;
 		zend_call_method_with_0_params(NULL, php_midgard_connection_class, NULL, "get_instance",
 									   &instance);
+		if (MGDG(midgard_memory_debug)) {
+			php_printf("---> got connection: %p, refcount=%d\n", instance, Z_REFCOUNT_P(instance));
+		}
 		zval_ptr_dtor(&instance);
 	}
 
