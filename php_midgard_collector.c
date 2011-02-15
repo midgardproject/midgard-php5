@@ -55,6 +55,7 @@ static PHP_METHOD(midgard_collector, __construct)
 	if (ce == NULL) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Didn't find %s class", classname);
 		php_midgard_error_exception_force_throw(mgd, MGD_ERR_INVALID_OBJECT TSRMLS_CC);
+		return;
 	}
 
 	zend_class_entry *base_ce = php_midgard_get_baseclass_ptr(ce);
