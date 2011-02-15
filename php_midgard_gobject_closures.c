@@ -47,16 +47,6 @@ static void php_midgard_closure_invalidate(gpointer data, GClosure *closure)
 
 static GHashTable *__classes_hash = NULL;
 
-static void __destroy_hash(gpointer data)
-{
-	if (!data)
-		return;
-
-	GHashTable *hash = (GHashTable*) data;
-
-	g_hash_table_destroy(hash);
-}
-
 void php_midgard_gobject_closure_hash_new()
 {
 	if (__classes_hash == NULL)
