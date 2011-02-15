@@ -608,6 +608,10 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
 	for (i = 0; i < propn; i++) {
+		if (props[i]->flags & G_PARAM_CONSTRUCT_ONLY) {
+			continue;
+		}
+
 		if (!(props[i]->flags & G_PARAM_READABLE)) {
 			// not readable
 			continue;
