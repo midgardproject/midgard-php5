@@ -283,6 +283,10 @@ static void php_midgard_initialize_schema(TSRMLS_D)
 		midgard_schema_init(midgard_global_schema, path);
 		zend_bool success = midgard_schema_read_dir(midgard_global_schema, share_dir);
 
+		if (FALSE == success) {
+			// FIXME: die in pain
+		}
+
 		g_free(share_dir);
 		g_free(path);
 	}
