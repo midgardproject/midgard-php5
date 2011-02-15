@@ -231,16 +231,13 @@ static PHP_METHOD(midgard_query_builder, execute)
 		return;
 
 	/* TODO: Should use iterator, instead, and create objects lazily */
-	/* Initialize zend objects for the same class which was used to initialize Query Builder */
 	for (i = 0; i < n_objects; i++) {
 		GObject *gobject = objects[i];
-		zval *zobject;
 
-		/* TODO: Simplify code below. If possible. */
+		zval *zobject;
 		MAKE_STD_ZVAL(zobject);
-		object_init_ex(zobject, ce); /* Initialize new object for which QB has been created for */
-		MGD_PHP_SET_GOBJECT(zobject, gobject); // inject our gobject
-		zend_call_method_with_0_params(&zobject, ce, &ce->constructor, "__construct", NULL); /* Call class constructor on given instance */
+
+		php_midgard_gobject_new_with_gobject(zobject, ce, gobject, TRUE TSRMLS_CC);
 
 		zend_hash_next_index_insert(HASH_OF(return_value), &zobject, sizeof(zval *), NULL);
 	}
