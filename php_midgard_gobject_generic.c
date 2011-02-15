@@ -31,7 +31,7 @@ static zend_bool php_midgard_gvalue_from_zval(const zval *zvalue, GValue *gvalue
 	g_assert(zvalue != NULL);
 
 	if (MGDG(midgard_memory_debug)) {
-		printf("php_midgard_gvalue_from_zval(z=%p [refcount=%d], g=%p)\n", zvalue, Z_REFCOUNT_P(zvalue), gvalue);
+		printf("php_midgard_gvalue_from_zval(z=%p [refcount=%d], g=%p)\n", zvalue, Z_REFCOUNT_P((zval *)zvalue), gvalue);
 	}
 
 	HashTable *zhash;
