@@ -130,16 +130,9 @@ static PHP_METHOD(midgard_config, list_files)
 {
 	RETVAL_FALSE;
 	zend_bool user = FALSE;
-	zval *zval_object = getThis();
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|b", &user) == FAILURE) {
 		return;
-	}
-
-	MidgardConfig *config = NULL;
-
-	if (zval_object) {
-		config = (MidgardConfig *) __php_gobject_ptr(zval_object);
 	}
 
 	array_init(return_value);
@@ -194,7 +187,7 @@ PHP_MINIT_FUNCTION(midgard2_config)
 		PHP_ME(midgard_config, read_file,         arginfo_midgard_config_read_file,         ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_config, read_file_at_path, arginfo_midgard_config_read_file_at_path, ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_config, read_data,         arginfo_midgard_config_read_data,         ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_config, list_files,        arginfo_midgard_config_list_files,        ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config, list_files,        arginfo_midgard_config_list_files,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_config, create_blobdir,    arginfo_midgard_config_create_blobdir,    ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
