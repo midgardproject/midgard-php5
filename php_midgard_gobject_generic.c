@@ -30,6 +30,10 @@ static zend_bool php_midgard_gvalue_from_zval(const zval *zvalue, GValue *gvalue
 {
 	g_assert(zvalue != NULL);
 
+	if (MGDG(midgard_memory_debug)) {
+		printf("php_midgard_gvalue_from_zval(z=%p [refcount=%d], g=%p)\n", zvalue, Z_REFCOUNT_P(zvalue), gvalue);
+	}
+
 	HashTable *zhash;
 	GValueArray *array;
 	zval **value;
@@ -242,6 +246,10 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 					g_object_ref(gobject_property);
 					php_midgard_gobject_init(zvalue, php_class_name, gobject_property, TRUE TSRMLS_CC);
 
+					if (MGDG(midgard_memory_debug)) {
+						printf("php_midgard_gvalue2zval: [%p] refcount=%d, gobj=%p, glib refcount=%d\n", zvalue, Z_REFCOUNT_P(zvalue), gobject_property, gobject_property->ref_count);
+					}
+
 					return TRUE;
 				} else {
 					ZVAL_NULL(zvalue);
@@ -423,12 +431,15 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 			int hf_ret = zend_hash_find(Z_OBJPROP_P(zobject), propname, proplen, (void **) &property);
 
 			if (hf_ret == SUCCESS) {
-				if (MGDG(midgard_memory_debug)) {
-					php_printf("==========> found\n");
-				}
-
 				_retval = *property;
 				// zval_add_ref(property);
+
+				if (MGDG(midgard_memory_debug)) {
+					printf("==========> found\n");
+					printf("==========> property's tmp-var refcount: %d [%s]\n", Z_REFCOUNT_P(_retval), propname);
+					GObject *gobj = __php_gobject_ptr(_retval);
+					printf("==========> property's gobject: %p [refcount: %d]\n", gobj, gobj->ref_count);
+				}
 			} else {
 				if (MGDG(midgard_memory_debug)) {
 					php_printf("==========> NOT found\n");
@@ -785,7 +796,7 @@ void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *
 		MAKE_STD_ZVAL(zvalue);
 
 	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] php_midgard_gobject_init(%s, %p [refcount = %d])\n", zvalue, php_classname, gobject, gobject->ref_count);
+		printf("[%p] php_midgard_gobject_init(%s, %p [gobject refcount = %d])\n", zvalue, php_classname, gobject, gobject->ref_count);
 	}
 
 	ce = php_midgard_get_class_ptr_by_name(php_classname TSRMLS_CC);
