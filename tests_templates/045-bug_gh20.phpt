@@ -25,6 +25,20 @@ try {
     echo "OK\n";
 }
 
+try {
+    $obj = new atype(-1);
+    echo "ERROR\n";
+} catch (midgard_error_exception $e) {
+    echo "OK\n";
+}
+
+try {
+    $obj = new atype(0);
+    echo "ERROR\n";
+} catch (midgard_error_exception $e) {
+    echo "OK\n";
+}
+
 $a = new atype();
 $a->create();
 
@@ -49,6 +63,8 @@ $a->delete();
 ?>
 ===DONE===
 --EXPECTF--
+OK
+OK
 OK
 OK
 OK
