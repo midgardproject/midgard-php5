@@ -96,25 +96,30 @@ static void _set_gobject_timestamp_property(zval *zobject TSRMLS_DC)
 	/* Prepare DateTime::format argument */
 	zval *fmt;
 	MAKE_STD_ZVAL(fmt);
-	ZVAL_STRING(fmt, "Y-m-d H:i:s", 1);
+	ZVAL_STRING(fmt, "Y-m-d H:i:sO", 1);
 
 	/* Invoke Datetime::format */
 	zval *_retval = NULL;
 	zend_call_method_with_1_params(&zobject, Z_OBJCE_P(zobject), NULL, "format", &_retval, fmt);
 	zval_ptr_dtor(&fmt);
 
+	zval *date_str;
+	MAKE_STD_ZVAL(date_str);
+	ZVAL_STRINGL(date_str, Z_STRVAL_P(_retval), Z_STRLEN_P(_retval) - 2, 1);
+	zval_ptr_dtor(&_retval);
+
 	/* Find underlying GObject */
 	GObject *gobject = __php_gobject_ptr(_object);
 
 	/* GObject is found, sets it property */
 	if (gobject) {
-		GValue *prop_val = php_midgard_zval2gvalue(_retval TSRMLS_CC);
+		GValue *prop_val = php_midgard_zval2gvalue(date_str TSRMLS_CC);
 		g_object_set_property(gobject, (const gchar *) Z_STRVAL_P(_propname), prop_val);
 		g_value_unset(prop_val);
 		g_free(prop_val);
 	}
 
-	zval_ptr_dtor(&_retval);
+	zval_ptr_dtor(&date_str);
 
 	return;
 }
