@@ -96,7 +96,7 @@ static void _set_gobject_timestamp_property(zval *zobject TSRMLS_DC)
 	/* Prepare DateTime::format argument */
 	zval *fmt;
 	MAKE_STD_ZVAL(fmt);
-	ZVAL_STRING(fmt, "c", 1);
+	ZVAL_STRING(fmt, "Y-m-d H:i:s", 1);
 
 	/* Invoke Datetime::format */
 	zval *_retval = NULL;
