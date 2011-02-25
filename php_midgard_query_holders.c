@@ -111,6 +111,7 @@ static PHP_METHOD(midgard_query_value, __construct)
 		GValue *tmp = php_midgard_zval2gvalue(zvalue TSRMLS_CC);
 		qvalue = midgard_query_value_create_with_value((const GValue *)tmp);
 		g_value_unset(tmp);
+		g_free(tmp);
 	} else {
 		qvalue = midgard_query_value_new();
 	}
