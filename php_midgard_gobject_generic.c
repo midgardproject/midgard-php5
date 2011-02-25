@@ -140,7 +140,6 @@ GValue *php_midgard_zval2gvalue(const zval *zvalue TSRMLS_DC)
 	GValue *gvalue = g_new0(GValue, 1);
 
 	if (!php_midgard_gvalue_from_zval(zvalue, gvalue TSRMLS_CC)) {
-		g_value_unset(gvalue);
 		g_free(gvalue);
 		return NULL;
 	}
