@@ -16,6 +16,7 @@ ZEND_API zval* zend_call_method__mgd(zval **object_pp, zend_class_entry *obj_ce,
 # define Z_SET_ISREF_P(ptr) (ptr)->is_ref = 1
 # define Z_REFCOUNT_P(ptr) (ptr)->refcount
 # define Z_ADDREF_P(ptr) (ptr)->refcount++
+# define Z_ADDREF_PP(pptr) Z_ADDREF_P(*(pptr))
 # define Z_DELREF_P(ptr) (ptr)->refcount--
 # define Z_DELREF_PP(pptr) Z_DELREF_P(*(pptr))
 # define zend_parse_parameters_none() zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "")

@@ -17,6 +17,8 @@
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
 
+#include "php_midgard__helpers.h"
+
 #include <zend_exceptions.h>
 
 static zend_class_entry *php_midgard_dbus_class;
