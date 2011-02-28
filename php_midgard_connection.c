@@ -128,7 +128,7 @@ PHP_METHOD(midgard_connection, get_instance)
 	}
 
 	if (MGDG(midgard_memory_debug)) {
-		php_printf(":: midgard_connection::get_isntance()\n");
+		php_printf(":: midgard_connection::get_instance()\n");
 	}
 
 	instance = zend_read_static_property(php_midgard_connection_class, "instance", sizeof("instance")-1, 0 TSRMLS_CC);
