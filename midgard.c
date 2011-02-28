@@ -538,7 +538,11 @@ PHP_RINIT_FUNCTION(midgard2)
 		if (MGDG(midgard_memory_debug)) {
 			php_printf("---> got connection: %p, refcount=%d\n", instance, Z_REFCOUNT_P(instance));
 		}
+
+#if PHP_MAJOR_VERSION > 5 || PHP_MINOR_VERSION >= 3
+		// 5.2 doesn't add reference, no need to take it away
 		zval_ptr_dtor(&instance);
+#endif
 	}
 
 	if (MGDG(connection_established) == FALSE) {
@@ -659,7 +663,11 @@ MidgardConnection *mgd_handle(TSRMLS_D)
 								   &instance);
 
 	MidgardConnection *connection = __midgard_connection_get_ptr(instance);
+
+#if PHP_MAJOR_VERSION > 5 || PHP_MINOR_VERSION >= 3
+	// 5.2 doesn't add reference, no need to take it away
 	zval_ptr_dtor(&instance);
+#endif
 	return connection;
 }
 
