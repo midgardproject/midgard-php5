@@ -1,10 +1,12 @@
 <?php
 
-if (version_compare(pakeApp::VERSION, '1.4.1', '<'))
-    throw new pakeException('Pake 1.4.1 or newer is required');
+if (!function_exists('pake_require_version'))
+    throw new pakeException('Your version of Pake is too old. Upgrade');
 
 ini_set('display_errors', 'On');
 define('_SRC_DIR_', dirname(__FILE__));
+
+pake_require_version('1.6.1');
 
 // "public" tasks
 
@@ -103,7 +105,9 @@ function run_clean_test_db($task, $args, $long_args)
         $db_pass = pake_input('Database password?', 'midgard');
         $db_host = pake_input('Database host?', 'localhost');
 
-        pake_sh("echo 'drop database midgard; create database midgard;' | mysql -u ".$db_user." -p".$db_pass." ".$db_name);
+        $db = new pakeMySQL($db_user, $db_pass, $db_host);
+        $db->dropDatabase($db_name);
+        $db->createDatabase($db_name);
     } else {
         $file = _SRC_DIR_.'/tests/'._get_midgard_config()->database.'.db';
 
