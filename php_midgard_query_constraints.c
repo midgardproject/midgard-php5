@@ -327,7 +327,7 @@ static PHP_METHOD(midgard_query_constraint_group, add_constraint)
 	MidgardQueryConstraintGroup *constraint_group = MIDGARD_QUERY_CONSTRAINT_GROUP(__php_gobject_ptr(getThis()));
 	MidgardQueryConstraintSimple *constraint = MIDGARD_QUERY_CONSTRAINT_SIMPLE(__php_gobject_ptr(z_constraint));
 
-	zend_bool result = midgard_query_constraint_group_add_constraint(constraint_group, constraint, NULL);
+	zend_bool result = midgard_query_constraint_group_add_constraint(constraint_group, constraint);
 
 	RETURN_BOOL(result);
 }
