@@ -20,6 +20,7 @@
 
 #include "php_midgard__helpers.h"
 
+#include <midgard/midgard_executable.h>
 
 static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, guint n_objects, zval *zarray TSRMLS_DC);
 
@@ -160,11 +161,17 @@ static PHP_METHOD(midgard_query_executor, execute)
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MidgardQueryExecutor *executor = MIDGARD_QUERY_EXECUTOR(__php_gobject_ptr(getThis()));
+	MidgardExecutable *executor = MIDGARD_EXECUTABLE(__php_gobject_ptr(getThis()));
 
-	zend_bool result = midgard_query_executor_execute(executor);
+	GError *error = NULL;
+	midgard_executable_execute(executor, &error);
 
-	RETURN_BOOL(result);
+	if (error) {
+		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to execute statement: %s", error->message);
+		g_error_free(error);
+	}
+
+	RETURN_TRUE;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_executor_execute, 0, 0, 0)
