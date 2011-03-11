@@ -1,5 +1,5 @@
 --TEST--
-midgard_datetime tests
+test for superglobals_compat ini-setting
 --SKIPIF--
 <?php if (!extension_loaded("midgard2")) print "skip"; ?>
 --INI--
