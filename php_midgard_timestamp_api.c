@@ -26,11 +26,12 @@ zval *php_midgard_datetime_get_timestamp(const zval *object TSRMLS_DC)
 	/* Prepare DateTime::format argument */
 	zval *fmt;
 	MAKE_STD_ZVAL(fmt);
-	ZVAL_STRING(fmt, "c", 0);
+	ZVAL_STRING(fmt, "c", 1);
 
 	/* Invoke Datetime::format */
 	zval *_retval;
 	zend_call_method_with_1_params((zval **)&object, Z_OBJCE_P(object), NULL, "format", &_retval, fmt);
+	zval_ptr_dtor(&fmt);
 
 	return _retval;
 }
