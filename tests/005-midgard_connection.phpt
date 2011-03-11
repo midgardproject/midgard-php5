@@ -6,6 +6,7 @@ test of midgard_connection in CLI-mode
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+report_memleaks = On
 --FILE--
 <?php
 $cfg = new midgard_config();

@@ -8,6 +8,7 @@ midgard.http = Off
 midgard.memory_debug = Off
 midgard.superglobals_compat = Off
 display_startup_errors = On
+report_memleaks = On
 --FILE--
 <?php
 function mytest()
