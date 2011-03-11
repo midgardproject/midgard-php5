@@ -260,11 +260,12 @@ static PHP_METHOD(midgard_datetime, __toString)
 	/* Prepare DateTime::format argument */
 	zval *fmt;
 	MAKE_STD_ZVAL(fmt);
-	ZVAL_STRING(fmt, "c", 0);
+	ZVAL_STRING(fmt, "c", 1);
 
 	/* Invoke Datetime::format */
 	zval *retval = NULL;
 	zend_call_method_with_1_params(&zend_object, Z_OBJCE_P(zend_object), NULL, "format", &retval, fmt);
+	zval_ptr_dtor(&fmt);
 
 	RETURN_ZVAL(retval, 1, 1);
 }
