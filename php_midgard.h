@@ -165,7 +165,7 @@ HashTable *php_midgard_zendobject_get_properties (zval *zobject TSRMLS_DC);
 void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, zval *zarray TSRMLS_DC);
 
 GValue *php_midgard_zval2gvalue(const zval *zvalue TSRMLS_DC);
-zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC);
+zend_bool php_midgard_gvalue2zval(const GValue *gvalue, zval *zvalue TSRMLS_DC);
 
 GParameter *php_midgard_array_to_gparameter(zval *params, guint *n_params TSRMLS_DC);
 

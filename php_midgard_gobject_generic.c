@@ -147,7 +147,7 @@ GValue *php_midgard_zval2gvalue(const zval *zvalue TSRMLS_DC)
 	return gvalue;
 }
 
-zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
+zend_bool php_midgard_gvalue2zval(const GValue *gvalue, zval *zvalue TSRMLS_DC)
 {
 	g_assert(gvalue);
 	g_assert(zvalue);
