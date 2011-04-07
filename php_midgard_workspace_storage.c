@@ -22,6 +22,7 @@
 zend_class_entry *php_midgard_workspace_storage_class;
 zend_class_entry *php_midgard_workspace_context_class;
 zend_class_entry *php_midgard_workspace_class;
+zend_class_entry *php_midgard_workspace_manager;
 
 /* MidgardWorkspaceStorage */
 static PHP_METHOD(midgard_workspace_storage, get_path)
@@ -446,6 +447,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	php_midgard_workspace_class->create_object = php_midgard_gobject_new;
 	php_midgard_workspace_class->doc_comment = strdup("Represents single workspace");
 
+
 	static function_entry midgard_workspace_context_methods[] = {
 		PHP_ME(midgard_workspace_context, __construct,   arginfo_midgard_workspace_context___construct,   ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_workspace_context, has_workspace, arginfo_midgard_workspace_context_has_workspace, ZEND_ACC_PUBLIC)
@@ -459,7 +461,6 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	php_midgard_workspace_context_class->create_object = php_midgard_gobject_new;
 	php_midgard_workspace_context_class->doc_comment = strdup("Represents workspaces' tree");
 
-	return SUCCESS;
 
 	static function_entry midgard_workspace_manager_methods[] = {
 		PHP_ME(midgard_workspace_manager, __construct,           arginfo_midgard_workspace_manager___construct,           ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -476,9 +477,9 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	static zend_class_entry php_midgard_workspace_manager_class_entry;
 	INIT_CLASS_ENTRY(php_midgard_workspace_manager_class_entry, "midgard_workspace_manager", midgard_workspace_manager_methods);
 
-	php_midgard_workspace_context_class = zend_register_internal_class(&php_midgard_workspace_manager_class_entry TSRMLS_CC);
-	php_midgard_workspace_context_class->create_object = php_midgard_gobject_new;
-	php_midgard_workspace_context_class->doc_comment = strdup("Workspaces' manager");
+	php_midgard_workspace_manager = zend_register_internal_class(&php_midgard_workspace_manager_class_entry TSRMLS_CC);
+	php_midgard_workspace_manager->create_object = php_midgard_gobject_new;
+	php_midgard_workspace_manager->doc_comment = strdup("Workspaces' manager");
 
 	return SUCCESS;
 }
