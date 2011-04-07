@@ -130,8 +130,11 @@ static PHP_METHOD(midgard_workspace, __construct)
 		return;
 
 	MidgardWorkspace *self = midgard_workspace_new();
-	if (!self)
-		RETURN_FALSE;
+
+	if (!self) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create workspace object");
+		return;
+	}
 
 	MGD_PHP_SET_GOBJECT(object, self);
 }
