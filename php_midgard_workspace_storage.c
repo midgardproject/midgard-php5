@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2011 Piotr Pokora <piotrek.pokora@gmail.com>
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
@@ -29,7 +29,7 @@ static PHP_METHOD (midgard_workspace_storage, get_path)
 	if (zend_parse_parameters_none () == FAILURE)
 		return;
 
-	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));	
+	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));
 	const char *path = midgard_workspace_storage_get_path (self);
 
 	if (path)
@@ -46,10 +46,10 @@ static PHP_METHOD (midgard_workspace_storage, get_workspace_by_name)
 	char *name;
 	int name_length;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_length) == FAILURE) 
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_length) == FAILURE)
 		return;
-	
-	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));	
+
+	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));
 	MidgardWorkspaceStorage *workspace = midgard_workspace_storage_get_workspace_by_name (self, name);
 
 	if (!workspace)
@@ -57,7 +57,7 @@ static PHP_METHOD (midgard_workspace_storage, get_workspace_by_name)
 
 	if (MIDGARD_IS_WORKSPACE (self))
 		object_init_ex (return_value, php_midgard_workspace_class);
-	else 
+	else
 		object_init_ex (return_value, php_midgard_workspace_context_class);
 
 	MGD_PHP_SET_GOBJECT (return_value, workspace);
@@ -73,7 +73,7 @@ static PHP_METHOD (midgard_workspace_storage, list_children)
 		return;
 
 	guint n_objects;
-	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));	
+	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));
 	MidgardWorkspaceStorage **children = midgard_workspace_storage_list_children (self, &n_objects);
 
 	array_init (return_value);
@@ -104,7 +104,7 @@ static PHP_METHOD (midgard_workspace_storage, list_workspace_names)
 		return;
 
 	guint n_names;
-	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));	
+	MidgardWorkspaceStorage *self = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (getThis()));
 	char **names = midgard_workspace_storage_list_workspace_names (self, &n_names);
 
 	array_init (return_value);
@@ -113,7 +113,7 @@ static PHP_METHOD (midgard_workspace_storage, list_workspace_names)
 		return;
 
 	int i;
-	for (i = 0; i < n_names; i++) 
+	for (i = 0; i < n_names; i++)
 		add_index_string (return_value, i, names[i], 1);
 }
 
@@ -140,11 +140,11 @@ ZEND_BEGIN_ARG_INFO (arginfo_midgard_workspace___construct, 0)
 ZEND_END_ARG_INFO ()
 
 static PHP_METHOD (midgard_workspace, get_context)
-{	
+{
 	if (zend_parse_parameters_none() == FAILURE)
 		return;
 
-	MidgardWorkspace *self = MIDGARD_WORKSPACE (__php_gobject_ptr (getThis()));	
+	MidgardWorkspace *self = MIDGARD_WORKSPACE (__php_gobject_ptr (getThis()));
 	const MidgardWorkspaceContext *context = midgard_workspace_get_context (self);
 
 	if (!context)
@@ -179,7 +179,7 @@ ZEND_END_ARG_INFO ()
 static PHP_METHOD (midgard_workspace_context, has_workspace)
 {
 	zval *z_workspace = NULL;
-	
+
 	if (zend_parse_parameters (ZEND_NUM_ARGS () TSRMLS_CC, "O", &z_workspace, php_midgard_workspace_class) == FAILURE) {
 		return;
 	}
@@ -202,7 +202,7 @@ static PHP_METHOD (midgard_workspace_manager, __construct)
 	const gchar *g_class_name = g_type_name (MIDGARD_TYPE_CONNECTION);
 	const char *php_class_name = g_class_name_to_php_class_name (g_class_name);
 	zend_class_entry *ce = zend_fetch_class ((char *)php_class_name, strlen(php_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
-	
+
 	if (zend_parse_parameters (ZEND_NUM_ARGS () TSRMLS_CC, "O", &z_mgd, ce) == FAILURE) {
 		return;
 	}
@@ -241,7 +241,7 @@ static PHP_METHOD (midgard_workspace_manager, get_workspace_by_path)
 		g_error_free(error);
 	}
 
-	RETURN_BOOL (result);	
+	RETURN_BOOL (result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_workspace_manager_get_workspace_by_path, 0, 0, 2)
@@ -270,7 +270,7 @@ static PHP_METHOD (midgard_workspace_manager, create_workspace)
 		g_error_free(error);
 	}
 
-	RETURN_BOOL (result);	
+	RETURN_BOOL (result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_workspace_manager_create_workspace, 0, 0, 2)
@@ -297,7 +297,7 @@ static PHP_METHOD (midgard_workspace_manager, update_workspace)
 		g_error_free(error);
 	}
 
-	RETURN_BOOL (result);	
+	RETURN_BOOL (result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_workspace_manager_update_workspace, 0, 0, 1)
@@ -323,7 +323,7 @@ static PHP_METHOD (midgard_workspace_manager, purge_workspace)
 		g_error_free(error);
 	}
 
-	RETURN_BOOL (result);	
+	RETURN_BOOL (result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_workspace_manager_purge_workspace, 0, 0, 1)
@@ -341,7 +341,7 @@ static PHP_METHOD (midgard_workspace_manager, path_exists)
 
 	MidgardWorkspaceManager *self = MIDGARD_WORKSPACE_MANAGER (__php_gobject_ptr (getThis ()));
         zend_bool result = midgard_workspace_manager_path_exists (self, path);
-	RETURN_BOOL (result);	
+	RETURN_BOOL (result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_workspace_manager_path_exists, 0, 0, 1)
@@ -369,7 +369,7 @@ static PHP_METHOD (midgard_workspace_manager, purge_content)
 		g_error_free(error);
 	}
 
-	RETURN_BOOL (result);	
+	RETURN_BOOL (result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_workspace_manager_purge_content, 0, 0, 2)
@@ -384,8 +384,8 @@ static PHP_METHOD (midgard_workspace_manager, move_content)
 	zval *z_src_workspace;
 	zval *z_dest_workspace;
 
-	if (zend_parse_parameters (ZEND_NUM_ARGS () TSRMLS_CC, "sOO", &type, &type_length, 
-				&z_src_workspace, php_midgard_workspace_class, 
+	if (zend_parse_parameters (ZEND_NUM_ARGS () TSRMLS_CC, "sOO", &type, &type_length,
+				&z_src_workspace, php_midgard_workspace_class,
 				&z_dest_workspace, php_midgard_workspace_class) == FAILURE) {
 		return;
 	}
@@ -402,7 +402,7 @@ static PHP_METHOD (midgard_workspace_manager, move_content)
 		g_error_free(error);
 	}
 
-	RETURN_BOOL (result);	
+	RETURN_BOOL (result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_workspace_manager_move_content, 0, 0, 3)
