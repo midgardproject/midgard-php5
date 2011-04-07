@@ -25,8 +25,8 @@ $a->delete();
 ===DONE===
 --EXPECTF--
 bool(true)
-string('baz')
-string('baz')
+string(3) "baz"
+string(3) "baz"
 bool(true)
 NULL
 ===DONE===
