@@ -178,11 +178,11 @@ PHP_FUNCTION(_php_midgard_object_set_parameter)
 	if (strval == NULL)
 		strval = "";
 
-	GValue sval = {0, };
-	g_value_init(&sval, G_TYPE_STRING);
-	g_value_set_string(&sval, strval);
+	GValue *sval = g_new0 (GValue, 1);
+	g_value_init(sval, G_TYPE_STRING);
+	g_value_set_string(sval, strval);
 
-	gboolean rv = midgard_object_set_parameter(mobj, domain, name, (GValue *)&sval);
+	gboolean rv = midgard_object_set_parameter(mobj, domain, name, sval);
 
 	RETURN_BOOL(rv);
 }
