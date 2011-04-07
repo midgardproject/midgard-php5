@@ -1097,6 +1097,14 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 		return "midgard_reflection_property";
 	} else if (strcmp(g_class_name, "MidgardCollector") == 0) {
 		return "midgard_collector";
+	} else if (strcmp(g_class_name, "MidgardWorkspaceStorage") == 0) {
+		return "midgard_workspace_storage";
+	} else if (strcmp(g_class_name, "MidgardWorkspace") == 0) {
+		return "midgard_workspace";
+	} else if (strcmp(g_class_name, "MidgardWorkspaceContext") == 0) {
+		return "midgard_workspace_context";
+	} else if (strcmp(g_class_name, "MidgardWorkspaceManager") == 0) {
+		return "midgard_workspace_manager";
 	}
 
 	return g_class_name;
@@ -1136,6 +1144,14 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 		return "MidgardReflectionProperty";
 	} else if (strcmp(php_class_name, "midgard_collector") == 0) {
 		return "MidgardCollector";
+	} else if (strcmp(php_class_name, "midgard_workspace_storage") == 0) {
+		return "MidgardWorkspaceStorage";
+	} else if (strcmp(php_class_name, "midgard_workspace") == 0) {
+		return "MidgardStorage";
+	} else if (strcmp(php_class_name, "midgard_workspace_context") == 0) {
+		return "MidgardWorkspaceContext";
+	} else if (strcmp(php_class_name, "midgard_workspace_manager") == 0) {
+		return "MidgardWorkspaceManager";
 	}
 
 	return php_class_name;

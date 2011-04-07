@@ -698,6 +698,24 @@ PHP_FUNCTION(_php_midgard_object_unlock)
 	RETURN_BOOL(midgard_object_unlock(object));
 }
 
+PHP_FUNCTION(_php_midgard_object_get_workspace)
+{
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	RETVAL_FALSE;
+
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardObject *object = __midgard_object_get_ptr(getThis());
+	MidgardWorkspace *workspace = midgard_object_get_workspace(object);
+	if (!workspace)
+		return;
+
+	php_midgard_gobject_new_with_gobject(return_value, php_midgard_workspace_class, G_OBJECT(object), TRUE TSRMLS_CC);
+}
+
 static struct
 {
 	char *fname;
@@ -1109,6 +1127,16 @@ __midgard_php_type_functions[] =
 		{
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 		}, 0
+	},
+
+	{"get_workspace",
+		ZEND_FN(_php_midgard_object_get_workspace),
+		ZEND_ACC_PUBLIC,
+		{
+			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+		},
+		0,
+		"Get workspace associated with object. Returned workspace is valid per method call." 
 	},
 
 	{ NULL, NULL }
