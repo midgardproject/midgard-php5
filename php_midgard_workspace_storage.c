@@ -88,10 +88,10 @@ static PHP_METHOD (midgard_workspace_storage, list_children)
 	int i;
 	for (i = 0; i < n_objects; i++) {
 		zval *zobject;
-                MAKE_STD_ZVAL (zobject);
+		MAKE_STD_ZVAL (zobject);
 
-                php_midgard_gobject_new_with_gobject (zobject, ce, G_OBJECT (children[i]), TRUE TSRMLS_CC);
-                zend_hash_next_index_insert (HASH_OF (return_value), &zobject, sizeof (zval *), NULL);
+		php_midgard_gobject_new_with_gobject (zobject, ce, G_OBJECT (children[i]), TRUE TSRMLS_CC);
+		zend_hash_next_index_insert (HASH_OF (return_value), &zobject, sizeof (zval *), NULL);
 	}
 }
 
@@ -210,7 +210,7 @@ static PHP_METHOD (midgard_workspace_manager, __construct)
        	zval *object = getThis();
 
 	MidgardWorkspaceManager *self = midgard_workspace_manager_new (MIDGARD_CONNECTION (__php_gobject_ptr (z_mgd)));
-        if (!self)
+	if (!self)
 		RETURN_FALSE;
 
 	MGD_PHP_SET_GOBJECT (object, self);
@@ -234,7 +234,7 @@ static PHP_METHOD (midgard_workspace_manager, get_workspace_by_path)
       	MidgardWorkspaceStorage *workspace = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (z_workspace));
 
 	GError *error = NULL;
-        zend_bool result = midgard_workspace_manager_get_workspace_by_path (self, workspace, path, &error);
+	zend_bool result = midgard_workspace_manager_get_workspace_by_path (self, workspace, path, &error);
 
 	if (error) {
 		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to get workspace by path. %s", error->message);
@@ -263,7 +263,7 @@ static PHP_METHOD (midgard_workspace_manager, create_workspace)
       	MidgardWorkspaceStorage *workspace = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (z_workspace));
 
 	GError *error = NULL;
-        zend_bool result = midgard_workspace_manager_create_workspace (self, workspace, path, &error);
+	zend_bool result = midgard_workspace_manager_create_workspace (self, workspace, path, &error);
 
 	if (error) {
 		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to create workspace. %s", error->message);
@@ -290,7 +290,7 @@ static PHP_METHOD (midgard_workspace_manager, update_workspace)
       	MidgardWorkspaceStorage *workspace = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (z_workspace));
 
 	GError *error = NULL;
-        zend_bool result = midgard_workspace_manager_update_workspace (self, workspace, &error);
+	zend_bool result = midgard_workspace_manager_update_workspace (self, workspace, &error);
 
 	if (error) {
 		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to update workspace. %s", error->message);
@@ -316,7 +316,7 @@ static PHP_METHOD (midgard_workspace_manager, purge_workspace)
       	MidgardWorkspaceStorage *workspace = MIDGARD_WORKSPACE_STORAGE (__php_gobject_ptr (z_workspace));
 
 	GError *error = NULL;
-        zend_bool result = midgard_workspace_manager_purge_workspace (self, workspace, &error);
+	zend_bool result = midgard_workspace_manager_purge_workspace (self, workspace, &error);
 
 	if (error) {
 		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to purge workspace. %s", error->message);
@@ -340,7 +340,7 @@ static PHP_METHOD (midgard_workspace_manager, path_exists)
 	}
 
 	MidgardWorkspaceManager *self = MIDGARD_WORKSPACE_MANAGER (__php_gobject_ptr (getThis ()));
-        zend_bool result = midgard_workspace_manager_path_exists (self, path);
+	zend_bool result = midgard_workspace_manager_path_exists (self, path);
 	RETURN_BOOL (result);
 }
 
@@ -362,7 +362,7 @@ static PHP_METHOD (midgard_workspace_manager, purge_content)
       	MidgardWorkspace *workspace = MIDGARD_WORKSPACE (__php_gobject_ptr (z_workspace));
 
 	GError *error = NULL;
-        zend_bool result = midgard_workspace_manager_purge_content (self, type, workspace, &error);
+	zend_bool result = midgard_workspace_manager_purge_content (self, type, workspace, &error);
 
 	if (error) {
 		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to purge %s content from workspace. %s", type, error->message);
@@ -395,7 +395,7 @@ static PHP_METHOD (midgard_workspace_manager, move_content)
       	MidgardWorkspace *dest_workspace = MIDGARD_WORKSPACE (__php_gobject_ptr (z_dest_workspace));
 
 	GError *error = NULL;
-        zend_bool result = midgard_workspace_manager_move_content (self, type, src_workspace, dest_workspace, &error);
+	zend_bool result = midgard_workspace_manager_move_content (self, type, src_workspace, dest_workspace, &error);
 
 	if (error) {
 		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to move %s content betwen workspaces. %s", type, error->message);
