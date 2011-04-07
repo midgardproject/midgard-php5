@@ -1105,6 +1105,8 @@ const char* g_class_name_to_php_class_name(const char *g_class_name)
 		return "midgard_workspace_context";
 	} else if (strcmp(g_class_name, "MidgardWorkspaceManager") == 0) {
 		return "midgard_workspace_manager";
+	} else if (strcmp(g_class_name, "MidgardRepligard") == 0) {
+		return "midgard_repligard";
 	}
 
 	return g_class_name;
@@ -1152,6 +1154,8 @@ const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 		return "MidgardWorkspaceContext";
 	} else if (strcmp(php_class_name, "midgard_workspace_manager") == 0) {
 		return "MidgardWorkspaceManager";
+	} else if (strcmp(php_class_name, "midgard_repligard") == 0) {
+		return "MidgardRepligard";
 	}
 
 	return php_class_name;
