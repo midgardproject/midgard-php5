@@ -171,8 +171,11 @@ static PHP_METHOD(midgard_workspace_context, __construct)
 		return;
 
 	MidgardWorkspaceContext *self = midgard_workspace_context_new();
-	if (!self)
-		RETURN_FALSE;
+
+	if (!self) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create workspace context object");
+		return;
+	}
 
 	MGD_PHP_SET_GOBJECT(object, self);
 }
@@ -214,8 +217,11 @@ static PHP_METHOD(midgard_workspace_manager, __construct)
 	zval *object = getThis();
 
 	MidgardWorkspaceManager *self = midgard_workspace_manager_new(MIDGARD_CONNECTION(__php_gobject_ptr(z_mgd)));
-	if (!self)
-		RETURN_FALSE;
+
+	if (!self) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create workspace object");
+		return;
+	}
 
 	MGD_PHP_SET_GOBJECT(object, self);
 }
