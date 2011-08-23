@@ -1331,9 +1331,22 @@ static void __register_abstract_php_classes(const gchar *class_name, zend_class_
 	mgdclass->module = NULL;
 	mgdclass->ce_flags = 0;
 
-	// registering class-template as class
+	/* registering class-template as class 
+	 * From this class we need nothing but properties, so no need to define 
+	 * object initialization routine or other ones */	
 	mgdclass_ptr = zend_register_internal_class(mgdclass TSRMLS_CC);
 	mgdclass_ptr->ce_flags = ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+
+	/* Register default properties */
+	guint n_prop;
+	guint i;
+	GObjectClass *klass = g_type_class_peek (g_type_from_name (class_name));
+	GParamSpec **pspecs = g_object_class_list_properties (klass, &n_prop);
+	for (i = 0; i < n_prop; i++) {
+		/* By default, register string property */
+		zend_declare_property_string (mgdclass_ptr, (char*) pspecs[i]->name, strlen (pspecs[i]->name), "", ZEND_ACC_PUBLIC TSRMLS_CC);
+	}
+	g_free(pspecs);
 
 	// freeing class-template (it is not needed anymore)
 	g_free(mgdclass);
