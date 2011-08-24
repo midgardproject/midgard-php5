@@ -329,6 +329,8 @@ PHP_MINIT_FUNCTION(midgard2_user)
 	/* Set function to initialize underlying data */
 	php_midgard_user_class->create_object = php_midgard_gobject_new;
 	php_midgard_user_class->doc_comment = strdup("Midgard's Authentication API");
+	php_midgard_user_class->serialize = php_midgard_serialize_dbobject_hook;
+	php_midgard_user_class->unserialize = php_midgard_unserialize_dbobject_hook;
 
 	return SUCCESS;
 }

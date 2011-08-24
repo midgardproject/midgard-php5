@@ -182,6 +182,10 @@ gboolean php_midgard_is_derived_from_class(const gchar *classname,
 	} \
 }
 
+/* DBObject routines and hooks */
+int php_midgard_serialize_dbobject_hook(zval *zobject, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC);
+int php_midgard_unserialize_dbobject_hook(zval **zobject, zend_class_entry *ce, const unsigned char *buffer, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
+
 /* closures */
 void php_midgard_object_connect_class_closures(GObject *object, zval *zobject TSRMLS_DC);
 void php_midgard_gobject_closure_hash_new();
