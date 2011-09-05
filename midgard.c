@@ -371,6 +371,7 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_query)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_g_mainloop)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_workspaces)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_base_abstract)(INIT_FUNC_ARGS_PASSTHRU);
 
 	/* Register midgard_metadata class */
 	static zend_class_entry midgard_metadata_class_entry;

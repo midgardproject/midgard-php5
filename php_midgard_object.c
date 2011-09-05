@@ -27,6 +27,7 @@
 
 zend_class_entry *php_midgard_dbobject_class = NULL;
 zend_class_entry *php_midgard_object_class = NULL;
+zend_class_entry *php_midgard_base_abstract_class = NULL;
 
 #define __THROW_EXCEPTION \
 	if (EG(exception)) { \
@@ -1294,6 +1295,77 @@ PHP_MINIT_FUNCTION(midgard2_object)
 
 		__register_php_classes(typename, php_midgard_object_class TSRMLS_CC);
 		__add_method_comments(typename);
+	}
+
+	g_free(all_types);
+
+	return SUCCESS;
+}
+
+static void __register_abstract_php_classes(const gchar *class_name, zend_class_entry *parent TSRMLS_DC)
+{
+	zend_class_entry *mgdclass, *mgdclass_ptr;
+
+	/* lcn is freed in zend_register_internal_class */
+	gchar *lcn = g_ascii_strdown(class_name, strlen(class_name));
+
+	// creating class-template
+	mgdclass = g_new0(zend_class_entry, 1);
+	mgdclass->name = lcn;
+	mgdclass->name_length = strlen(class_name);
+	mgdclass->builtin_functions = NULL;
+
+	mgdclass->constructor = NULL;
+	mgdclass->destructor = NULL;
+	mgdclass->clone = NULL;
+	mgdclass->create_object = NULL;
+	mgdclass->interface_gets_implemented = NULL;
+	mgdclass->__call = NULL;
+	mgdclass->__get = NULL;
+	mgdclass->__set = NULL;
+	mgdclass->parent = parent;
+	mgdclass->num_interfaces = 0;
+	mgdclass->interfaces = NULL;
+	mgdclass->get_iterator = NULL;
+	mgdclass->iterator_funcs.funcs = NULL;
+	mgdclass->module = NULL;
+	mgdclass->ce_flags = 0;
+
+	/* registering class-template as class 
+	 * From this class we need nothing but properties, so no need to define 
+	 * object initialization routine or other ones */	
+	mgdclass_ptr = zend_register_internal_class(mgdclass TSRMLS_CC);
+	mgdclass_ptr->ce_flags = ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+
+	/* Register default properties */
+	guint n_prop;
+	guint i;
+	GObjectClass *klass = g_type_class_peek (g_type_from_name (class_name));
+	GParamSpec **pspecs = g_object_class_list_properties (klass, &n_prop);
+	for (i = 0; i < n_prop; i++) {
+		/* By default, register string property */
+		zend_declare_property_string (mgdclass_ptr, (char*) pspecs[i]->name, strlen (pspecs[i]->name), "", ZEND_ACC_PUBLIC TSRMLS_CC);
+	}
+	g_free(pspecs);
+
+	// freeing class-template (it is not needed anymore)
+	g_free(mgdclass);
+}
+
+PHP_MINIT_FUNCTION(midgard2_base_abstract)
+{
+	/* Register MidgardBaseAbstract class */
+	static zend_class_entry php_midgard_base_abstract_ce;
+	INIT_CLASS_ENTRY(php_midgard_base_abstract_ce, "MidgardBaseAbstract", NULL);
+
+	php_midgard_base_abstract_class = zend_register_internal_class(&php_midgard_base_abstract_ce TSRMLS_CC);
+
+	guint n_types, i;
+	GType *all_types = g_type_children(MIDGARD_TYPE_BASE_ABSTRACT, &n_types);
+
+	for (i = 0; i < n_types; i++) {
+		const gchar *typename = g_class_name_to_php_class_name(g_type_name(all_types[i]));
+		__register_abstract_php_classes(typename, php_midgard_base_abstract_class TSRMLS_CC);
 	}
 
 	g_free(all_types);
