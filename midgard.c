@@ -312,8 +312,8 @@ PHP_MINIT_FUNCTION(midgard2)
 	global_loghandler = g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_MASK, midgard_error_default_log,
 										  NULL);
 
-	//g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
-	//g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_CRITICAL);
+	g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
+	g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_WARNING);
 
 	/* Get DateTime class pointer and set global */
 	zend_datetime_class_ptr = php_date_get_date_ce();
@@ -351,7 +351,6 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_config)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_blob)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_object_class)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_collector)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_connection)(INIT_FUNC_ARGS_PASSTHRU);
@@ -371,7 +370,9 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_query)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_g_mainloop)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_workspaces)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_base_interface)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_base_abstract)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
 
 	/* Register midgard_metadata class */
 	static zend_class_entry midgard_metadata_class_entry;
