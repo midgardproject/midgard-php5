@@ -1143,7 +1143,7 @@ __midgard_php_type_functions[] =
 	{ NULL, NULL }
 };
 
-int __serialize_object_hook(zval *zobject, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC)
+int php_midgard_serialize_dbobject_hook(zval *zobject, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC)
 {
 	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
 
@@ -1174,7 +1174,7 @@ int __serialize_object_hook(zval *zobject, unsigned char **buffer, zend_uint *bu
 	return SUCCESS;
 }
 
-int __unserialize_object_hook(zval **zobject, zend_class_entry *ce, const unsigned char *buffer, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC)
+int php_midgard_unserialize_dbobject_hook(zval **zobject, zend_class_entry *ce, const unsigned char *buffer, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC)
 {
 	if (buffer == NULL)
 		return FAILURE;
@@ -1269,8 +1269,8 @@ static void __register_php_classes(const gchar *class_name, zend_class_entry *pa
 	// registering class-template as class
 	mgdclass_ptr = zend_register_internal_class(mgdclass TSRMLS_CC);
 	mgdclass_ptr->ce_flags = 0;
-	mgdclass_ptr->serialize = __serialize_object_hook;
-	mgdclass_ptr->unserialize = __unserialize_object_hook;
+	mgdclass_ptr->serialize = php_midgard_serialize_dbobject_hook;
+	mgdclass_ptr->unserialize = php_midgard_unserialize_dbobject_hook;
 	mgdclass_ptr->create_object = php_midgard_gobject_new;
 
 	/* Get class interfaces and add php ones */
