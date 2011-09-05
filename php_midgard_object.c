@@ -1195,6 +1195,19 @@ int __unserialize_object_hook(zval **zobject, zend_class_entry *ce, const unsign
 	return SUCCESS;
 }
 
+static zend_class_entry *
+__find_interface_by_name (const gchar *name)
+{
+       	int iface_name_length = strlen(name);
+	char *lower_iface_name = g_ascii_strdown(name, iface_name_length);
+	zend_class_entry **ce;
+
+	if (zend_hash_find(CG(class_table), (char *)lower_iface_name, iface_name_length + 1, (void **) &ce) != SUCCESS) {
+		return NULL;
+	}
+	g_free(lower_iface_name);
+	return *ce;
+}
 
 static void __register_php_classes(const gchar *class_name, zend_class_entry *parent TSRMLS_DC)
 {
@@ -1259,6 +1272,16 @@ static void __register_php_classes(const gchar *class_name, zend_class_entry *pa
 	mgdclass_ptr->serialize = __serialize_object_hook;
 	mgdclass_ptr->unserialize = __unserialize_object_hook;
 	mgdclass_ptr->create_object = php_midgard_gobject_new;
+
+	/* Get class interfaces and add php ones */
+	guint n_types;
+	guint i;
+	GType *iface_types = g_type_interfaces(g_type_from_name(class_name), &n_types);
+	for (i = 0; i < n_types; i++) {
+		zend_class_entry *iface_ce = __find_interface_by_name(g_type_name(iface_types[i]));	
+		zend_class_implements(mgdclass_ptr TSRMLS_CC, 1, iface_ce);
+	}	
+	g_free(iface_types);
 
 	// freeing class-template (it is not needed anymore)
 	g_free(mgdclass);
