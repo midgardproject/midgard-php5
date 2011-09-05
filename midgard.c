@@ -351,7 +351,6 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_config)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_blob)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_object_class)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_collector)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_connection)(INIT_FUNC_ARGS_PASSTHRU);
 	if (midgard_dbus_is_enabled()) {
@@ -361,7 +360,6 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_datetime)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_error)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_transaction)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_view)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_storage)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config_context)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config_file_context)(INIT_FUNC_ARGS_PASSTHRU);
@@ -373,6 +371,8 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_base_interface)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_base_abstract)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_view)(INIT_FUNC_ARGS_PASSTHRU);
 
 	/* Register midgard_metadata class */
 	static zend_class_entry midgard_metadata_class_entry;
