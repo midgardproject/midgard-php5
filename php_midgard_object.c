@@ -1196,7 +1196,7 @@ int php_midgard_unserialize_dbobject_hook(zval **zobject, zend_class_entry *ce, 
 }
 
 static zend_class_entry *
-__find_interface_by_name (const gchar *name)
+__find_class_by_name (const gchar *name)
 {
        	int iface_name_length = strlen(name);
 	char *lower_iface_name = g_ascii_strdown(name, iface_name_length);
@@ -1209,11 +1209,26 @@ __find_interface_by_name (const gchar *name)
 	return *ce;
 }
 
-static void __register_php_classes(const gchar *class_name, zend_class_entry *parent TSRMLS_DC)
+static void 
+__add_method_comments(const char *class_name)
+{
+	guint j;
+
+	for (j = 0; __midgard_php_type_functions[j].fname != NULL; j++) {
+		php_midgard_docs_add_method_comment(class_name, __midgard_php_type_functions[j].fname, __midgard_php_type_functions[j].doc_comment);
+	}
+}
+
+static void 
+__register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC)
 {
 	zend_class_entry *mgdclass, *mgdclass_ptr;
 	gint j;
 	guint _am = 0;
+	
+	zend_class_entry *ce = __find_class_by_name(class_name);
+	if (ce != NULL)
+		return;
 
 	for (j = 0; __midgard_php_type_functions[j].fname; j++) {
 		_am++;
@@ -1278,22 +1293,22 @@ static void __register_php_classes(const gchar *class_name, zend_class_entry *pa
 	guint i;
 	GType *iface_types = g_type_interfaces(g_type_from_name(class_name), &n_types);
 	for (i = 0; i < n_types; i++) {
-		zend_class_entry *iface_ce = __find_interface_by_name(g_type_name(iface_types[i]));	
+		zend_class_entry *iface_ce = __find_class_by_name(g_type_name(iface_types[i]));	
 		zend_class_implements(mgdclass_ptr TSRMLS_CC, 1, iface_ce);
 	}	
 	g_free(iface_types);
 
 	// freeing class-template (it is not needed anymore)
 	g_free(mgdclass);
-}
 
-static void __add_method_comments(const char *class_name)
-{
-	guint j;
-
-	for (j = 0; __midgard_php_type_functions[j].fname != NULL; j++) {
-		php_midgard_docs_add_method_comment(class_name, __midgard_php_type_functions[j].fname, __midgard_php_type_functions[j].doc_comment);
+	/* Register all derived classes */
+	GType *derived = g_type_children(g_type_from_name(class_name), &n_types);
+	for (i = 0; i < n_types; i++) {
+		const gchar *typename = g_class_name_to_php_class_name(g_type_name(derived[i]));
+		__register_php_class(typename, mgdclass_ptr);
+		__add_method_comments(typename);
 	}
+
 }
 
 PHP_MINIT_FUNCTION(midgard2_object)
@@ -1315,8 +1330,7 @@ PHP_MINIT_FUNCTION(midgard2_object)
 
 	for (i = 0; i < n_types; i++) {
 		const gchar *typename = g_class_name_to_php_class_name(g_type_name(all_types[i]));
-
-		__register_php_classes(typename, php_midgard_object_class TSRMLS_CC);
+		__register_php_class(typename, php_midgard_object_class TSRMLS_CC);
 		__add_method_comments(typename);
 	}
 
