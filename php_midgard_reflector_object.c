@@ -19,6 +19,13 @@
 
 zend_class_entry *php_midgard_reflector_object_class;
 
+#define __CHECK_GTYPE_NAME(__name) \
+	GType type_from_name = g_type_from_name(__name); \
+	if (type_from_name == G_TYPE_INVALID) { \
+		php_error(E_WARNING, "Type '%s' is not registered in Gtype system", __name); \
+		return; \
+	} 
+
 static PHP_METHOD(midgard_reflector_object, get_property_primary)
 {
 	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
@@ -42,12 +49,7 @@ static PHP_METHOD(midgard_reflector_object, get_property_primary)
 	}
 
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	__CHECK_GTYPE_NAME(g_classname);
 
 	const gchar *property_primary = midgard_reflector_object_get_property_primary(g_classname);
 
@@ -84,12 +86,7 @@ static PHP_METHOD(midgard_reflector_object, get_property_up)
 	}
 
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	__CHECK_GTYPE_NAME(g_classname);
 
 	const gchar *property_up = midgard_reflector_object_get_property_up(g_classname);
 
@@ -126,12 +123,7 @@ static PHP_METHOD(midgard_reflector_object, get_property_parent)
 	}
 
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	__CHECK_GTYPE_NAME(g_classname);
 
 	const gchar *property_parent = midgard_reflector_object_get_property_parent(g_classname);
 
@@ -168,12 +160,7 @@ static PHP_METHOD(midgard_reflector_object, get_property_unique)
 	}
 
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	__CHECK_GTYPE_NAME(g_classname);
 
 	const gchar *property_unique = midgard_reflector_object_get_property_unique(g_classname);
 
@@ -210,12 +197,7 @@ static PHP_METHOD(midgard_reflector_object, list_children)
 	}
 
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	__CHECK_GTYPE_NAME(g_classname);
 
 	guint n_children;
 	gchar **children = midgard_reflector_object_list_children(g_classname, &n_children);
@@ -231,7 +213,6 @@ static PHP_METHOD(midgard_reflector_object, list_children)
 	}
 
 	g_free(children);
-
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_reflector_object_list_children, 0, 0, 1)
@@ -261,12 +242,7 @@ static PHP_METHOD(midgard_reflector_object, has_metadata_class)
 	}
 
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	__CHECK_GTYPE_NAME(g_classname);
 
 	RETURN_BOOL(midgard_reflector_object_has_metadata_class(g_classname));
 }
@@ -298,12 +274,7 @@ static PHP_METHOD(midgard_reflector_object, get_metadata_class)
 	}
 
 	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(g_classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	__CHECK_GTYPE_NAME(g_classname);
 
 	const gchar *metadata_class = midgard_reflector_object_get_metadata_class(g_classname);
 
@@ -340,14 +311,7 @@ static PHP_METHOD(midgard_reflector_object, get_schema_value)
 	} else {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "first argument should be object or string");
 		return;
-	}
-
-	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME(classname);
-
-	if (!klass) {
-		php_error(E_WARNING, "MidgardObjectClass not found");
-		return;
-	}
+	}	
 
 	const gchar *schema_value = midgard_reflector_object_get_schema_value(classname, (const gchar *)name);
 
@@ -362,6 +326,146 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_reflector_object_get_schema_value, 0, 0, 
 	ZEND_ARG_INFO(0, node_name)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_reflector_object, is_mixin)
+{
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	zval *zvalue;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zvalue) == FAILURE) {
+		return;
+	}
+
+	const char *php_classname = NULL;
+
+	if (Z_TYPE_P(zvalue) == IS_STRING) {
+		php_classname = Z_STRVAL_P(zvalue);
+	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+		php_classname = Z_OBJCE_P(zvalue)->name;
+	} else {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "argument should be object or string");
+		return;
+	}
+
+	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
+	__CHECK_GTYPE_NAME(g_classname);
+
+	RETURN_BOOL(midgard_reflector_object_is_mixin(g_classname));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_reflector_object_is_mixin, 0, 0, 1)
+	ZEND_ARG_INFO(0, classname)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_reflector_object, is_interface)
+{
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	zval *zvalue;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zvalue) == FAILURE) {
+		return;
+	}
+
+	const char *php_classname = NULL;
+
+	if (Z_TYPE_P(zvalue) == IS_STRING) {
+		php_classname = Z_STRVAL_P(zvalue);
+	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+		php_classname = Z_OBJCE_P(zvalue)->name;
+	} else {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "argument should be object or string");
+		return;
+	}
+
+	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
+	__CHECK_GTYPE_NAME(g_classname);
+
+	RETURN_BOOL(midgard_reflector_object_is_interface(g_classname));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_reflector_object_is_interface, 0, 0, 1)
+	ZEND_ARG_INFO(0, classname)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_reflector_object, is_abstract)
+{
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	zval *zvalue;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zvalue) == FAILURE) {
+		return;
+	}
+
+	const char *php_classname = NULL;
+
+	if (Z_TYPE_P(zvalue) == IS_STRING) {
+		php_classname = Z_STRVAL_P(zvalue);
+	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+		php_classname = Z_OBJCE_P(zvalue)->name;
+	} else {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "argument should be object or string");
+		return;
+	}
+
+	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
+	__CHECK_GTYPE_NAME(g_classname);
+
+	RETURN_BOOL(midgard_reflector_object_is_abstract(g_classname));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_reflector_object_is_abstract, 0, 0, 1)
+	ZEND_ARG_INFO(0, classname)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_reflector_object, list_defined_properties)
+{
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	zval *zvalue;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zvalue) == FAILURE) {
+		return;
+	}
+
+	const char *php_classname = NULL;
+
+	if (Z_TYPE_P(zvalue) == IS_STRING) {
+		php_classname = Z_STRVAL_P(zvalue);
+	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+		php_classname = Z_OBJCE_P(zvalue)->name;
+	} else {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "argument should be object or string");
+		return;
+	}
+
+	const gchar *g_classname = php_class_name_to_g_class_name(php_classname);
+	__CHECK_GTYPE_NAME(g_classname);
+
+	guint n_prop;
+	gchar **properties = midgard_reflector_object_list_defined_properties(g_classname, &n_prop);
+
+	array_init(return_value);
+	
+	if (properties == NULL)
+		return;
+
+	guint i;
+	for (i = 0; i < n_prop; i++) {
+		add_assoc_string(return_value, (gchar *)properties[i], "", 1);
+	}
+
+	g_free(properties);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_reflector_object_list_defined_properties, 0, 0, 1)
+	ZEND_ARG_INFO(0, classname)
+ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_reflector_object)
 {
@@ -374,6 +478,10 @@ PHP_MINIT_FUNCTION(midgard2_reflector_object)
 		PHP_ME(midgard_reflector_object, has_metadata_class,        arginfo_midgard_reflector_object_has_metadata_class,        ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflector_object, get_metadata_class,        arginfo_midgard_reflector_object_get_metadata_class,        ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflector_object, get_schema_value,    arginfo_midgard_reflector_object_get_schema_value,    ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflector_object, is_mixin,    arginfo_midgard_reflector_object_is_mixin,    ZEND_ACC_STATIC | ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflector_object, is_interface,    arginfo_midgard_reflector_object_is_interface,    ZEND_ACC_STATIC | ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflector_object, is_abstract,    arginfo_midgard_reflector_object_is_abstract,    ZEND_ACC_STATIC | ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_reflector_object, list_defined_properties,    arginfo_midgard_reflector_object_list_defined_properties,    ZEND_ACC_STATIC | ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
