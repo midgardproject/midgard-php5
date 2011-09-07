@@ -1236,9 +1236,6 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 
 	zend_function_entry __functions[_am+1];
 
-	/* lcn is freed in zend_register_internal_class */
-	gchar *lcn = g_ascii_strdown(class_name, strlen(class_name));
-
 	__functions[0].fname = "__construct";
 	__functions[0].handler = ZEND_FN(_midgard_php_object_constructor);
 	__functions[0].arg_info = __midgard_php_type_functions[0].arg_info;
@@ -1260,9 +1257,10 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 	__functions[_am].flags = 0;
 
 	// creating class-template
+	int class_name_length = strlen(class_name);
 	mgdclass = g_new0(zend_class_entry, 1);
-	mgdclass->name = lcn;
-	mgdclass->name_length = strlen(class_name);
+	mgdclass->name = g_strdup (class_name);
+	mgdclass->name_length = class_name_length;
 	mgdclass->builtin_functions = __functions;
 
 	mgdclass->constructor = NULL;
