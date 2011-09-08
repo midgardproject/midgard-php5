@@ -1302,7 +1302,7 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 	/* Register all derived classes */
 	GType *derived = g_type_children(g_type_from_name(class_name), &n_types);
 	for (i = 0; i < n_types; i++) {
-		const gchar *typename = g_class_name_to_php_class_name(g_type_name(derived[i]));
+		const gchar *typename = g_type_name(derived[i]);
 		__register_php_class(typename, mgdclass_ptr);
 		__add_method_comments(typename);
 	}
@@ -1313,21 +1313,24 @@ PHP_MINIT_FUNCTION(midgard2_object)
 {
 	/* Register midgard_dbobject class */
 	static zend_class_entry php_midgard_dbobject_ce;
-	INIT_CLASS_ENTRY(php_midgard_dbobject_ce, "midgard_dbobject", NULL);
+	INIT_CLASS_ENTRY(php_midgard_dbobject_ce, "MidgardDBObject", NULL);
 
 	php_midgard_dbobject_class = zend_register_internal_class(&php_midgard_dbobject_ce TSRMLS_CC);
+	zend_register_class_alias("midgard_dbobject", php_midgard_dbobject_class);
 
 	/* Register midgard_object class */
 	static zend_class_entry php_midgard_object_ce;
-	INIT_CLASS_ENTRY(php_midgard_object_ce, "midgard_object", NULL);
+	INIT_CLASS_ENTRY(php_midgard_object_ce, "MidgardObject", NULL);
 
-	php_midgard_object_class = zend_register_internal_class_ex(&php_midgard_object_ce, php_midgard_dbobject_class, "midgard_dbobject" TSRMLS_CC);
+	php_midgard_object_class = zend_register_internal_class_ex(&php_midgard_object_ce, php_midgard_dbobject_class, "MidgardDBObject" TSRMLS_CC);
+	zend_register_class_alias ("midgard_object", php_midgard_object_class);
+
 
 	guint n_types, i;
 	GType *all_types = g_type_children(MIDGARD_TYPE_OBJECT, &n_types);
 
 	for (i = 0; i < n_types; i++) {
-		const gchar *typename = g_class_name_to_php_class_name(g_type_name(all_types[i]));
+		const gchar *typename = g_type_name(all_types[i]);
 		__register_php_class(typename, php_midgard_object_class TSRMLS_CC);
 		__add_method_comments(typename);
 	}
@@ -1399,7 +1402,7 @@ PHP_MINIT_FUNCTION(midgard2_base_abstract)
 	GType *all_types = g_type_children(MIDGARD_TYPE_BASE_ABSTRACT, &n_types);
 
 	for (i = 0; i < n_types; i++) {
-		const gchar *typename = g_class_name_to_php_class_name(g_type_name(all_types[i]));
+		const gchar *typename = g_type_name(all_types[i]);
 		__register_abstract_php_classes(typename, php_midgard_base_abstract_class TSRMLS_CC);
 	}
 
