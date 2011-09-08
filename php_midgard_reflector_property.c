@@ -382,5 +382,7 @@ PHP_MINIT_FUNCTION(midgard2_reflector_property)
 	php_midgard_reflector_property_class = zend_register_internal_class(&reflector_property_class_entry TSRMLS_CC);
 	php_midgard_reflector_property_class->create_object = php_midgard_gobject_new;
 
+	zend_register_class_alias("midgard_reflector_property", php_midgard_reflector_property_class);
+
 	return SUCCESS;
 }

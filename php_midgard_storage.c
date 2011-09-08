@@ -123,11 +123,13 @@ PHP_MINIT_FUNCTION(midgard2_storage)
 	};
 
 	static zend_class_entry php_midgard_storage_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_storage_class_entry, "midgard_storage", midgard_storage_methods);
+	INIT_CLASS_ENTRY(php_midgard_storage_class_entry, "MidgardStorage", midgard_storage_methods);
 
 	php_midgard_storage_class = zend_register_internal_class(&php_midgard_storage_class_entry TSRMLS_CC);
 	php_midgard_storage_class->create_object = NULL;
 	php_midgard_storage_class->doc_comment = strdup("Collection of static methods for managing underlying data storage");
+
+	zend_register_class_alias("midgard_storage", php_midgard_storage_class);
 
 	return SUCCESS;
 }

@@ -83,8 +83,7 @@ static PHP_METHOD(midgard_workspace_storage, list_children)
 		return;
 
 	const char *g_class_name = G_OBJECT_TYPE_NAME(children[0]);
-	const char *ws_cname = g_class_name_to_php_class_name(g_class_name);
-	zend_class_entry *ce = zend_fetch_class((char *) ws_cname, strlen(ws_cname), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+	zend_class_entry *ce = zend_fetch_class((char *) g_class_name, strlen(g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	int i;
 	for (i = 0; i < n_objects; i++) {
@@ -207,8 +206,7 @@ static PHP_METHOD(midgard_workspace_manager, __construct)
 {
 	zval *z_mgd = NULL;
 	const gchar *g_class_name = g_type_name(MIDGARD_TYPE_CONNECTION);
-	const char *php_class_name = g_class_name_to_php_class_name(g_class_name);
-	zend_class_entry *ce = zend_fetch_class((char *)php_class_name, strlen(php_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+	zend_class_entry *ce = zend_fetch_class((char *)g_class_name, strlen(g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &z_mgd, ce) == FAILURE) {
 		return;
@@ -432,13 +430,14 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	};
 
 	static zend_class_entry php_midgard_workspace_storage_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_workspace_storage_class_entry, "midgard_workspace_storage", midgard_workspace_storage_methods);
+	INIT_CLASS_ENTRY(php_midgard_workspace_storage_class_entry, "MidgardWorkspaceStorage", midgard_workspace_storage_methods);
 
 	php_midgard_workspace_storage_class = zend_register_internal_class(&php_midgard_workspace_storage_class_entry TSRMLS_CC);
 	php_midgard_workspace_storage_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_workspace_storage_class->create_object = php_midgard_gobject_new;
 	php_midgard_workspace_storage_class->doc_comment = strdup("Base class for workspaces");
 
+	zend_register_class_alias("midgard_workspace_storage", php_midgard_workspace_storage_class);
 
 	static function_entry midgard_workspace_methods[] = {
 		PHP_ME(midgard_workspace, __construct, arginfo_midgard_workspace___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -447,12 +446,13 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	};
 
 	static zend_class_entry php_midgard_workspace_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_workspace_class_entry, "midgard_workspace", midgard_workspace_methods);
+	INIT_CLASS_ENTRY(php_midgard_workspace_class_entry, "MidgardWorkspace", midgard_workspace_methods);
 
 	php_midgard_workspace_class = zend_register_internal_class_ex(&php_midgard_workspace_class_entry, php_midgard_workspace_storage_class, "midgard_workspace_storage" TSRMLS_CC);
 	php_midgard_workspace_class->create_object = php_midgard_gobject_new;
 	php_midgard_workspace_class->doc_comment = strdup("Represents single workspace");
 
+	zend_register_class_alias("midgard_workspace", php_midgard_workspace_class);
 
 	static function_entry midgard_workspace_context_methods[] = {
 		PHP_ME(midgard_workspace_context, __construct,   arginfo_midgard_workspace_context___construct,   ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -461,12 +461,13 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	};
 
 	static zend_class_entry php_midgard_workspace_context_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_workspace_context_class_entry, "midgard_workspace_context", midgard_workspace_context_methods);
+	INIT_CLASS_ENTRY(php_midgard_workspace_context_class_entry, "MidgardWorkspaceContext", midgard_workspace_context_methods);
 
 	php_midgard_workspace_context_class = zend_register_internal_class_ex(&php_midgard_workspace_context_class_entry, php_midgard_workspace_storage_class, "midgard_workspace_storage" TSRMLS_CC);
 	php_midgard_workspace_context_class->create_object = php_midgard_gobject_new;
 	php_midgard_workspace_context_class->doc_comment = strdup("Represents workspaces' tree");
 
+	zend_register_class_alias("midgard_workspace_context", php_midgard_workspace_context_class);
 
 	static function_entry midgard_workspace_manager_methods[] = {
 		PHP_ME(midgard_workspace_manager, __construct,           arginfo_midgard_workspace_manager___construct,           ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -481,11 +482,13 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	};
 
 	static zend_class_entry php_midgard_workspace_manager_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_workspace_manager_class_entry, "midgard_workspace_manager", midgard_workspace_manager_methods);
+	INIT_CLASS_ENTRY(php_midgard_workspace_manager_class_entry, "MidgardWorkspaceManager", midgard_workspace_manager_methods);
 
 	php_midgard_workspace_manager = zend_register_internal_class(&php_midgard_workspace_manager_class_entry TSRMLS_CC);
 	php_midgard_workspace_manager->create_object = php_midgard_gobject_new;
 	php_midgard_workspace_manager->doc_comment = strdup("Workspaces' manager");
+
+	zend_register_class_alias("midgard_workspace_manager", php_midgard_workspace_manager);
 
 	return SUCCESS;
 }

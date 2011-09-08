@@ -227,11 +227,13 @@ PHP_MINIT_FUNCTION(midgard2_blob)
 	};
 
 	static zend_class_entry php_midgard_blob_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_blob_class_entry, "midgard_blob", blob_methods);
+	INIT_CLASS_ENTRY(php_midgard_blob_class_entry, "MidgardBlob", blob_methods);
 
 	php_midgard_blob_class = zend_register_internal_class(&php_midgard_blob_class_entry TSRMLS_CC);
 	php_midgard_blob_class->create_object = php_midgard_gobject_new;
 	php_midgard_blob_class->doc_comment = strdup("Wrapper around midgard_attachment object, which provides high-level API for working with larget binary entities");
+
+	zend_register_class_alias("midgard_blob", php_midgard_blob_class);
 
 	return SUCCESS;
 }

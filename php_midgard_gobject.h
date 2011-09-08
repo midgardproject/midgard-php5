@@ -65,7 +65,6 @@ void php_midgard_gobject_unset_property(zval *object, zval *member TSRMLS_DC);
 void php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAMETERS);
 void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS);
 
-const char* g_class_name_to_php_class_name(const gchar *g_class_name);
 const gchar* php_class_name_to_g_class_name(const char *php_class_name);
 
 #endif /* PHP_MIDGARD_GOBJECT_GENERIC  */
