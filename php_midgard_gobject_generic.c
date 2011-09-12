@@ -838,6 +838,13 @@ zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce)
 		return ce;
 	}
 
+	GType g_class_type = g_type_from_name(ce->name);
+	if (g_class_type != G_TYPE_INVALID) {
+		if (g_type_is_a (g_class_type, MIDGARD_TYPE_DBOBJECT)) {
+			return ce;
+		}
+	}
+
 	if (ce->parent == php_midgard_dbobject_class
 			|| ce->parent == php_midgard_object_class
 			|| ce->parent == php_midgard_view_class
@@ -853,6 +860,13 @@ zend_class_entry *php_midgard_get_mgdschema_class_ptr(zend_class_entry *ce)
 	g_assert(ce != NULL);
 
 	zend_class_entry *tmp = ce;
+
+	GType g_class_type = g_type_from_name(ce->name);
+	if (g_class_type != G_TYPE_INVALID) {
+		if (g_type_is_a (g_class_type, MIDGARD_TYPE_DBOBJECT)) {
+			return tmp;
+		}
+	}
 
 	while (
 		tmp->parent
