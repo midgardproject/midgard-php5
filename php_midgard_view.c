@@ -126,6 +126,7 @@ PHP_MINIT_FUNCTION(midgard2_view)
 	INIT_CLASS_ENTRY(php_midgard_view_ce, "MidgardView", NULL);
 
 	php_midgard_view_class = zend_register_internal_class_ex(&php_midgard_view_ce, php_midgard_dbobject_class, "MidgardDBObject" TSRMLS_CC);
+	php_midgard_view_class->ce_flags = ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 
 	guint n_types, i;
 	GType *all_types = g_type_children(MIDGARD_TYPE_VIEW, &n_types);
