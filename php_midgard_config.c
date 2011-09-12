@@ -193,11 +193,13 @@ PHP_MINIT_FUNCTION(midgard2_config)
 	};
 
 	static zend_class_entry php_midgard_config_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_config_class_entry, "midgard_config", midgard_config_methods);
+	INIT_CLASS_ENTRY(php_midgard_config_class_entry, "MidgardConfig", midgard_config_methods);
 
 	php_midgard_config_class = zend_register_internal_class(&php_midgard_config_class_entry TSRMLS_CC);
 	php_midgard_config_class->create_object = php_midgard_gobject_new;
 	php_midgard_config_class->doc_comment = strdup("Represents Midgard unified configuration file");
+	
+	zend_register_class_alias("midgard_config", php_midgard_config_class);
 
 	return SUCCESS;
 }

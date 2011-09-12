@@ -301,13 +301,14 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 	};
 
 	static zend_class_entry php_midgard_query_executor_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_query_executor_class_entry, "midgard_query_executor", midgard_query_executor_methods);
+	INIT_CLASS_ENTRY(php_midgard_query_executor_class_entry, "MidgardQueryExecutor", midgard_query_executor_methods);
 
 	php_midgard_query_executor_class = zend_register_internal_class(&php_midgard_query_executor_class_entry TSRMLS_CC);
 	php_midgard_query_executor_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_query_executor_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_executor_class->doc_comment = strdup("Base class for midgard_query query executors");
+	php_midgard_query_executor_class->doc_comment = strdup("Base, abstract class for queries executions");
 
+	zend_register_class_alias("midgard_query_executor", php_midgard_query_executor_class);
 
 	static function_entry midgard_query_select_methods[] = {
 		PHP_ME(midgard_query_select, __construct,      arginfo_midgard_query_select___construct,      ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -319,12 +320,13 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 	};
 
 	static zend_class_entry php_midgard_query_select_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_query_select_class_entry, "midgard_query_select", midgard_query_select_methods);
+	INIT_CLASS_ENTRY(php_midgard_query_select_class_entry, "MidgardQuerySelect", midgard_query_select_methods);
 
 	php_midgard_query_select_class = zend_register_internal_class_ex(&php_midgard_query_select_class_entry, php_midgard_query_executor_class, "midgard_query_executor" TSRMLS_CC);
 	php_midgard_query_select_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_select_class->doc_comment = strdup("midgard_query Select query executor");
+	php_midgard_query_select_class->doc_comment = strdup("SQL SELECT queries generator and executor");
 
+	zend_register_class_alias("midgard_query_select", php_midgard_query_select_class);
 
 	return SUCCESS;
 }
@@ -346,9 +348,8 @@ static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, gu
 		GObject *object = G_OBJECT(objects[i]);
 		GType object_type = G_OBJECT_TYPE(object);
 		const gchar *g_class_name = g_type_name(object_type);
-		const char *php_class_name = g_class_name_to_php_class_name(g_class_name);
 
-		zend_class_entry *ce = zend_fetch_class((char *)php_class_name, strlen(php_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);;
+		zend_class_entry *ce = zend_fetch_class((char *)g_class_name, strlen(g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 		zval *zobject;
 		MAKE_STD_ZVAL(zobject);

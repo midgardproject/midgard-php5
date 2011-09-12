@@ -557,8 +557,7 @@ static PHP_METHOD (midgard_connection, get_workspace)
 		return;
 
 	const char *g_class_name = G_OBJECT_TYPE_NAME (workspace);
-	const char *ws_cname = g_class_name_to_php_class_name (g_class_name);
-	zend_class_entry *ce = zend_fetch_class ((char *) ws_cname, strlen (ws_cname), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+	zend_class_entry *ce = zend_fetch_class ((char *) g_class_name, strlen (g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	php_midgard_gobject_new_with_gobject (return_value, ce, g_object_ref (G_OBJECT (workspace)), TRUE TSRMLS_CC);
 }
@@ -632,7 +631,7 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 
 	static zend_class_entry php_midgard_connection_class_entry;
 
-	INIT_CLASS_ENTRY(php_midgard_connection_class_entry, "midgard_connection", connection_methods);
+	INIT_CLASS_ENTRY(php_midgard_connection_class_entry, "MidgardConnection", connection_methods);
 	php_midgard_connection_class = zend_register_internal_class(&php_midgard_connection_class_entry TSRMLS_CC);
 
 	php_midgard_connection_class->create_object = php_midgard_gobject_new;
@@ -641,6 +640,8 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 	php_midgard_connection_class->doc_comment = strdup("midgard_connection class represents connection to underlying data-source and is responsible for holding and setting environmental variables (like error, authenticated user, debug level, etc.)");
 
 	zend_declare_property_null(php_midgard_connection_class, "instance", sizeof("instance")-1, ZEND_ACC_PRIVATE|ZEND_ACC_STATIC TSRMLS_CC);
+
+	zend_register_class_alias("midgard_connection", php_midgard_connection_class);
 
 	return SUCCESS;
 }

@@ -165,7 +165,7 @@ PHP_MINIT_FUNCTION(midgard2_transaction)
 	};
 
 	static zend_class_entry php_midgard_transaction_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_transaction_class_entry, "midgard_transaction", transaction_methods);
+	INIT_CLASS_ENTRY(php_midgard_transaction_class_entry, "MidgardTransaction", transaction_methods);
 
 	php_midgard_transaction_class = zend_register_internal_class(&php_midgard_transaction_class_entry TSRMLS_CC);
 
@@ -174,6 +174,8 @@ PHP_MINIT_FUNCTION(midgard2_transaction)
 	php_midgard_transaction_class->serialize = NULL; /* FIXME, set (un)serialize for some explicit error if needed */
 	php_midgard_transaction_class->unserialize = NULL;
 	php_midgard_transaction_class->doc_comment = strdup("Transaction manager");
+
+	zend_register_class_alias("midgard_transaction", php_midgard_transaction_class);
 
 	return SUCCESS;
 }
