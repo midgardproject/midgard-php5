@@ -184,6 +184,7 @@ STD_PHP_INI_BOOLEAN("midgard.engine",              "1", PHP_INI_ALL,    OnUpdate
 STD_PHP_INI_BOOLEAN("midgard.memory_debug",        "0", PHP_INI_ALL,    OnUpdateBool,   midgard_memory_debug,       zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.superglobals_compat", "0", PHP_INI_SYSTEM, OnUpdateBool,   superglobals_compat,        zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.valgrind_friendly",   "0", PHP_INI_SYSTEM, OnUpdateBool,   valgrind_friendly,          zend_midgard2_globals, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.glib_loghandler",	"0", PHP_INI_SYSTEM, OnUpdateBool,   glib_loghandler,          zend_midgard2_globals, midgard2_globals)
 PHP_INI_END()
 
 static zend_bool php_midgard_engine_is_enabled(TSRMLS_D)
@@ -312,8 +313,8 @@ PHP_MINIT_FUNCTION(midgard2)
 	global_loghandler = g_log_set_handler(G_LOG_DOMAIN, G_LOG_LEVEL_MASK, midgard_error_default_log,
 										  NULL);
 
-	g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
-	g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_WARNING);
+	//g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
+	//g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_WARNING);
 
 	/* Get DateTime class pointer and set global */
 	zend_datetime_class_ptr = php_date_get_date_ce();
@@ -464,6 +465,11 @@ PHP_MINIT_FUNCTION(midgard2)
 	   g_log_set_fatal_mask("GLib", G_LOG_LEVEL_CRITICAL); */
 
 	php_midgard_log_enabled = TRUE;
+
+	if (MGDG(glib_loghandler)) {
+		g_log_set_handler("GLib", G_LOG_LEVEL_MASK, php_midgard_log_errors, NULL);
+		g_log_set_handler("GLib-GObject", G_LOG_LEVEL_MASK, php_midgard_log_errors, NULL);
+	}
 
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("MINIT done (pid = %d)\n", getpid());
