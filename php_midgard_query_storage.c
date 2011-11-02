@@ -55,11 +55,13 @@ PHP_MINIT_FUNCTION(midgard2_query_storage)
 	};
 
 	static zend_class_entry php_midgard_query_storage_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_query_storage_class_entry, "midgard_query_storage", midgard_query_storage_methods);
+	INIT_CLASS_ENTRY(php_midgard_query_storage_class_entry, "MidgardQueryStorage", midgard_query_storage_methods);
 
 	php_midgard_query_storage_class = zend_register_internal_class(&php_midgard_query_storage_class_entry TSRMLS_CC);
 	php_midgard_query_storage_class->create_object = php_midgard_gobject_new;
 	php_midgard_query_storage_class->doc_comment = strdup("Wraps DBObject for use with midgard_query_* classes");
+
+	zend_register_class_alias("midgard_query_storage", php_midgard_query_storage_class);
 
 	return SUCCESS;
 }

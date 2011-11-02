@@ -86,13 +86,15 @@ PHP_MINIT_FUNCTION(midgard2_key_config_context)
 	};
 
 	static zend_class_entry php_midgard_key_config_context_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_key_config_context_class_entry, "midgard_key_config_context", midgard_key_config_context_methods);
+	INIT_CLASS_ENTRY(php_midgard_key_config_context_class_entry, "MidgardKeyConfigContext", midgard_key_config_context_methods);
 
 	php_midgard_key_config_context_class = zend_register_internal_class(&php_midgard_key_config_context_class_entry TSRMLS_CC);
 
 	php_midgard_key_config_context_class->ce_flags = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_key_config_context_class->doc_comment = strdup("Abstract class for key-value (ini like) configuration contexts");
 	php_midgard_key_config_context_class->create_object = php_midgard_gobject_new;
+
+	zend_register_class_alias("midgard_key_config_context", php_midgard_key_config_context_class);
 
 	return SUCCESS;
 }

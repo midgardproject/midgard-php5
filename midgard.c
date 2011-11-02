@@ -184,6 +184,7 @@ STD_PHP_INI_BOOLEAN("midgard.engine",              "1", PHP_INI_ALL,    OnUpdate
 STD_PHP_INI_BOOLEAN("midgard.memory_debug",        "0", PHP_INI_ALL,    OnUpdateBool,   midgard_memory_debug,       zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.superglobals_compat", "0", PHP_INI_SYSTEM, OnUpdateBool,   superglobals_compat,        zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.valgrind_friendly",   "0", PHP_INI_SYSTEM, OnUpdateBool,   valgrind_friendly,          zend_midgard2_globals, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.glib_loghandler",	"0", PHP_INI_SYSTEM, OnUpdateBool,   glib_loghandler,          zend_midgard2_globals, midgard2_globals)
 PHP_INI_END()
 
 static zend_bool php_midgard_engine_is_enabled(TSRMLS_D)
@@ -313,7 +314,7 @@ PHP_MINIT_FUNCTION(midgard2)
 										  NULL);
 
 	//g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
-	//g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_CRITICAL);
+	//g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_WARNING);
 
 	/* Get DateTime class pointer and set global */
 	zend_datetime_class_ptr = php_date_get_date_ce();
@@ -351,8 +352,6 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_config)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_blob)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_object_class)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_collector)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_connection)(INIT_FUNC_ARGS_PASSTHRU);
 	if (midgard_dbus_is_enabled()) {
@@ -362,7 +361,6 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_datetime)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_error)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_transaction)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_view)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_storage)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config_context)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config_file_context)(INIT_FUNC_ARGS_PASSTHRU);
@@ -371,12 +369,22 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_query)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_g_mainloop)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_workspaces)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_base_interface)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_base_abstract)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_view)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_reflector_object)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_reflector_property)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_repligard)(INIT_FUNC_ARGS_PASSTHRU);
 
 	/* Register midgard_metadata class */
 	static zend_class_entry midgard_metadata_class_entry;
-	INIT_CLASS_ENTRY(midgard_metadata_class_entry, "midgard_metadata", NULL);
+	INIT_CLASS_ENTRY(midgard_metadata_class_entry, "MidgardMetadata", NULL);
 	midgard_metadata_class = zend_register_internal_class(&midgard_metadata_class_entry TSRMLS_CC);
 	midgard_metadata_class->create_object = php_midgard_gobject_new;
+
+	zend_register_class_alias("midgard_metadata", midgard_metadata_class);
 
 #define MGD_PHP_REGISTER_CONSTANT(name) \
 	REGISTER_LONG_CONSTANT(#name, name, CONST_CS | CONST_PERSISTENT)
@@ -458,6 +466,11 @@ PHP_MINIT_FUNCTION(midgard2)
 	   g_log_set_fatal_mask("GLib", G_LOG_LEVEL_CRITICAL); */
 
 	php_midgard_log_enabled = TRUE;
+
+	if (MGDG(glib_loghandler)) {
+		g_log_set_handler("GLib", G_LOG_LEVEL_MASK, php_midgard_log_errors, NULL);
+		g_log_set_handler("GLib-GObject", G_LOG_LEVEL_MASK, php_midgard_log_errors, NULL);
+	}
 
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("MINIT done (pid = %d)\n", getpid());

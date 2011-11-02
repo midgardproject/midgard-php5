@@ -447,6 +447,103 @@ static PHP_METHOD (midgard_connection, is_enabled_workspace)
 ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_is_enabled_workspace, 0)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD (midgard_connection, enable_replication)
+{
+	zend_bool toggle = FALSE;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "b", &toggle) == FAILURE)
+		return;
+
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+
+	midgard_connection_enable_replication(mgd, toggle);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_connection_enable_replication, 0, 0, 1)
+	ZEND_ARG_INFO(0, toggle)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD (midgard_connection, is_enabled_replication)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+	zend_bool rv = midgard_connection_is_enabled_replication(mgd);
+
+	RETURN_BOOL (rv);
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_is_enabled_replication, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD (midgard_connection, enable_quota)
+{
+	zend_bool toggle = FALSE;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "b", &toggle) == FAILURE)
+		return;
+
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+
+	midgard_connection_enable_quota(mgd, toggle);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_connection_enable_quota, 0, 0, 1)
+	ZEND_ARG_INFO(0, toggle)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD (midgard_connection, is_enabled_quota)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+	zend_bool rv = midgard_connection_is_enabled_quota(mgd);
+
+	RETURN_BOOL (rv);
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_is_enabled_quota, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD (midgard_connection, enable_dbus)
+{
+	zend_bool toggle = FALSE;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "b", &toggle) == FAILURE)
+		return;
+
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+
+	midgard_connection_enable_dbus(mgd, toggle);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_connection_enable_dbus, 0, 0, 1)
+	ZEND_ARG_INFO(0, toggle)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD (midgard_connection, is_enabled_dbus)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+	zend_bool rv = midgard_connection_is_enabled_dbus(mgd);
+
+	RETURN_BOOL (rv);
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_is_enabled_dbus, 0)
+ZEND_END_ARG_INFO()
+
+
 static PHP_METHOD (midgard_connection, get_workspace)
 {
 	if (zend_parse_parameters_none() == FAILURE)
@@ -460,8 +557,7 @@ static PHP_METHOD (midgard_connection, get_workspace)
 		return;
 
 	const char *g_class_name = G_OBJECT_TYPE_NAME (workspace);
-	const char *ws_cname = g_class_name_to_php_class_name (g_class_name);
-	zend_class_entry *ce = zend_fetch_class ((char *) ws_cname, strlen (ws_cname), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+	zend_class_entry *ce = zend_fetch_class ((char *) g_class_name, strlen (g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	php_midgard_gobject_new_with_gobject (return_value, ce, g_object_ref (G_OBJECT (workspace)), TRUE TSRMLS_CC);
 }
@@ -522,6 +618,12 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 		PHP_ME(midgard_connection, list_auth_types,      arginfo_midgard_connection_list_auth_types,       ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, enable_workspace,     arginfo_midgard_connection_enable_workspace,      ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, is_enabled_workspace, arginfo_midgard_connection_is_enabled_workspace,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, enable_replication,   arginfo_midgard_connection_enable_replication,    ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, is_enabled_replication, arginfo_midgard_connection_is_enabled_replication,  ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, enable_dbus,     	 arginfo_midgard_connection_enable_dbus,	   ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, is_enabled_dbus,      arginfo_midgard_connection_is_enabled_dbus,	   ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, enable_quota,         arginfo_midgard_connection_enable_quota,          ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, is_enabled_quota,     arginfo_midgard_connection_is_enabled_quota,      ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, get_workspace,        arginfo_midgard_connection_get_workspace,         ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, set_workspace,        arginfo_midgard_connection_set_workspace,         ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
@@ -529,7 +631,7 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 
 	static zend_class_entry php_midgard_connection_class_entry;
 
-	INIT_CLASS_ENTRY(php_midgard_connection_class_entry, "midgard_connection", connection_methods);
+	INIT_CLASS_ENTRY(php_midgard_connection_class_entry, "MidgardConnection", connection_methods);
 	php_midgard_connection_class = zend_register_internal_class(&php_midgard_connection_class_entry TSRMLS_CC);
 
 	php_midgard_connection_class->create_object = php_midgard_gobject_new;
@@ -538,6 +640,8 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 	php_midgard_connection_class->doc_comment = strdup("midgard_connection class represents connection to underlying data-source and is responsible for holding and setting environmental variables (like error, authenticated user, debug level, etc.)");
 
 	zend_declare_property_null(php_midgard_connection_class, "instance", sizeof("instance")-1, ZEND_ACC_PRIVATE|ZEND_ACC_STATIC TSRMLS_CC);
+
+	zend_register_class_alias("midgard_connection", php_midgard_connection_class);
 
 	return SUCCESS;
 }

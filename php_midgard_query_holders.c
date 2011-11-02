@@ -138,13 +138,14 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 	};
 
 	static zend_class_entry php_midgard_query_holder_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_query_holder_class_entry, "midgard_query_holder", midgard_query_holder_methods);
+	INIT_CLASS_ENTRY(php_midgard_query_holder_class_entry, "MidgardQueryHolder", midgard_query_holder_methods);
 
 	php_midgard_query_holder_class = zend_register_internal_class(&php_midgard_query_holder_class_entry TSRMLS_CC);
 	php_midgard_query_holder_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_query_holder_class->create_object = php_midgard_gobject_new;
 	php_midgard_query_holder_class->doc_comment = strdup("Base class for holding data-atom in midgard_query");
 
+	zend_register_class_alias("midgard_query_holder", php_midgard_query_holder_class);
 
 	static function_entry midgard_query_property_methods[] = {
 		PHP_ME(midgard_query_property, __construct, arginfo_midgard_query_property___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -152,12 +153,13 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 	};
 
 	static zend_class_entry php_midgard_query_property_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_query_property_class_entry, "midgard_query_property", midgard_query_property_methods);
+	INIT_CLASS_ENTRY(php_midgard_query_property_class_entry, "MidgardQueryProperty", midgard_query_property_methods);
 
 	php_midgard_query_property_class = zend_register_internal_class_ex(&php_midgard_query_property_class_entry, php_midgard_query_holder_class, "midgard_query_holder" TSRMLS_CC);
 	php_midgard_query_property_class->create_object = php_midgard_gobject_new;
 	php_midgard_query_property_class->doc_comment = strdup("Class for holding object-properties");
 
+	zend_register_class_alias("midgard_query_property", php_midgard_query_property_class);
 
 	static function_entry midgard_query_value_methods[] = {
 		PHP_ME(midgard_query_value, __construct, arginfo_midgard_query_value___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -165,11 +167,13 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 	};
 
 	static zend_class_entry php_midgard_query_value_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_query_value_class_entry, "midgard_query_value", midgard_query_value_methods);
+	INIT_CLASS_ENTRY(php_midgard_query_value_class_entry, "MidgardQueryValue", midgard_query_value_methods);
 
 	php_midgard_query_value_class = zend_register_internal_class_ex(&php_midgard_query_value_class_entry, php_midgard_query_holder_class, "midgard_query_holder" TSRMLS_CC);
 	php_midgard_query_value_class->create_object = php_midgard_gobject_new;
 	php_midgard_query_value_class->doc_comment = strdup("Class for holding literal data");
+
+	zend_register_class_alias("midgard_query_value", php_midgard_query_value_class);
 
 	return SUCCESS;
 }

@@ -123,9 +123,10 @@ PHP_MINIT_FUNCTION(midgard2_view)
 {
 	/* Register midgard_view class */
 	static zend_class_entry php_midgard_view_ce;
-	INIT_CLASS_ENTRY(php_midgard_view_ce, "midgard_view", NULL);
+	INIT_CLASS_ENTRY(php_midgard_view_ce, "MidgardView", NULL);
 
-	php_midgard_view_class = zend_register_internal_class_ex(&php_midgard_view_ce, php_midgard_dbobject_class, "midgard_view" TSRMLS_CC);
+	php_midgard_view_class = zend_register_internal_class_ex(&php_midgard_view_ce, php_midgard_dbobject_class, "MidgardDBObject" TSRMLS_CC);
+	php_midgard_view_class->ce_flags = ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 
 	guint n_types, i;
 	GType *all_types = g_type_children(MIDGARD_TYPE_VIEW, &n_types);
@@ -134,6 +135,8 @@ PHP_MINIT_FUNCTION(midgard2_view)
 		const gchar *typename = g_type_name(all_types[i]);
 		__register_view_php_classes(typename, php_midgard_view_class TSRMLS_CC);
 	}
+
+	zend_register_class_alias("midgard_view", php_midgard_view_class);
 
 	g_free(all_types);
 

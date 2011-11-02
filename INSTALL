@@ -63,6 +63,9 @@ midgard.quota
 	Disable or enable quota check. Default is 'Off'.
 	You can change it between requests and also use in .htaccess files.
 
+midgard.glib_loghandler
+	Propagate GLib and GLib-GObject domains errors as PHP ones. Default is 'Off'.
+	Enable or disable when module is loaded.
 
 ########################################################
 #############  HTTP SERVER NOTES  ######################

@@ -322,13 +322,17 @@ PHP_MINIT_FUNCTION(midgard2_user)
 	};
 
 	static zend_class_entry php_midgard_user_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_user_class_entry, "midgard_user", midgard_user_methods);
+	INIT_CLASS_ENTRY(php_midgard_user_class_entry, "MidgardUser", midgard_user_methods);
 
 	php_midgard_user_class = zend_register_internal_class_ex(&php_midgard_user_class_entry, NULL, "midgard_dbobject" TSRMLS_CC);
 
 	/* Set function to initialize underlying data */
 	php_midgard_user_class->create_object = php_midgard_gobject_new;
 	php_midgard_user_class->doc_comment = strdup("Midgard's Authentication API");
+	php_midgard_user_class->serialize = php_midgard_serialize_dbobject_hook;
+	php_midgard_user_class->unserialize = php_midgard_unserialize_dbobject_hook;
+
+	zend_register_class_alias("midgard_user", php_midgard_user_class);
 
 	return SUCCESS;
 }

@@ -243,10 +243,8 @@ zend_bool php_midgard_gvalue2zval(const GValue *gvalue, zval *zvalue TSRMLS_DC)
 					if (!gclass_name)
 						return FALSE;
 
-					const char *php_class_name = g_class_name_to_php_class_name(gclass_name);
-
 					g_object_ref(gobject_property);
-					php_midgard_gobject_init(zvalue, php_class_name, gobject_property, TRUE TSRMLS_CC);
+					php_midgard_gobject_init(zvalue, gclass_name, gobject_property, TRUE TSRMLS_CC);
 
 					if (MGDG(midgard_memory_debug)) {
 						printf("php_midgard_gvalue2zval: [%p] refcount=%d, gobj=%p, glib refcount=%d\n", zvalue, Z_REFCOUNT_P(zvalue), gobject_property, gobject_property->ref_count);
@@ -840,6 +838,13 @@ zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce)
 		return ce;
 	}
 
+	GType g_class_type = g_type_from_name(ce->name);
+	if (g_class_type != G_TYPE_INVALID) {
+		if (g_type_is_a (g_class_type, MIDGARD_TYPE_DBOBJECT)) {
+			return ce;
+		}
+	}
+
 	if (ce->parent == php_midgard_dbobject_class
 			|| ce->parent == php_midgard_object_class
 			|| ce->parent == php_midgard_view_class
@@ -855,6 +860,13 @@ zend_class_entry *php_midgard_get_mgdschema_class_ptr(zend_class_entry *ce)
 	g_assert(ce != NULL);
 
 	zend_class_entry *tmp = ce;
+
+	GType g_class_type = g_type_from_name(ce->name);
+	if (g_class_type != G_TYPE_INVALID) {
+		if (g_type_is_a (g_class_type, MIDGARD_TYPE_DBOBJECT)) {
+			return tmp;
+		}
+	}
 
 	while (
 		tmp->parent
@@ -1063,100 +1075,11 @@ CLEAN_AND_RETURN_NULL:
 	return NULL;
 }
 
-const char* g_class_name_to_php_class_name(const char *g_class_name)
-{
-	if (strcmp(g_class_name, "MidgardMetadata") == 0) {
-		return "midgard_metadata";
-	} else if (strcmp(g_class_name, "MidgardDBObject") == 0) {
-		return "midgard_dbobject";
-	} else if (strcmp(g_class_name, "MidgardObject") == 0) {
-		return "midgard_object";
-	} else if (strcmp(g_class_name, "MidgardConnection") == 0) {
-		return "midgard_connection";
-	} else if (strcmp(g_class_name, "MidgardQueryStorage") == 0) {
-		return "midgard_query_storage";
-	} else if (strcmp(g_class_name, "MidgardQueryProperty") == 0) {
-		return "midgard_query_property";
-	} else if (strcmp(g_class_name, "MidgardQueryValue") == 0) {
-		return "midgard_query_value";
-	} else if (strcmp(g_class_name, "MidgardQueryConstraintGroup") == 0) {
-		return "midgard_query_constraint_group";
-	} else if (strcmp(g_class_name, "MidgardQueryConstraint") == 0) {
-		return "midgard_query_constraint";
-	} else if (strcmp(g_class_name, "MidgardUser") == 0) {
-		return "midgard_user";
-	} else if (strcmp(g_class_name, "MidgardView") == 0) {
-		return "midgard_view";
-	} else if (strcmp(g_class_name, "MidgardDBObject") == 0) {
-		return "midgard_dbobject";
-	} else if (strcmp(g_class_name, "MidgardConfig") == 0) {
-		return "midgard_config";
-	} else if (strcmp(g_class_name, "MidgardDbus") == 0) {
-		return "midgard_dbus";
-	} else if (strcmp(g_class_name, "MidgardReflectionProperty") == 0) {
-		return "midgard_reflection_property";
-	} else if (strcmp(g_class_name, "MidgardCollector") == 0) {
-		return "midgard_collector";
-	} else if (strcmp(g_class_name, "MidgardWorkspaceStorage") == 0) {
-		return "midgard_workspace_storage";
-	} else if (strcmp(g_class_name, "MidgardWorkspace") == 0) {
-		return "midgard_workspace";
-	} else if (strcmp(g_class_name, "MidgardWorkspaceContext") == 0) {
-		return "midgard_workspace_context";
-	} else if (strcmp(g_class_name, "MidgardWorkspaceManager") == 0) {
-		return "midgard_workspace_manager";
-	} else if (strcmp(g_class_name, "MidgardRepligard") == 0) {
-		return "midgard_repligard";
-	}
-
-	return g_class_name;
-}
-
 const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 {
-	if (strcmp(php_class_name, "midgard_metadata") == 0) {
-		return "MidgardMetadata";
-	} else if (strcmp(php_class_name, "midgard_dbobject") == 0) {
-		return "MidgardDBObject";
-	} else if (strcmp(php_class_name, "midgard_object") == 0) {
-		return "MidgardObject";
-	} else if (strcmp(php_class_name, "midgard_connection") == 0) {
-		return "MidgardConnection";
-	} else if (strcmp(php_class_name, "midgard_query_storage") == 0) {
-		return "MidgardQueryStorage";
-	} else if (strcmp(php_class_name, "midgard_query_property") == 0) {
-		return "MidgardQueryProperty";
-	} else if (strcmp(php_class_name, "midgard_query_value") == 0) {
-		return "MidgardQueryValue";
-	} else if (strcmp(php_class_name, "midgard_query_constraint_group") == 0) {
-		return "MidgardQueryConstraintGroup";
-	} else if (strcmp(php_class_name, "midgard_query_constraint") == 0) {
-		return "MidgardQueryConstraint";
-	} else if (strcmp(php_class_name, "midgard_user") == 0) {
-		return "MidgardUser";
-	} else if (strcmp(php_class_name, "midgard_view") == 0) {
-		return "MidgardView";
-	} else if (strcmp(php_class_name, "midgard_dbobject") == 0) {
-		return "MidgardDBObject";
-	} else if (strcmp(php_class_name, "midgard_config") == 0) {
-		return "MidgardConfig";
-	} else if (strcmp(php_class_name, "midgard_dbus") == 0) {
-		return "MidgardDbus";
-	} else if (strcmp(php_class_name, "midgard_reflection_property") == 0) {
-		return "MidgardReflectionProperty";
-	} else if (strcmp(php_class_name, "midgard_collector") == 0) {
-		return "MidgardCollector";
-	} else if (strcmp(php_class_name, "midgard_workspace_storage") == 0) {
-		return "MidgardWorkspaceStorage";
-	} else if (strcmp(php_class_name, "midgard_workspace") == 0) {
-		return "MidgardStorage";
-	} else if (strcmp(php_class_name, "midgard_workspace_context") == 0) {
-		return "MidgardWorkspaceContext";
-	} else if (strcmp(php_class_name, "midgard_workspace_manager") == 0) {
-		return "MidgardWorkspaceManager";
-	} else if (strcmp(php_class_name, "midgard_repligard") == 0) {
-		return "MidgardRepligard";
-	}
+	zend_class_entry *ce = php_midgard_get_class_ptr_by_name(php_class_name TSRMLS_CC);
+	if (ce)
+		return ce->name;
 
 	return php_class_name;
 }

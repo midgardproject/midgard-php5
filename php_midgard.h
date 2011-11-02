@@ -116,6 +116,7 @@ ZEND_BEGIN_MODULE_GLOBALS(midgard2)
 	zend_bool midgard_memory_debug;
 	zend_bool superglobals_compat;
 	zend_bool valgrind_friendly;
+	zend_bool glib_loghandler;
 ZEND_END_MODULE_GLOBALS(midgard2)
 
 ZEND_EXTERN_MODULE_GLOBALS(midgard2)
@@ -182,6 +183,10 @@ gboolean php_midgard_is_derived_from_class(const gchar *classname,
 	} \
 }
 
+/* DBObject routines and hooks */
+int php_midgard_serialize_dbobject_hook(zval *zobject, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC);
+int php_midgard_unserialize_dbobject_hook(zval **zobject, zend_class_entry *ce, const unsigned char *buffer, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
+
 /* closures */
 void php_midgard_object_connect_class_closures(GObject *object, zval *zobject TSRMLS_DC);
 void php_midgard_gobject_closure_hash_new();
@@ -214,6 +219,11 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround);
 PHP_MINIT_FUNCTION(midgard2_query);
 PHP_MINIT_FUNCTION(midgard2_g_mainloop);
 PHP_MINIT_FUNCTION(midgard2_workspaces);
+PHP_MINIT_FUNCTION(midgard2_base_abstract);
+PHP_MINIT_FUNCTION(midgard2_base_interface);
+PHP_MINIT_FUNCTION(midgard2_reflector_object);
+PHP_MINIT_FUNCTION(midgard2_reflector_property);
+PHP_MINIT_FUNCTION(midgard2_repligard);
 
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const char *name TSRMLS_DC);
@@ -251,6 +261,8 @@ extern zend_class_entry *ce_midgard_error_exception;
 extern zend_class_entry *php_midgard_datetime_class;
 extern zend_class_entry *php_midgard_workspace_storage_class;
 extern zend_class_entry *php_midgard_workspace_class;
+extern zend_class_entry *php_midgard_reflector_object_class;
+extern zend_class_entry *php_midgard_reflector_property_class;
 
 #define __php_objstore_object(instance) ((php_midgard_gobject *)zend_object_store_get_object(instance TSRMLS_CC))
 #define __php_gobject_ptr(instance) (__php_objstore_object(instance)->gobject)
