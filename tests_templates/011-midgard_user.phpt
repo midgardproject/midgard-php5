@@ -15,7 +15,7 @@ var_dump($user1);
 ?>
 ===DONE===
 --EXPECTF--
-object(midgard_user)#%d (8) {
+object(MidgardUser)#%d (8) {
   ["guid"]=>
   string(0) ""
   ["login"]=>
