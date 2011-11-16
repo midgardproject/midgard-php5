@@ -26,7 +26,7 @@ tmp-php.ini
 /tests/midgard.log
 /tests/test.cfg
 /tests/test.db
-/tests/*.sh
+/tests/0*.sh
 /tests/*.php
 /tests/*.log
 /tests/*.out
