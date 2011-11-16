@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Install Pake
-pyrus channel-discover pear.indeyets.ru
-pyrus install indeyets/pake
+pyrus install http://pear.symfony-project.com/get/YAML-1.0.6.tgz
+pyrus install http://pear.indeyets.ru/get/pake-1.6.3.tgz
 echo "Pake is in `pyrus get bin_dir|tail -1`"
 pyrus info indeyets/pake files
 
