@@ -1,2 +1,2 @@
 #!/bin/bash
-`pyrus get bin_dir|tail -1`/pake.sh test
+php `pyrus get php_dir|tail -1`/pake.php test
