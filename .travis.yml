@@ -6,4 +6,4 @@ php:
 before_script:
   - ./tests/travis.sh
 
-script: `pyrus get bin_dir|tail -1`/pake test
+script: ./tests/travis-test.sh
