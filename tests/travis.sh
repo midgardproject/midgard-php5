@@ -2,9 +2,8 @@
 
 # Install Pake
 pyrus install http://pear.symfony-project.com/get/YAML-1.0.6.tgz
-pyrus install http://pear.indeyets.ru/get/pake-1.6.3.tgz
+pyrus install -f http://pear.indeyets.ru/get/pake-1.6.3.tgz
 echo "Pake is in `pyrus get bin_dir|tail -1`"
-pyrus info indeyets/pake files
 
 # Install Midgard from OBS
 sudo apt-get install -y dbus libgda-4.0-4 libgda-4.0-dev
