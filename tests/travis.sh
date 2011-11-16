@@ -3,9 +3,7 @@
 # Install Pake
 pyrus channel-discover pear.indeyets.ru
 pyrus install indeyets/pake
-
-# Ensure Pake is in path
-export PATH=$PATH:`pyrus get bin_dir|tail -1`
+echo "Pake is in `pyrus get bin_dir|tail -1`"
 
 # Install Midgard from OBS
 sudo apt-get install -y dbus libgda-4.0-4 libgda-4.0-dev
