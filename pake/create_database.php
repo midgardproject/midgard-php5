@@ -36,17 +36,12 @@ foreach ($re->getClasses() as $class_ref) {
     $class_mgd_ref = new midgard_reflection_class($class_ref->getName());
     $parent_class = $class_mgd_ref->getParentClass();
 
-    if (!$parent_class)
-        continue;
-
-    if (!in_array($parent_class->getName(), array("midgard_dbobject", "midgard_object", "midgard_view")))
-        continue;
-
-    // skip abstract classes
-    if (in_array($class_mgd_ref->getName(), array("midgard_dbobject", "midgard_object", "midgard_view")))
-        continue;
-
     $name = $class_mgd_ref->getName();
+    if (!is_subclass_of ($name, 'MidgardDBObject')
+        || $class_mgd_ref->isAbstract()) {
+            continue;
+    }
+
     echo 'midgard_storage: create_class_storage('.$name.")\n";
     if (true !== midgard_storage::create_class_storage($name)) {
         throw new Exception('Failed to create storage for "'.$name.': "'.midgard_connection::get_instance()->get_error_string());
