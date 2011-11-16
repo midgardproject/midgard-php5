@@ -15,5 +15,4 @@ sudo dpkg -i midgard2-common_10.05.5.1-1_i386.deb
 sudo dpkg -i libmidgard2-dev_10.05.5.1-1_i386.deb
 
 # Enable dynamic loading of extensions in PHP
-# FIXME: get php.ini path in a non-hardcoded way
-echo "enable_dl=On" >> ~/.phpfarm/inst/php-5.3.8/lib/php.ini
+echo "enable_dl=On" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
