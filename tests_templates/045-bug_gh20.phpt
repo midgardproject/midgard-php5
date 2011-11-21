@@ -34,9 +34,9 @@ try {
 
 try {
     $obj = new atype(0);
-    echo "ERROR\n";
-} catch (midgard_error_exception $e) {
     echo "OK\n";
+} catch (midgard_error_exception $e) {
+    echo "ERROR\n";
 }
 
 $a = new atype();
