@@ -14,6 +14,8 @@ report_memleaks = On
 <?php
 $cfg = new midgard_config();
 $cfg->read_file_at_path(dirname(__FILE__).'/test.cfg');
+$mgd = midgard_connection::get_instance();
+$mgd->open_config($cfg);
 
 try {
     $dbus = new midgard_dbus('/test');
@@ -31,4 +33,5 @@ try {
 ?>
 ===DONE===
 --EXPECTF--
+MISSED ERROR
 ===DONE===
