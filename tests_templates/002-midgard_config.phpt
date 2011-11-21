@@ -14,7 +14,7 @@ var_dump($cfg->read_file_at_path('[[CFG_FILE]]'));
 var_dump($cfg->dbtype === '[[DB_TYPE]]');
 var_dump($cfg->database === '[[DB_NAME]]');
 var_dump($cfg->logfilename === '[[PATH]]/midgard.log');
-var_dump($cfg->loglevel === 'debug');
+var_dump($cfg->loglevel === 'warn');
 var_dump($cfg->tablecreate === true);
 var_dump($cfg->tableupdate === true);
 var_dump($cfg->testunit === false);
