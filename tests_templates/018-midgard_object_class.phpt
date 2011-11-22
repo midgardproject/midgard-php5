@@ -41,8 +41,8 @@ var_dump(midgard_object_class::get_property_parent('atype') === NULL);
 $guid = $obj->guid;
 $obj->delete();
 
-var_dump(midgard_object_class::undelete($guid));
-$obj = new atype($guid);
+//var_dump(midgard_object_class::undelete($guid));
+//$obj = new atype($guid);
 
 var_dump(midgard_object_class::has_metadata($obj));
 var_dump(midgard_object_class::has_metadata('atype'));
@@ -58,7 +58,6 @@ $obj->delete();
 ?>
 ===DONE===
 --EXPECTF--
-bool(true)
 bool(true)
 bool(true)
 bool(true)
