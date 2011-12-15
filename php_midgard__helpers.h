@@ -49,10 +49,8 @@ zend_class_entry *php_date_get_timezone_ce(void);
 void 		php_midgard_docs_add_class 		(const gchar *classname);
 void		php_midgard_docs_add_method_comment 	(const char *classname, const char *method, const char *comment);
 const gchar 	*php_midgard_docs_get_method_comment 	(const gchar *classname, const gchar *method);
-#if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3)
-# define php_mgd_register_auto_global(name) \
-#		zend_register_auto_global(#name, sizeof(#name)-1, 0, NULL TSRMLS_CC);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+#define php_mgd_register_auto_global(name) zend_register_auto_global(#name, sizeof(#name)-1, 0, NULL TSRMLS_CC);
 #else
-# define php_mgd_register_auto_global(name) \
-#		zend_register_auto_global(#name, sizeof(#name)-1, NULL TSRMLS_CC);
+#define php_mgd_register_auto_global(name) zend_register_auto_global(#name, sizeof(#name)-1, NULL TSRMLS_CC);
 #endif

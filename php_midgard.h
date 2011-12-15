@@ -236,7 +236,7 @@ void php_midgard_error_exception_force_throw(MidgardConnection *mgd, gint errcod
 /* Logging */
 void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gchar *msg, gpointer userdata);
 
-#if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3)
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 #define CHECK_MGD(handle) \
 { \
 	if (!handle) { \
