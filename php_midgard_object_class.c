@@ -293,7 +293,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_object_class)
 {
-	static function_entry object_class_methods[] = {
+	static zend_function_entry object_class_methods[] = {
 		PHP_ME(midgard_object_class, factory,             arginfo_midgard_object_class_factory,             ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_object_class, undelete,            arginfo_midgard_object_class_undelete,            ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_object_class, get_object_by_guid,  arginfo_midgard_object_class_get_object_by_guid,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)

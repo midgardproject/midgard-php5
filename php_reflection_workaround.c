@@ -336,14 +336,14 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 	zend_reflection_class_class = php_midgard_get_class_ptr_by_name("reflectionclass" TSRMLS_CC);
 
 	/* Extend ReflectionMethod */
-	static function_entry midgard_reflection_method_methods[] = {
+	static zend_function_entry midgard_reflection_method_methods[] = {
 		PHP_ME(php_midgard_reflection_method, __construct,   NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(php_midgard_reflection_method, getDocComment, NULL, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	/* Extend ReflectionClass */
-	static function_entry midgard_reflection_class_methods[] = {
+	static zend_function_entry midgard_reflection_class_methods[] = {
 		PHP_ME(php_midgard_reflection_class, __construct,    php_midgard_reflection_class___construct,     ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(php_midgard_reflection_class, getDocComment,  NULL,                                         ZEND_ACC_PUBLIC)
 		PHP_ME(php_midgard_reflection_class, listSignals,    NULL,                                         ZEND_ACC_PUBLIC)

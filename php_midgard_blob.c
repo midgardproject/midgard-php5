@@ -215,7 +215,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_blob)
 {
-	static function_entry blob_methods[] = {
+	static zend_function_entry blob_methods[] = {
 		PHP_ME(midgard_blob, __construct,   arginfo_midgard_blob___construct,   ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_blob, read_content,  arginfo_midgard_blob_read_content,  ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_blob, write_content, arginfo_midgard_blob_write_content, ZEND_ACC_PUBLIC)

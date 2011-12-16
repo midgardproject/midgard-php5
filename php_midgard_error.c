@@ -150,7 +150,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_error)
 {
-	static function_entry midgard_error_methods[] = {
+	static zend_function_entry midgard_error_methods[] = {
 		PHP_ME(midgard_error, __construct, arginfo_midgard_error___construct, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 		PHP_ME(midgard_error, error,       arginfo_midgard_error_error,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_error, critical,    arginfo_midgard_error_critical,    ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)

@@ -501,7 +501,7 @@ static PHP_METHOD(midgard_collector, execute)
 
 PHP_MINIT_FUNCTION(midgard2_collector)
 {
-	static function_entry collector_methods[] = {
+	static zend_function_entry collector_methods[] = {
 		PHP_ME(midgard_collector, __construct,        arginfo_midgard_collector___construct,        ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_collector, set_key_property,   arginfo_midgard_collector_set_key_property,   ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_collector, add_value_property, arginfo_midgard_collector_add_value_property, ZEND_ACC_PUBLIC)

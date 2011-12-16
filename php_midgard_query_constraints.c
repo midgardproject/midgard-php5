@@ -339,7 +339,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_query_constraints)
 {
-	static function_entry midgard_query_constraint_simple_methods[] = {
+	static zend_function_entry midgard_query_constraint_simple_methods[] = {
 		PHP_ME(midgard_query_constraint_simple, list_constraints, arginfo_midgard_query_constraint_simple_list_constraints, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
@@ -354,7 +354,7 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 
 	zend_register_class_alias("midgard_query_constraint_simple", php_midgard_query_constraint_simple_class);
 
-	static function_entry midgard_query_constraint_methods[] = {
+	static zend_function_entry midgard_query_constraint_methods[] = {
 		PHP_ME(midgard_query_constraint, __construct,  arginfo_midgard_query_constraint___construct,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_query_constraint, get_storage,  arginfo_midgard_query_constraint_get_storage,  ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_constraint, set_storage,  arginfo_midgard_query_constraint_set_storage,  ZEND_ACC_PUBLIC)
@@ -374,7 +374,7 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 
 	zend_register_class_alias("midgard_query_constraint", php_midgard_query_constraint_class);
 
-	static function_entry midgard_query_constraint_group_methods[] = {
+	static zend_function_entry midgard_query_constraint_group_methods[] = {
 		PHP_ME(midgard_query_constraint_group, __construct,          arginfo_midgard_query_constraint_group___construct,          ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_query_constraint_group, get_type,             arginfo_midgard_query_constraint_group_get_type,             ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_constraint_group, set_type,             arginfo_midgard_query_constraint_group_set_type,             ZEND_ACC_PUBLIC)

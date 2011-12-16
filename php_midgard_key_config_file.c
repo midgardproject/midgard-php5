@@ -60,7 +60,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_key_config_file)
 {
-	static function_entry midgard_key_config_file_methods[] = {
+	static zend_function_entry midgard_key_config_file_methods[] = {
 		PHP_ME(midgard_key_config_file, __construct, arginfo_midgard_key_config_file___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		{NULL, NULL, NULL}
 	};

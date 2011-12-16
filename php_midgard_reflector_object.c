@@ -469,7 +469,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_reflector_object)
 {
-	static function_entry object_class_methods[] = {
+	static zend_function_entry object_class_methods[] = {
 		PHP_ME(midgard_reflector_object, get_property_primary,     arginfo_midgard_reflector_object_get_property_primary,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflector_object, get_property_up,     arginfo_midgard_reflector_object_get_property_up,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflector_object, get_property_parent, arginfo_midgard_reflector_object_get_property_parent, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)

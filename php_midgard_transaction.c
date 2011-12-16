@@ -154,7 +154,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_transaction)
 {
-	static function_entry transaction_methods[] = {
+	static zend_function_entry transaction_methods[] = {
 		PHP_ME(midgard_transaction, __construct, arginfo_midgard_transaction___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_transaction, begin,       arginfo_midgard_transaction_begin,       ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_transaction, commit,      arginfo_midgard_transaction_commit,      ZEND_ACC_PUBLIC)

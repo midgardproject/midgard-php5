@@ -600,7 +600,7 @@ int __unserialize_cnc_hook(zval **zobject, zend_class_entry *ce, const unsigned 
 
 PHP_MINIT_FUNCTION(midgard2_connection)
 {
-	static function_entry connection_methods[] = {
+	static zend_function_entry connection_methods[] = {
 		PHP_ME(midgard_connection, __construct,          arginfo_midgard_connection___construct,           ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 		PHP_ME(midgard_connection, __destruct,           arginfo_midgard_connection___destruct,            ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
 		PHP_ME(midgard_connection, get_instance,         arginfo_midgard_connection_get_instance,          ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)

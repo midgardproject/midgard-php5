@@ -109,7 +109,7 @@ ZEND_END_ARG_INFO()
 PHP_MINIT_FUNCTION(midgard2_dbus)
 {
 
-	static function_entry midgard_dbus_methods[] = {
+	static zend_function_entry midgard_dbus_methods[] = {
 		PHP_ME(midgard_dbus, __construct, arginfo_midgard_dbus___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_dbus, send,        arginfo_midgard_dbus_send,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_dbus, connect,	  arginfo_midgard_dbus_connect,     ZEND_ACC_PUBLIC)

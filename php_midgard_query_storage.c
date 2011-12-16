@@ -49,7 +49,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_query_storage)
 {
-	static function_entry midgard_query_storage_methods[] = {
+	static zend_function_entry midgard_query_storage_methods[] = {
 		PHP_ME(midgard_query_storage, __construct, arginfo_midgard_query_storage___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		{NULL, NULL, NULL}
 	};

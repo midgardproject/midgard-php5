@@ -56,11 +56,8 @@ GHashTable *mgdg_config_files = NULL;
 /* Every user visible function must have an entry in midgard_functions[].
  */
 #include "php_midgard_functions.h"
-#if PHP_MAJOR_VERSION > 5 || PHP_MINOR_VERSION > 3
+
 zend_function_entry midgard2_functions[] = {
-#else
-function_entry midgard2_functions[] = {
-#endif
 	PHP_FE(mgd_version, NULL)
 	PHP_FE(mgd_is_guid, NULL)
 	/* Undocumented */

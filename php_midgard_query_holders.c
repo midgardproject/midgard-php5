@@ -131,7 +131,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_query_holders)
 {
-	static function_entry midgard_query_holder_methods[] = {
+	static zend_function_entry midgard_query_holder_methods[] = {
 		PHP_ME(midgard_query_holder, get_value, arginfo_midgard_query_holder_get_value, ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_holder, set_value, arginfo_midgard_query_holder_set_value, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
@@ -147,7 +147,7 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 
 	zend_register_class_alias("midgard_query_holder", php_midgard_query_holder_class);
 
-	static function_entry midgard_query_property_methods[] = {
+	static zend_function_entry midgard_query_property_methods[] = {
 		PHP_ME(midgard_query_property, __construct, arginfo_midgard_query_property___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		{NULL, NULL, NULL}
 	};
@@ -161,7 +161,7 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 
 	zend_register_class_alias("midgard_query_property", php_midgard_query_property_class);
 
-	static function_entry midgard_query_value_methods[] = {
+	static zend_function_entry midgard_query_value_methods[] = {
 		PHP_ME(midgard_query_value, __construct, arginfo_midgard_query_value___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		{NULL, NULL, NULL}
 	};

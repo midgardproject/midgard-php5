@@ -275,7 +275,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_datetime)
 {
-	static function_entry midgard_datetime_methods[] = {
+	static zend_function_entry midgard_datetime_methods[] = {
 		PHP_ME(midgard_datetime, __construct,  arginfo_midgard_datetime___construct,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_datetime, setTimezone,  arginfo_midgard_datetime_settimezone,  ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_datetime, setTime,      arginfo_midgard_datetime_settime,      ZEND_ACC_PUBLIC)

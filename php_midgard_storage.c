@@ -113,7 +113,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_storage)
 {
-	static function_entry midgard_storage_methods[] = {
+	static zend_function_entry midgard_storage_methods[] = {
 		PHP_ME(midgard_storage, create_base_storage,  arginfo_midgard_storage_create_base_storage,  ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_storage, create_class_storage, arginfo_midgard_storage_create_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_storage, update_class_storage, arginfo_midgard_storage_update_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)

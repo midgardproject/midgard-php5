@@ -181,7 +181,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_config)
 {
-	static function_entry midgard_config_methods[] = {
+	static zend_function_entry midgard_config_methods[] = {
 		PHP_ME(midgard_config, __construct,       arginfo_midgard_config___construct,       ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_config, save_file,         arginfo_midgard_config_save_file,         ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_config, read_file,         arginfo_midgard_config_read_file,         ZEND_ACC_PUBLIC)

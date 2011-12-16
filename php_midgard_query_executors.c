@@ -289,7 +289,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_query_executors)
 {
-	static function_entry midgard_query_executor_methods[] = {
+	static zend_function_entry midgard_query_executor_methods[] = {
 		PHP_ME(midgard_query_executor, set_constraint,    arginfo_midgard_query_executor_set_constraint,    ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_executor, set_offset,        arginfo_midgard_query_executor_set_offset,        ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_executor, set_limit,         arginfo_midgard_query_executor_set_limit,         ZEND_ACC_PUBLIC)
@@ -310,7 +310,7 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 
 	zend_register_class_alias("midgard_query_executor", php_midgard_query_executor_class);
 
-	static function_entry midgard_query_select_methods[] = {
+	static zend_function_entry midgard_query_select_methods[] = {
 		PHP_ME(midgard_query_select, __construct,      arginfo_midgard_query_select___construct,      ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_query_select, toggle_readonly,  arginfo_midgard_query_select_toggle_readonly,  ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_select, include_deleted,  arginfo_midgard_query_select_include_deleted,  ZEND_ACC_PUBLIC)
