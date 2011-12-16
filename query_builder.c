@@ -391,7 +391,7 @@ PHP_MINIT_FUNCTION(midgard2_query_builder)
 	INIT_CLASS_ENTRY(query_builder_class_entry, "MidgardQueryBuilder", query_builder_methods);
 	php_midgard_query_builder_class = zend_register_internal_class(&query_builder_class_entry TSRMLS_CC);
 	php_midgard_query_builder_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_builder_class->doc_comment = strdup("API for building complex data-queries");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_builder_class, strdup("API for building complex data-queries"));
 
 	zend_register_class_alias("midgard_query_builder", php_midgard_query_builder_class);
 
