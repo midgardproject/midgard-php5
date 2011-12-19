@@ -111,7 +111,11 @@ static void __register_view_php_classes(const gchar *class_name, zend_class_entr
 	mgdclass->interfaces = NULL;
 	mgdclass->get_iterator = NULL;
 	mgdclass->iterator_funcs.funcs = NULL;
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+        mgdclass->info.internal.module = NULL;
+#else
 	mgdclass->module = NULL;
+#endif
 	mgdclass->ce_flags = 0;
 
 	mgdclass_ptr = zend_register_internal_class(mgdclass TSRMLS_CC);
