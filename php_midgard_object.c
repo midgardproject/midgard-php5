@@ -1262,7 +1262,11 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 	mgdclass = g_new0(zend_class_entry, 1);
 	mgdclass->name = g_strdup (class_name);
 	mgdclass->name_length = class_name_length;
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	mgdclass->function_table = __functions;
+#else
 	mgdclass->builtin_functions = __functions;
+#endif
 
 	mgdclass->constructor = NULL;
 	mgdclass->destructor = NULL;
@@ -1277,7 +1281,11 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 	mgdclass->interfaces = NULL;
 	mgdclass->get_iterator = NULL;
 	mgdclass->iterator_funcs.funcs = NULL;
-	mgdclass->module = NULL;
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	mgdclass->info.internal.module = NULL;
+#else
+	mgdclass->info.internal.module = NULL;
+#endif
 	mgdclass->ce_flags = 0;
 
 	// registering class-template as class
@@ -1354,7 +1362,11 @@ static void __register_abstract_php_classes(const gchar *class_name, zend_class_
 	mgdclass = g_new0(zend_class_entry, 1);
 	mgdclass->name = lcn;
 	mgdclass->name_length = strlen(class_name);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	mgdclass->function_table = NULL;
+#else
 	mgdclass->builtin_functions = NULL;
+#endif
 
 	mgdclass->constructor = NULL;
 	mgdclass->destructor = NULL;
@@ -1369,7 +1381,11 @@ static void __register_abstract_php_classes(const gchar *class_name, zend_class_
 	mgdclass->interfaces = NULL;
 	mgdclass->get_iterator = NULL;
 	mgdclass->iterator_funcs.funcs = NULL;
-	mgdclass->module = NULL;
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	mgdclass->info.internal.module = NULL;
+#else
+	mgdclass->info.internal.module = NULL;
+#endif
 	mgdclass->ce_flags = 0;
 
 	/* registering class-template as class 
