@@ -93,8 +93,11 @@ static void __register_view_php_classes(const gchar *class_name, zend_class_entr
 	mgdclass = g_new0(zend_class_entry, 1);
 	mgdclass->name = lcn;
 	mgdclass->name_length = strlen(class_name);
-	mgdclass->builtin_functions = __functions;
-
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+        mgdclass->info.internal.builtin_functions = __functions;
+#else
+        mgdclass->builtin_functions = __functions;
+#endif
 	mgdclass->constructor = NULL;
 	mgdclass->destructor = NULL;
 	mgdclass->clone = NULL;
