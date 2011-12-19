@@ -124,12 +124,10 @@ static PHP_METHOD(php_midgard_reflection_method, getDocComment)
 
 	if (fptr->type == ZEND_USER_FUNCTION) {
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-		if (fptr->op_array.info.user.doc_comment) {
-			RETURN_STRINGL(fptr->op_array.info.user.doc_comment, fptr->op_array.info.user.doc_comment_len, 1);
-#else
+		RETURN_FALSE;
+#endif
 		if (fptr->op_array.doc_comment) {
 			RETURN_STRINGL(fptr->op_array.doc_comment, fptr->op_array.doc_comment_len, 1);
-#endif
 		} else {
 			RETURN_FALSE;
 		}
