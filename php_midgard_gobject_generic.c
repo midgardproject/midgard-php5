@@ -352,7 +352,11 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 
 	if (-1 == result) {
 		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		result = std_hnd->has_property(zobject, prop, 2, check_type TSRMLS_CC);
+#else
 		result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
+#endif
 	}
 
 	return result;
@@ -478,7 +482,12 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 		 * of BP_VAR_NA. The point is to throw warning when property
 		 * is not registered for (sub)class. */
 		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA, 1 TSRMLS_CC);
+#else
 		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA TSRMLS_CC);
+#endif
+
 	}
 
 	return _retval;
@@ -572,8 +581,11 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 			g_free(gvalue);
 		}
 	}
-
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	std_hnd->write_property(zobject, prop, value, 1 TSRMLS_CC);
+#else
 	std_hnd->write_property(zobject, prop, value TSRMLS_CC);
+#endif
 
 	return;
 }
@@ -774,7 +786,11 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	php_gobject->user_class_name = NULL;
 
 	zend_hash_copy(php_gobject->zo.properties,
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			&class_type->default_properties_table,
+#else
 			&class_type->default_properties,
+#endif
 			(copy_ctor_func_t) zval_add_ref,
 			(void *) &tmp, sizeof(zval *));
 
