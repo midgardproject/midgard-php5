@@ -2,16 +2,12 @@ language: php
 
 php:
   - 5.3
-
-env:
-  - DATABASE=sqlite
-  - DATABASE=mysql
-  - DATABASE=postgresql
+  - 5.4
 
 before_script:
-  - ./tests/travis_${DATABASE}.sh
+  - ./.travis/install.sh
 
-script: phpunit -c api-test/phpunit_${DATABASE}.xml.dist
+script: ./.travis/test.sh
 
 notifications:
     irc: "irc.freenode.org#midgard"
