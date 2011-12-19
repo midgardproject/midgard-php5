@@ -16,6 +16,7 @@
 
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
+#include "php_midgard__helpers.h"
 
 static zend_class_entry *php_midgard_object_class_class;
 
