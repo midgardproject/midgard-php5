@@ -1284,7 +1284,7 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 	mgdclass->info.internal.module = NULL;
 #else
-	mgdclass->info.internal.module = NULL;
+	mgdclass->module = NULL;
 #endif
 	mgdclass->ce_flags = 0;
 
@@ -1384,7 +1384,7 @@ static void __register_abstract_php_classes(const gchar *class_name, zend_class_
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 	mgdclass->info.internal.module = NULL;
 #else
-	mgdclass->info.internal.module = NULL;
+	mgdclass->module = NULL;
 #endif
 	mgdclass->ce_flags = 0;
 
