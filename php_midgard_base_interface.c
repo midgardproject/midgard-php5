@@ -77,8 +77,11 @@ __register_php_interface (const char *name)
 	php_iface = g_new0(zend_class_entry, 1);
 	php_iface->name = g_strdup (name);
 	php_iface->name_length = strlen(name);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	php_iface->info.internal.builtin_functions = NULL;
+#else
 	php_iface->builtin_functions = NULL;
-
+#endif
 	php_iface->constructor = NULL;
 	php_iface->destructor = NULL;
 	php_iface->clone = NULL;
@@ -92,7 +95,11 @@ __register_php_interface (const char *name)
 	php_iface->interfaces = NULL;
 	php_iface->get_iterator = NULL;
 	php_iface->iterator_funcs.funcs = NULL;
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	php_iface->info.internal.module = NULL;
+#else
 	php_iface->module = NULL;
+#endif
 	php_iface->ce_flags = 0;
 
 	/* Register interface */
