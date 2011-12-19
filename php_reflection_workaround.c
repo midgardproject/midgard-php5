@@ -123,8 +123,13 @@ static PHP_METHOD(php_midgard_reflection_method, getDocComment)
 	GET_REFLECTION_OBJECT_PTR(fptr);
 
 	if (fptr->type == ZEND_USER_FUNCTION) {
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		if (fptr->op_array.info.user.doc_comment) {
+			RETURN_STRINGL(fptr->op_array.info.user.doc_comment, fptr->op_array.info.user.doc_comment_len, 1);
+#else
 		if (fptr->op_array.doc_comment) {
 			RETURN_STRINGL(fptr->op_array.doc_comment, fptr->op_array.doc_comment_len, 1);
+#endif
 		} else {
 			RETURN_FALSE;
 		}
@@ -175,8 +180,11 @@ static PHP_METHOD(php_midgard_reflection_class, getDocComment)
 
 	if (ce == NULL)
 		RETURN_NULL();
-
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	RETURN_STRING(ce->info.user.doc_comment ? ce->info.user.doc_comment : "", 1);
+#else
 	RETURN_STRING(ce->doc_comment ? ce->doc_comment : "", 1);
+#endif
 }
 
 static PHP_METHOD(php_midgard_reflection_class, listSignals)
