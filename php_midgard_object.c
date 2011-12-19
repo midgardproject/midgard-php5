@@ -1263,7 +1263,7 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 	mgdclass->name = g_strdup (class_name);
 	mgdclass->name_length = class_name_length;
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-	mgdclass->function_table = __functions;
+	mgdclass->info.internal.builtin_functions = __functions;
 #else
 	mgdclass->builtin_functions = __functions;
 #endif
@@ -1363,7 +1363,7 @@ static void __register_abstract_php_classes(const gchar *class_name, zend_class_
 	mgdclass->name = lcn;
 	mgdclass->name_length = strlen(class_name);
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-	mgdclass->function_table = NULL;
+	mgdclass->info.internal.builtin_functions = NULL;
 #else
 	mgdclass->builtin_functions = NULL;
 #endif
