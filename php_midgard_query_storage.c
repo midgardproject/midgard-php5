@@ -59,7 +59,7 @@ PHP_MINIT_FUNCTION(midgard2_query_storage)
 
 	php_midgard_query_storage_class = zend_register_internal_class(&php_midgard_query_storage_class_entry TSRMLS_CC);
 	php_midgard_query_storage_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_storage_class->doc_comment = strdup("Wraps DBObject for use with midgard_query_* classes");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_storage_class, strdup("Wraps DBObject for use with midgard_query_* classes"));
 
 	zend_register_class_alias("midgard_query_storage", php_midgard_query_storage_class);
 

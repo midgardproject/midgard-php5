@@ -637,7 +637,7 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 	php_midgard_connection_class->create_object = php_midgard_gobject_new;
 	php_midgard_connection_class->serialize = __serialize_cnc_hook;
 	php_midgard_connection_class->unserialize = __unserialize_cnc_hook;
-	php_midgard_connection_class->doc_comment = strdup("midgard_connection class represents connection to underlying data-source and is responsible for holding and setting environmental variables (like error, authenticated user, debug level, etc.)");
+	CLASS_SET_DOC_COMMENT(php_midgard_connection_class, strdup("midgard_connection class represents connection to underlying data-source and is responsible for holding and setting environmental variables (like error, authenticated user, debug level, etc.)"));
 
 	zend_declare_property_null(php_midgard_connection_class, "instance", sizeof("instance")-1, ZEND_ACC_PRIVATE|ZEND_ACC_STATIC TSRMLS_CC);
 

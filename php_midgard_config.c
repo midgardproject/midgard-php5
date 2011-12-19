@@ -197,7 +197,7 @@ PHP_MINIT_FUNCTION(midgard2_config)
 
 	php_midgard_config_class = zend_register_internal_class(&php_midgard_config_class_entry TSRMLS_CC);
 	php_midgard_config_class->create_object = php_midgard_gobject_new;
-	php_midgard_config_class->doc_comment = strdup("Represents Midgard unified configuration file");
+	CLASS_SET_DOC_COMMENT(php_midgard_config_class, strdup("Represents Midgard unified configuration file"));
 	
 	zend_register_class_alias("midgard_config", php_midgard_config_class);
 

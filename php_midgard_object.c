@@ -1214,9 +1214,10 @@ __add_method_comments(const char *class_name)
 {
 	guint j;
 
+	/* FIXME, Rewrite for PHP 5.4
 	for (j = 0; __midgard_php_type_functions[j].fname != NULL; j++) {
 		php_midgard_docs_add_method_comment(class_name, __midgard_php_type_functions[j].fname, __midgard_php_type_functions[j].doc_comment);
-	}
+	} */
 }
 
 static void 

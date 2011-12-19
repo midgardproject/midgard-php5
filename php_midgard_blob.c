@@ -231,7 +231,7 @@ PHP_MINIT_FUNCTION(midgard2_blob)
 
 	php_midgard_blob_class = zend_register_internal_class(&php_midgard_blob_class_entry TSRMLS_CC);
 	php_midgard_blob_class->create_object = php_midgard_gobject_new;
-	php_midgard_blob_class->doc_comment = strdup("Wrapper around midgard_attachment object, which provides high-level API for working with larget binary entities");
+	CLASS_SET_DOC_COMMENT(php_midgard_blob_class, strdup("Wrapper around midgard_attachment object, which provides high-level API for working with larget binary entities"));
 
 	zend_register_class_alias("midgard_blob", php_midgard_blob_class);
 

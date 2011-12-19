@@ -68,7 +68,7 @@ PHP_MINIT_FUNCTION(midgard2_key_config_file_context)
 
 	php_midgard_key_config_file_context_class = zend_register_internal_class_ex(&php_midgard_key_config_file_context_class_entry, NULL, "midgard_key_config_context" TSRMLS_CC);
 
-	php_midgard_key_config_file_context_class->doc_comment = strdup("File based key-value (ini like) configurations");
+	CLASS_SET_DOC_COMMENT(php_midgard_key_config_file_context_class, strdup("File based key-value (ini like) configurations"));
 	php_midgard_key_config_file_context_class->create_object = php_midgard_gobject_new;
 
 	return SUCCESS;

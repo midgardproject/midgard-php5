@@ -357,14 +357,14 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 	INIT_CLASS_ENTRY(_reflection_ce, "midgard_reflection_method", midgard_reflection_method_methods);
 
 	php_midgard_reflection_method_class = zend_register_internal_class_ex(&_reflection_ce, zend_reflection_function_class, NULL TSRMLS_CC);
-	php_midgard_reflection_method_class->doc_comment = strdup("Helps Midgard to show doc_comments of methods of internal classes");
+	CLASS_SET_DOC_COMMENT(php_midgard_reflection_method_class, strdup("Helps Midgard to show doc_comments of methods of internal classes"));
 
 	php_midgard_docs_add_method_comment("midgard_reflection_method", "getDocComment", "returns doc_comment of method");
 
 	INIT_CLASS_ENTRY(_reflection_ce, "midgard_reflection_class", midgard_reflection_class_methods);
 
 	php_midgard_reflection_class_class = zend_register_internal_class_ex(&_reflection_ce, zend_reflection_class_class, NULL TSRMLS_CC);
-	php_midgard_reflection_class_class->doc_comment = strdup("Helps Midgard to show doc_comments of internal classes");
+	CLASS_SET_DOC_COMMENT(php_midgard_reflection_class_class, strdup("Helps Midgard to show doc_comments of internal classes"));
 
 	return SUCCESS;
 }

@@ -528,7 +528,7 @@ PHP_MINIT_FUNCTION(midgard2_collector)
 	zend_class_entry *qbce = php_midgard_get_class_ptr_by_name("MidgardQueryBuilder");
 	php_midgard_collector_class =  zend_register_internal_class_ex (&php_midgard_collector_class_entry, qbce, "MidgardQueryBuilder" TSRMLS_CC);
 	php_midgard_collector_class->create_object = php_midgard_gobject_new;
-	php_midgard_collector_class->doc_comment = strdup("Optimized database query tool, that doesn't return objects");
+	CLASS_SET_DOC_COMMENT(php_midgard_collector_class, strdup("Optimized database query tool, that doesn't return objects"));
 
 	zend_register_class_alias("midgard_collector", php_midgard_collector_class);
 

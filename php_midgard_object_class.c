@@ -309,7 +309,7 @@ PHP_MINIT_FUNCTION(midgard2_object_class)
 	INIT_CLASS_ENTRY(php_midgard_object_class_class_entry, "midgard_object_class", object_class_methods);
 
 	php_midgard_object_class_class = zend_register_internal_class(&php_midgard_object_class_class_entry TSRMLS_CC);
-	php_midgard_object_class_class->doc_comment = strdup("Collection of static methods for operating on class-hierarchies of midgard-objects");
+	CLASS_SET_DOC_COMMENT(php_midgard_object_class_class, strdup("Collection of static methods for operating on class-hierarchies of midgard-objects"));
 
 	return SUCCESS;
 }

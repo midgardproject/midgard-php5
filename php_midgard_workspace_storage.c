@@ -435,7 +435,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	php_midgard_workspace_storage_class = zend_register_internal_class(&php_midgard_workspace_storage_class_entry TSRMLS_CC);
 	php_midgard_workspace_storage_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_workspace_storage_class->create_object = php_midgard_gobject_new;
-	php_midgard_workspace_storage_class->doc_comment = strdup("Base class for workspaces");
+	CLASS_SET_DOC_COMMENT(php_midgard_workspace_storage_class, strdup("Base class for workspaces"));
 
 	zend_register_class_alias("midgard_workspace_storage", php_midgard_workspace_storage_class);
 
@@ -450,7 +450,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 
 	php_midgard_workspace_class = zend_register_internal_class_ex(&php_midgard_workspace_class_entry, php_midgard_workspace_storage_class, "midgard_workspace_storage" TSRMLS_CC);
 	php_midgard_workspace_class->create_object = php_midgard_gobject_new;
-	php_midgard_workspace_class->doc_comment = strdup("Represents single workspace");
+	CLASS_SET_DOC_COMMENT(php_midgard_workspace_class, strdup("Represents single workspace"));
 
 	zend_register_class_alias("midgard_workspace", php_midgard_workspace_class);
 
@@ -465,7 +465,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 
 	php_midgard_workspace_context_class = zend_register_internal_class_ex(&php_midgard_workspace_context_class_entry, php_midgard_workspace_storage_class, "midgard_workspace_storage" TSRMLS_CC);
 	php_midgard_workspace_context_class->create_object = php_midgard_gobject_new;
-	php_midgard_workspace_context_class->doc_comment = strdup("Represents workspaces' tree");
+	CLASS_SET_DOC_COMMENT(php_midgard_workspace_context_class, strdup("Represents workspaces' tree"));
 
 	zend_register_class_alias("midgard_workspace_context", php_midgard_workspace_context_class);
 
@@ -486,7 +486,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 
 	php_midgard_workspace_manager = zend_register_internal_class(&php_midgard_workspace_manager_class_entry TSRMLS_CC);
 	php_midgard_workspace_manager->create_object = php_midgard_gobject_new;
-	php_midgard_workspace_manager->doc_comment = strdup("Workspaces' manager");
+	CLASS_SET_DOC_COMMENT(php_midgard_workspace_manager, strdup("Workspaces' manager"));
 
 	zend_register_class_alias("midgard_workspace_manager", php_midgard_workspace_manager);
 

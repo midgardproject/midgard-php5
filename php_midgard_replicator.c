@@ -266,7 +266,7 @@ PHP_MINIT_FUNCTION(midgard2_replicator)
 	INIT_CLASS_ENTRY(php_midgard_replicator_class_entry, "MidgardReplicator", replicator_methods);
 
 	php_midgard_replicator_class = zend_register_internal_class(&php_midgard_replicator_class_entry TSRMLS_CC);
-	php_midgard_replicator_class->doc_comment = strdup("Collection of static methods for serializing, unserializing data to XML; importing and exporting it");
+	CLASS_SET_DOC_COMMENT(php_midgard_replicator_class, strdup("Collection of static methods for serializing, unserializing data to XML; importing and exporting it"));
 
 	zend_register_class_alias("midgard_replicator", php_midgard_replicator_class);
 

@@ -350,7 +350,7 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 	php_midgard_query_constraint_simple_class = zend_register_internal_class(&php_midgard_query_constraint_simple_class_entry TSRMLS_CC);
 	php_midgard_query_constraint_simple_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_query_constraint_simple_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_constraint_simple_class->doc_comment = strdup("Base class for holding constraint information for midgard_query");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_constraint_simple_class, strdup("Base class for holding constraint information for midgard_query"));
 
 	zend_register_class_alias("midgard_query_constraint_simple", php_midgard_query_constraint_simple_class);
 
@@ -370,7 +370,7 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 
 	php_midgard_query_constraint_class = zend_register_internal_class_ex(&php_midgard_query_constraint_class_entry, php_midgard_query_constraint_simple_class, "midgard_query_constraint_simple" TSRMLS_CC);
 	php_midgard_query_constraint_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_constraint_class->doc_comment = strdup("Class for holding simple constraint in midgard_query");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_constraint_class, strdup("Class for holding simple constraint in midgard_query"));
 
 	zend_register_class_alias("midgard_query_constraint", php_midgard_query_constraint_class);
 
@@ -387,7 +387,7 @@ PHP_MINIT_FUNCTION(midgard2_query_constraints)
 
 	php_midgard_query_constraint_group_class = zend_register_internal_class_ex(&php_midgard_query_constraint_group_class_entry, php_midgard_query_constraint_simple_class, "midgard_query_constraint_group" TSRMLS_CC);
 	php_midgard_query_constraint_group_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_constraint_group_class->doc_comment = strdup("Class for holding group of constraints in midgard_query");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_constraint_group_class, strdup("Class for holding group of constraints in midgard_query"));
 
 	zend_register_class_alias("midgard_query_constraint_group", php_midgard_query_constraint_group_class);
 

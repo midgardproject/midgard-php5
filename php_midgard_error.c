@@ -165,7 +165,7 @@ PHP_MINIT_FUNCTION(midgard2_error)
 	INIT_CLASS_ENTRY(php_midgard_error_class_entry, "midgard_error", midgard_error_methods);
 
 	php_midgard_error_class = zend_register_internal_class(&php_midgard_error_class_entry TSRMLS_CC);
-	php_midgard_error_class->doc_comment = strdup("Collection of static methods, which can be used to send core-level log-messages");
+	CLASS_SET_DOC_COMMENT(php_midgard_error_class, strdup("Collection of static methods, which can be used to send core-level log-messages"));
 
 	return SUCCESS;
 }

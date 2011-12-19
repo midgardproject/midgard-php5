@@ -143,7 +143,7 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 	php_midgard_query_holder_class = zend_register_internal_class(&php_midgard_query_holder_class_entry TSRMLS_CC);
 	php_midgard_query_holder_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 	php_midgard_query_holder_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_holder_class->doc_comment = strdup("Base class for holding data-atom in midgard_query");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_holder_class, strdup("Base class for holding data-atom in midgard_query"));
 
 	zend_register_class_alias("midgard_query_holder", php_midgard_query_holder_class);
 
@@ -157,7 +157,7 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 
 	php_midgard_query_property_class = zend_register_internal_class_ex(&php_midgard_query_property_class_entry, php_midgard_query_holder_class, "midgard_query_holder" TSRMLS_CC);
 	php_midgard_query_property_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_property_class->doc_comment = strdup("Class for holding object-properties");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_property_class, strdup("Class for holding object-properties"));
 
 	zend_register_class_alias("midgard_query_property", php_midgard_query_property_class);
 
@@ -171,7 +171,7 @@ PHP_MINIT_FUNCTION(midgard2_query_holders)
 
 	php_midgard_query_value_class = zend_register_internal_class_ex(&php_midgard_query_value_class_entry, php_midgard_query_holder_class, "midgard_query_holder" TSRMLS_CC);
 	php_midgard_query_value_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_value_class->doc_comment = strdup("Class for holding literal data");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_value_class, strdup("Class for holding literal data"));
 
 	zend_register_class_alias("midgard_query_value", php_midgard_query_value_class);
 
