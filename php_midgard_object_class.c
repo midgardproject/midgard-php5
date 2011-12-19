@@ -33,7 +33,11 @@ static PHP_METHOD(midgard_object_class, factory)
 		return;
 
 	zend_class_entry **pce = NULL;
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	if (zend_lookup_class_ex(class_name, class_name_length, 1, 0, &pce TSRMLS_CC) == FAILURE) {
+#else
 	if (zend_lookup_class_ex(class_name, class_name_length, 1, &pce TSRMLS_CC) == FAILURE) {
+#endif
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Can not find %s class", class_name);
 		return;
 	}
