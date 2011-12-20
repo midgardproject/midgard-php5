@@ -580,12 +580,13 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 			
 			g_free(gvalue);
 		}
-	}
+	} else { /* Fallback to zend */
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-	std_hnd->write_property(zobject, prop, value, 1 TSRMLS_CC);
+	//std_hnd->write_property(zobject, prop, value, 1 TSRMLS_CC);
 #else
 	std_hnd->write_property(zobject, prop, value TSRMLS_CC);
 #endif
+	}
 
 	return;
 }
