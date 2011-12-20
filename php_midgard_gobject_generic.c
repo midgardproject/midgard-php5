@@ -357,15 +357,15 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 
 	if (-1 == result) {
 		zend_object *zobj = Z_OBJ_P(zobject);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 		if (zobj->properties != NULL
 				&& zobj->properties_table != NULL) {
 			zend_object_handlers *std_hnd = zend_get_std_object_handlers();
-#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 			result = std_hnd->has_property(zobject, prop, 2, check_type TSRMLS_CC);
+		}
 #else
 			result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
 #endif
-		}
 	}
 
 	return result;
