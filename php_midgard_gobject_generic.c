@@ -361,7 +361,9 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 		if (zobj->properties != NULL
 				&& zobj->properties_table != NULL) {
-			result = std_hnd->has_property(zobject, prop, 2, check_type TSRMLS_CC);
+			result = std_hnd->has_property(zobject, prop, check_type, 2 TSRMLS_CC);
+		} else {
+			return 0;
 		}
 #else
 			result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
