@@ -74,6 +74,7 @@ midgard.glib_loghandler
 1. APACHE 
 
 In php.ini or in midgard2.ini configuration file these config keys must be added:
+
 midgard.http On
 midgard.engine On
 
@@ -81,5 +82,11 @@ In virtual host configuration:
 php_admin_value midgard.configuration 'midgard'
 
 2. LIGHTTPD
+
+In php.ini these config keys must be added:
+
+midgard.http Off
+midgard.engine On
+midgard.configuration_file "/absolute/path/to/configuration"
 
 3. NGINX
