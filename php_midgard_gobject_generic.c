@@ -24,6 +24,11 @@
 
 #include "php_midgard__helpers.h"
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+#define Z_OBJ_P(zval_p) \
+	        ((zend_object*)(EG(objects_store).object_buckets[Z_OBJ_HANDLE_P(zval_p)].bucket.obj.object))
+#endif
+
 /* GVALUE ROUTINES */
 
 static zend_bool php_midgard_gvalue_from_zval(const zval *zvalue, GValue *gvalue TSRMLS_DC)
@@ -351,12 +356,16 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 	}
 
 	if (-1 == result) {
-		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+		zend_object *zobj = Z_OBJ_P(zobject);
+		if (zobj->properties != NULL
+				&& zobj->properties_table != NULL) {
+			zend_object_handlers *std_hnd = zend_get_std_object_handlers();
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-		result = std_hnd->has_property(zobject, prop, 2, check_type TSRMLS_CC);
+			result = std_hnd->has_property(zobject, prop, 2, check_type TSRMLS_CC);
 #else
-		result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
+			result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
 #endif
+		}
 	}
 
 	return result;
