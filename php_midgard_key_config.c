@@ -240,7 +240,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_key_config)
 {
-	static function_entry midgard_key_config_methods[] = {
+	static zend_function_entry midgard_key_config_methods[] = {
 		PHP_ME(midgard_key_config, set_value,      arginfo_midgard_key_config_set_value,      ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_key_config, get_value,      arginfo_midgard_key_config_get_value,      ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_key_config, set_comment,    arginfo_midgard_key_config_set_comment,    ZEND_ACC_PUBLIC)
@@ -261,7 +261,7 @@ PHP_MINIT_FUNCTION(midgard2_key_config)
 	php_midgard_key_config_class = zend_register_internal_class(&php_midgard_key_config_class_entry TSRMLS_CC);
 
 	php_midgard_key_config_class->ce_flags = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
-	php_midgard_key_config_class->doc_comment = strdup("Abstract class for key-value (ini like) configurations");
+	CLASS_SET_DOC_COMMENT(php_midgard_key_config_class, strdup("Abstract class for key-value (ini like) configurations"));
 	php_midgard_key_config_class->create_object = php_midgard_gobject_new;
 	
 	zend_register_class_alias("midgard_key_config", php_midgard_key_config_class);

@@ -501,7 +501,7 @@ static PHP_METHOD(midgard_collector, execute)
 
 PHP_MINIT_FUNCTION(midgard2_collector)
 {
-	static function_entry collector_methods[] = {
+	static zend_function_entry collector_methods[] = {
 		PHP_ME(midgard_collector, __construct,        arginfo_midgard_collector___construct,        ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_collector, set_key_property,   arginfo_midgard_collector_set_key_property,   ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_collector, add_value_property, arginfo_midgard_collector_add_value_property, ZEND_ACC_PUBLIC)
@@ -528,7 +528,7 @@ PHP_MINIT_FUNCTION(midgard2_collector)
 	zend_class_entry *qbce = php_midgard_get_class_ptr_by_name("MidgardQueryBuilder");
 	php_midgard_collector_class =  zend_register_internal_class_ex (&php_midgard_collector_class_entry, qbce, "MidgardQueryBuilder" TSRMLS_CC);
 	php_midgard_collector_class->create_object = php_midgard_gobject_new;
-	php_midgard_collector_class->doc_comment = strdup("Optimized database query tool, that doesn't return objects");
+	CLASS_SET_DOC_COMMENT(php_midgard_collector_class, strdup("Optimized database query tool, that doesn't return objects"));
 
 	zend_register_class_alias("midgard_collector", php_midgard_collector_class);
 

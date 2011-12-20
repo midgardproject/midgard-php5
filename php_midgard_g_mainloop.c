@@ -155,7 +155,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_g_mainloop)
 {
-	static function_entry midgard_g_mainloop_methods[] = {
+	static zend_function_entry midgard_g_mainloop_methods[] = {
 		PHP_ME(midgard_g_mainloop,	__construct,	arginfo_midgard_g_mainloop___construct,	ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_g_mainloop,	run,		arginfo_midgard_g_mainloop_run,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_g_mainloop,	is_running,	arginfo_midgard_g_mainloop_is_running,	ZEND_ACC_PUBLIC)

@@ -275,7 +275,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_datetime)
 {
-	static function_entry midgard_datetime_methods[] = {
+	static zend_function_entry midgard_datetime_methods[] = {
 		PHP_ME(midgard_datetime, __construct,  arginfo_midgard_datetime___construct,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_datetime, setTimezone,  arginfo_midgard_datetime_settimezone,  ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_datetime, setTime,      arginfo_midgard_datetime_settime,      ZEND_ACC_PUBLIC)
@@ -291,7 +291,7 @@ PHP_MINIT_FUNCTION(midgard2_datetime)
 	INIT_CLASS_ENTRY(php_midgard_datetime_class_entry, "MidgardDatetime", midgard_datetime_methods);
 
 	php_midgard_datetime_class = zend_register_internal_class_ex(&php_midgard_datetime_class_entry, zend_datetime_class_ptr, "DateTime" TSRMLS_CC);
-	php_midgard_datetime_class->doc_comment = strdup("Midgard's version of DateTime class");
+	CLASS_SET_DOC_COMMENT(php_midgard_datetime_class, strdup("Midgard's version of DateTime class"));
 
 	/* Register properties */
 	zend_declare_property_string(php_midgard_datetime_class, "object",   sizeof("object")-1,   "", ZEND_ACC_PRIVATE TSRMLS_CC);

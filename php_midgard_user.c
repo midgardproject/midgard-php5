@@ -305,7 +305,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_user)
 {
-	static function_entry midgard_user_methods[] = {
+	static zend_function_entry midgard_user_methods[] = {
 		PHP_ME(midgard_user, get,         arginfo_midgard_user_get,         ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user, query,       arginfo_midgard_user_query,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user, __construct, arginfo_midgard_user___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -328,7 +328,7 @@ PHP_MINIT_FUNCTION(midgard2_user)
 
 	/* Set function to initialize underlying data */
 	php_midgard_user_class->create_object = php_midgard_gobject_new;
-	php_midgard_user_class->doc_comment = strdup("Midgard's Authentication API");
+	CLASS_SET_DOC_COMMENT(php_midgard_user_class, strdup("Midgard's Authentication API"));
 	php_midgard_user_class->serialize = php_midgard_serialize_dbobject_hook;
 	php_midgard_user_class->unserialize = php_midgard_unserialize_dbobject_hook;
 

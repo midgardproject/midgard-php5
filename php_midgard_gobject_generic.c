@@ -24,6 +24,11 @@
 
 #include "php_midgard__helpers.h"
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+#define Z_OBJ_P(zval_p) \
+	        ((zend_object*)(EG(objects_store).object_buckets[Z_OBJ_HANDLE_P(zval_p)].bucket.obj.object))
+#endif
+
 /* GVALUE ROUTINES */
 
 static zend_bool php_midgard_gvalue_from_zval(const zval *zvalue, GValue *gvalue TSRMLS_DC)
@@ -351,8 +356,18 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 	}
 
 	if (-1 == result) {
+		zend_object *zobj = Z_OBJ_P(zobject);
 		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
-		result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		if (zobj->properties != NULL
+				&& zobj->properties_table != NULL) {
+			result = std_hnd->has_property(zobject, prop, check_type, 2 TSRMLS_CC);
+		} else {
+			return 0;
+		}
+#else
+			result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
+#endif
 	}
 
 	return result;
@@ -478,7 +493,12 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 		 * of BP_VAR_NA. The point is to throw warning when property
 		 * is not registered for (sub)class. */
 		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA, 1 TSRMLS_CC);
+#else
 		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA TSRMLS_CC);
+#endif
+
 	}
 
 	return _retval;
@@ -571,9 +591,13 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 			
 			g_free(gvalue);
 		}
-	}
-
+	} else { /* Fallback to zend */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	//std_hnd->write_property(zobject, prop, value, 1 TSRMLS_CC);
+#else
 	std_hnd->write_property(zobject, prop, value TSRMLS_CC);
+#endif
+	}
 
 	return;
 }
@@ -759,6 +783,11 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	php_gobject = ecalloc(1, sizeof(php_midgard_gobject));
 	zend_object_std_init(&php_gobject->zo, class_type TSRMLS_CC);
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	ALLOC_HASHTABLE((&php_gobject->zo)->properties);
+	zend_hash_init((&php_gobject->zo)->properties, 0, NULL, ZVAL_PTR_DTOR, 0);
+#endif
+
 	if (MGDG(midgard_memory_debug)) {
 		printf("[%p] php_midgard_gobject_new(%s)\n", &php_gobject->zo, class_type->name);
 	}
@@ -773,10 +802,16 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	php_gobject->user_ce = NULL;
 	php_gobject->user_class_name = NULL;
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	/* Not sure if this is required, we need to initialize 'properties' hash, which this function 
+	 * initializes properties_table array */
+	object_properties_init(&(php_gobject->zo), class_type); 
+#else
 	zend_hash_copy(php_gobject->zo.properties,
 			&class_type->default_properties,
 			(copy_ctor_func_t) zval_add_ref,
 			(void *) &tmp, sizeof(zval *));
+#endif
 
 	retval.handle = zend_objects_store_put(php_gobject,
 			(zend_objects_store_dtor_t)zend_objects_destroy_object,

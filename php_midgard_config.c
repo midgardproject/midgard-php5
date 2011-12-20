@@ -181,7 +181,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_config)
 {
-	static function_entry midgard_config_methods[] = {
+	static zend_function_entry midgard_config_methods[] = {
 		PHP_ME(midgard_config, __construct,       arginfo_midgard_config___construct,       ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_config, save_file,         arginfo_midgard_config_save_file,         ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_config, read_file,         arginfo_midgard_config_read_file,         ZEND_ACC_PUBLIC)
@@ -197,7 +197,7 @@ PHP_MINIT_FUNCTION(midgard2_config)
 
 	php_midgard_config_class = zend_register_internal_class(&php_midgard_config_class_entry TSRMLS_CC);
 	php_midgard_config_class->create_object = php_midgard_gobject_new;
-	php_midgard_config_class->doc_comment = strdup("Represents Midgard unified configuration file");
+	CLASS_SET_DOC_COMMENT(php_midgard_config_class, strdup("Represents Midgard unified configuration file"));
 	
 	zend_register_class_alias("midgard_config", php_midgard_config_class);
 

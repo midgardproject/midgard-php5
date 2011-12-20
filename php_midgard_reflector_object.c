@@ -16,6 +16,7 @@
 
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
+#include "php_midgard__helpers.h"
 
 zend_class_entry *php_midgard_reflector_object_class;
 
@@ -469,7 +470,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_reflector_object)
 {
-	static function_entry object_class_methods[] = {
+	static zend_function_entry object_class_methods[] = {
 		PHP_ME(midgard_reflector_object, get_property_primary,     arginfo_midgard_reflector_object_get_property_primary,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflector_object, get_property_up,     arginfo_midgard_reflector_object_get_property_up,     ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflector_object, get_property_parent, arginfo_midgard_reflector_object_get_property_parent, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
@@ -489,7 +490,7 @@ PHP_MINIT_FUNCTION(midgard2_reflector_object)
 	INIT_CLASS_ENTRY(php_midgard_reflector_object_class_entry, "MidgardReflectorObject", object_class_methods);
 
 	php_midgard_reflector_object_class = zend_register_internal_class(&php_midgard_reflector_object_class_entry TSRMLS_CC);
-	php_midgard_reflector_object_class->doc_comment = strdup("Collection of static methods which provide reflection for MgdSchema classes");
+	CLASS_SET_DOC_COMMENT(php_midgard_reflector_object_class, strdup("Collection of static methods which provide reflection for MgdSchema classes"));
 
 	zend_register_class_alias("midgard_reflector_object", php_midgard_reflector_object_class);
 

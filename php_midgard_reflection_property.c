@@ -254,7 +254,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_reflection_property)
 {
-	static function_entry reflection_property_methods[] = {
+	static zend_function_entry reflection_property_methods[] = {
 		PHP_ME(midgard_reflection_property, __construct,      arginfo_mrp___construct,      ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_reflection_property, get_midgard_type, arginfo_mrp_get_midgard_type, ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_reflection_property, is_link,          arginfo_mrp_is_link,          ZEND_ACC_PUBLIC)

@@ -16,6 +16,7 @@
 
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
+#include "php_midgard__helpers.h"
 
 static zend_class_entry *php_midgard_object_class_class;
 
@@ -32,7 +33,11 @@ static PHP_METHOD(midgard_object_class, factory)
 		return;
 
 	zend_class_entry **pce = NULL;
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	if (zend_lookup_class_ex(class_name, class_name_length, NULL, 1, &pce TSRMLS_CC) == FAILURE) {
+#else
 	if (zend_lookup_class_ex(class_name, class_name_length, 1, &pce TSRMLS_CC) == FAILURE) {
+#endif
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Can not find %s class", class_name);
 		return;
 	}
@@ -293,7 +298,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_object_class)
 {
-	static function_entry object_class_methods[] = {
+	static zend_function_entry object_class_methods[] = {
 		PHP_ME(midgard_object_class, factory,             arginfo_midgard_object_class_factory,             ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_object_class, undelete,            arginfo_midgard_object_class_undelete,            ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_object_class, get_object_by_guid,  arginfo_midgard_object_class_get_object_by_guid,  ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
@@ -309,7 +314,7 @@ PHP_MINIT_FUNCTION(midgard2_object_class)
 	INIT_CLASS_ENTRY(php_midgard_object_class_class_entry, "midgard_object_class", object_class_methods);
 
 	php_midgard_object_class_class = zend_register_internal_class(&php_midgard_object_class_class_entry TSRMLS_CC);
-	php_midgard_object_class_class->doc_comment = strdup("Collection of static methods for operating on class-hierarchies of midgard-objects");
+	CLASS_SET_DOC_COMMENT(php_midgard_object_class_class, strdup("Collection of static methods for operating on class-hierarchies of midgard-objects"));
 
 	return SUCCESS;
 }

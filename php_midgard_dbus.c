@@ -109,7 +109,7 @@ ZEND_END_ARG_INFO()
 PHP_MINIT_FUNCTION(midgard2_dbus)
 {
 
-	static function_entry midgard_dbus_methods[] = {
+	static zend_function_entry midgard_dbus_methods[] = {
 		PHP_ME(midgard_dbus, __construct, arginfo_midgard_dbus___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_dbus, send,        arginfo_midgard_dbus_send,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_dbus, connect,	  arginfo_midgard_dbus_connect,     ZEND_ACC_PUBLIC)
@@ -123,7 +123,7 @@ PHP_MINIT_FUNCTION(midgard2_dbus)
 
 	php_midgard_dbus_class = zend_register_internal_class(&php_midgard_dbus_class_entry TSRMLS_CC);
 	php_midgard_dbus_class->create_object = php_midgard_gobject_new;
-	php_midgard_dbus_class->doc_comment = strdup("Sender of DBUS messages");
+	CLASS_SET_DOC_COMMENT(php_midgard_dbus_class, strdup("Sender of DBUS messages"));
 
 	zend_register_class_alias("midgard_dbus", php_midgard_dbus_class);
 

@@ -600,7 +600,7 @@ int __unserialize_cnc_hook(zval **zobject, zend_class_entry *ce, const unsigned 
 
 PHP_MINIT_FUNCTION(midgard2_connection)
 {
-	static function_entry connection_methods[] = {
+	static zend_function_entry connection_methods[] = {
 		PHP_ME(midgard_connection, __construct,          arginfo_midgard_connection___construct,           ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 		PHP_ME(midgard_connection, __destruct,           arginfo_midgard_connection___destruct,            ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
 		PHP_ME(midgard_connection, get_instance,         arginfo_midgard_connection_get_instance,          ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -637,7 +637,7 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 	php_midgard_connection_class->create_object = php_midgard_gobject_new;
 	php_midgard_connection_class->serialize = __serialize_cnc_hook;
 	php_midgard_connection_class->unserialize = __unserialize_cnc_hook;
-	php_midgard_connection_class->doc_comment = strdup("midgard_connection class represents connection to underlying data-source and is responsible for holding and setting environmental variables (like error, authenticated user, debug level, etc.)");
+	CLASS_SET_DOC_COMMENT(php_midgard_connection_class, strdup("midgard_connection class represents connection to underlying data-source and is responsible for holding and setting environmental variables (like error, authenticated user, debug level, etc.)"));
 
 	zend_declare_property_null(php_midgard_connection_class, "instance", sizeof("instance")-1, ZEND_ACC_PRIVATE|ZEND_ACC_STATIC TSRMLS_CC);
 

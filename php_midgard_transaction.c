@@ -154,7 +154,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_transaction)
 {
-	static function_entry transaction_methods[] = {
+	static zend_function_entry transaction_methods[] = {
 		PHP_ME(midgard_transaction, __construct, arginfo_midgard_transaction___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_transaction, begin,       arginfo_midgard_transaction_begin,       ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_transaction, commit,      arginfo_midgard_transaction_commit,      ZEND_ACC_PUBLIC)
@@ -173,7 +173,7 @@ PHP_MINIT_FUNCTION(midgard2_transaction)
 	php_midgard_transaction_class->create_object = php_midgard_gobject_new;
 	php_midgard_transaction_class->serialize = NULL; /* FIXME, set (un)serialize for some explicit error if needed */
 	php_midgard_transaction_class->unserialize = NULL;
-	php_midgard_transaction_class->doc_comment = strdup("Transaction manager");
+	CLASS_SET_DOC_COMMENT(php_midgard_transaction_class, strdup("Transaction manager"));
 
 	zend_register_class_alias("midgard_transaction", php_midgard_transaction_class);
 

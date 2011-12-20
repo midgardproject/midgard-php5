@@ -99,7 +99,7 @@ static zval* zend_call_method_va__mgd(zval **object_pp, zend_class_entry *obj_ce
 	}
 	return *retval_ptr_ptr;
 }
-#elif PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 3
+#elif PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3
 static zval* zend_call_method_va__mgd(zval **object_pp, zend_class_entry *obj_ce, zend_function **fn_proxy, char *function_name, int function_name_len, zval **retval_ptr_ptr, int param_count, zval*** params TSRMLS_DC)
 {
 	int result;
