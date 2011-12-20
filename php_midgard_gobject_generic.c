@@ -771,6 +771,11 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	php_gobject = ecalloc(1, sizeof(php_midgard_gobject));
 	zend_object_std_init(&php_gobject->zo, class_type TSRMLS_CC);
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	ALLOC_HASHTABLE((&php_gobject->zo)->properties);
+	zend_hash_init((&php_gobject->zo)->properties, 0, NULL, ZVAL_PTR_DTOR, 0);
+#endif
+
 	if (MGDG(midgard_memory_debug)) {
 		printf("[%p] php_midgard_gobject_new(%s)\n", &php_gobject->zo, class_type->name);
 	}
@@ -785,14 +790,16 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	php_gobject->user_ce = NULL;
 	php_gobject->user_class_name = NULL;
 
-	zend_hash_copy(php_gobject->zo.properties,
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-			&class_type->default_properties_table,
+	/* Not sure if this is required, we need to initialize 'properties' hash, which this function 
+	 * initializes properties_table array */
+	object_properties_init(&(php_gobject->zo), class_type); 
 #else
+	zend_hash_copy(php_gobject->zo.properties,
 			&class_type->default_properties,
-#endif
 			(copy_ctor_func_t) zval_add_ref,
 			(void *) &tmp, sizeof(zval *));
+#endif
 
 	retval.handle = zend_objects_store_put(php_gobject,
 			(zend_objects_store_dtor_t)zend_objects_destroy_object,
