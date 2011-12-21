@@ -24,7 +24,7 @@
 
 #include "php_midgard__helpers.h"
 
-#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 2
 #define Z_OBJ_P(zval_p) \
 	        ((zend_object*)(EG(objects_store).object_buckets[Z_OBJ_HANDLE_P(zval_p)].bucket.obj.object))
 #endif
