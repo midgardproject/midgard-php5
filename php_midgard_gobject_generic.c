@@ -306,7 +306,11 @@ zend_bool php_midgard_gvalue2zval(const GValue *gvalue, zval *zvalue TSRMLS_DC)
 /* OBJECTS ROUTINES */
 
 /* check if there is glib-property of object linked to zval */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type, const zend_literal *key TSRMLS_DC)
+#else
 int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type TSRMLS_DC)
+#endif
 {
 	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
 	char *prop_name = Z_STRVAL_P(prop);
@@ -337,7 +341,11 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 			return TRUE;
 		}
 	} else {
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		zval *value = php_midgard_gobject_read_property(zobject, prop, BP_VAR_IS, key TSRMLS_CC);
+#else
 		zval *value = php_midgard_gobject_read_property(zobject, prop, BP_VAR_IS TSRMLS_CC);
+#endif
 		Z_ADDREF_P(value);
 
 		if (MGDG(midgard_memory_debug)) {
@@ -361,7 +369,7 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 		if (zobj->properties != NULL
 				&& zobj->properties_table != NULL) {
-			result = std_hnd->has_property(zobject, prop, check_type, NULL TSRMLS_CC);
+			result = std_hnd->has_property(zobject, prop, check_type, key TSRMLS_CC);
 		} else {
 			return 0;
 		}
@@ -374,7 +382,11 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 }
 
 /* Read Zend object property using underlying GObject's one */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type, const zend_literal *key TSRMLS_DC)
+#else
 zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRMLS_DC)
+#endif
 {
 	zval *_retval = NULL;
 	gboolean is_native_property = FALSE;
@@ -494,7 +506,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 		 * is not registered for (sub)class. */
 		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA, NULL TSRMLS_CC);
+		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA, key TSRMLS_CC);
 #else
 		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA TSRMLS_CC);
 #endif
@@ -504,7 +516,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 	return _retval;
 }
 
-zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member TSRMLS_DC)
+zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC)
 {
 	if (MGDG(midgard_memory_debug)) {
 		const gchar *propname = Z_STRVAL_P(member);
@@ -552,7 +564,7 @@ static void _convert_value(zval *value, GType vtype)
 	return;
 }
 
-void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC)
+void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value, const zend_literal *key TSRMLS_DC)
 {
 	if (MGDG(midgard_memory_debug)) {
 		const gchar *propname = Z_STRVAL_P(prop);

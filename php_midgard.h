@@ -156,11 +156,18 @@ PHP_FUNCTION(_php_midgard_object_parameter);
 PHP_FUNCTION(_php_midgard_object_connect);
 
 /* Underlying GObject bindings */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type, const zend_literal *key TSRMLS_DC);
+zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC);
+void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value, const zend_literal *key TSRMLS_DC);
+int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type, const zend_literal *key TSRMLS_DC);
+#else
 zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRMLS_DC);
 zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member TSRMLS_DC);
 void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC);
-// void php_midgard_zendobject_register_properties (zval *zobject, GObject *gobject);
 int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_DC);
+#endif
+
 HashTable *php_midgard_zendobject_get_properties (zval *zobject TSRMLS_DC);
 
 void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, zval *zarray TSRMLS_DC);
