@@ -361,7 +361,7 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type T
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 		if (zobj->properties != NULL
 				&& zobj->properties_table != NULL) {
-			result = std_hnd->has_property(zobject, prop, check_type, 2 TSRMLS_CC);
+			result = std_hnd->has_property(zobject, prop, check_type, NULL TSRMLS_CC);
 		} else {
 			return 0;
 		}
@@ -494,7 +494,7 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 		 * is not registered for (sub)class. */
 		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA, 1 TSRMLS_CC);
+		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA, NULL TSRMLS_CC);
 #else
 		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA TSRMLS_CC);
 #endif
