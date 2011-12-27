@@ -778,7 +778,6 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 {
 	php_midgard_gobject *php_gobject;
 	zend_object_value retval;
-	zval *tmp;
 
 	php_gobject = ecalloc(1, sizeof(php_midgard_gobject));
 	zend_object_std_init(&php_gobject->zo, class_type TSRMLS_CC);
