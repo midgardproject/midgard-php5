@@ -243,8 +243,8 @@ void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gch
 		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to get connection"); \
 		return; \
 	} \
-	const gchar *_check_cname_space = NULL; \
-	gchar *_check_class_name = get_active_class_name(&_check_cname_space TSRMLS_CC); \
+	const gchar *_check_cname_space = ""; \
+	const gchar *_check_class_name = get_active_class_name(&_check_cname_space TSRMLS_CC); \
 	g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, " %s%s%s(...)", \
 		_check_class_name, _check_cname_space, get_active_function_name(TSRMLS_C)); \
 }
