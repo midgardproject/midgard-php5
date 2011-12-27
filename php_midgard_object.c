@@ -733,8 +733,14 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_constructor),
 		ZEND_ACC_PUBLIC | ZEND_ACC_CTOR,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "guid or id", sizeof("guid or id")-1, NULL, 0, 0, 1 /* Allows NULL */, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "guid or id", sizeof("guid or id")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
+#endif
+
 		}, 
 		1,
 		"Creates new empty instance or fetch object's data from storage if argument is of integer or string type. In latter case valid guid is expected. Throws midgard_error_exception on failure"
@@ -744,8 +750,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_get_by_id),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 1 },
+			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		1,
 		"Get object which is identified by given id"
@@ -755,8 +766,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_get_by_guid),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 1 },
+			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 
 		1, 
 		"Load data which is identified by given guid into current object"
@@ -766,7 +782,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_update),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		0,
 		"Store object-changes into database"
@@ -776,7 +796,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_create),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		0,
 		"Create object's record in database"
@@ -786,9 +810,15 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_is_in_parent_tree),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "root_id", sizeof("root_id")-1, NULL, 0, 0, 0, 0 },
+			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 2 },
 			{ "root_id", sizeof("root_id")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		2,
 		"Check if object identified by 'id' is descendant of object identified by 'root_id'. Traversing is done using 'parent' markers in schema"
@@ -798,9 +828,15 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_is_in_tree),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "root_id", sizeof("root_id")-1, NULL, 0, 0, 0, 0 },
+			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 2 },
 			{ "root_id", sizeof("root_id")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "id", sizeof("id")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		2,
 		"Check if object identified by 'id' is descendant of object identified by 'root_id'. Traversing is done using 'up' markers in schema"
@@ -810,7 +846,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(php_midgard_object_has_dependents),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -818,8 +858,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_delete),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "check_dependencies", sizeof("check_dependencies")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "check_dependencies", sizeof("check_dependencies")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		1,
 		"Mark object's record in database as \"deleted\""
@@ -829,7 +874,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_get_parent),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		0,
 		"returns parent-object, using 'parent' mark in schema"
@@ -839,7 +888,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_list),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -847,8 +900,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_list_children),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "node class name", sizeof("node class name")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "node class name", sizeof("node class name")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -856,8 +914,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_get_by_path),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "path", sizeof("path")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "path", sizeof("path")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -865,7 +928,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_midgard_php_object_parent),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		0,
 		"returns name of class, which is marked as 'parent' in schema"
@@ -875,7 +942,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(php_midgard_object_has_parameters),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -883,8 +954,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_list_parameters),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "domain", sizeof("domain")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "domain", sizeof("domain")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -892,8 +968,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_find_parameters),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -901,8 +982,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_delete_parameters),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -910,8 +996,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_purge_parameters),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -919,9 +1010,15 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_get_parameter),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "domain", sizeof("domain")-1, NULL, 0, 0, 0, 0 },
+			{ "name", sizeof("name")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 2 },
 			{ "domain", sizeof("domain")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "name", sizeof("name")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 2
 	},
 
@@ -929,10 +1026,17 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_set_parameter),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "domain", sizeof("domain")-1, NULL, 0, 0, 0, 0 },
+			{ "name", sizeof("name")-1, NULL, 0, 0, 0, 0 },
+			{ "value", sizeof("value")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 3 },
 			{ "domain", sizeof("domain")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "name", sizeof("name")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "value", sizeof("value")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 3
 	},
 
@@ -940,10 +1044,17 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_parameter),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "domain", sizeof("domain")-1, NULL, 0, 0, 0, 0 },
+			{ "name", sizeof("name")-1, NULL, 0, 0, 0, 0 },
+			{ "value", sizeof("value")-1, NULL, 0, 0, 0, 0 },	
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 2 },
 			{ "domain", sizeof("domain")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "name", sizeof("name")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "value", sizeof("value")-1, NULL, 0, 0, 0, 0, 0, 0 },	
+#endif
 		}, 
 	},
 
@@ -951,7 +1062,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(php_midgard_object_has_attachments),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -959,7 +1074,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_list_attachments),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -967,8 +1086,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_find_attachments),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -976,8 +1100,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_delete_attachments),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -985,9 +1114,15 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_purge_attachments),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+			{ "delete blob", sizeof("delete blob")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "constraints", sizeof("constraints")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
 			{ "delete blob", sizeof("delete blob")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 2
 	},
 
@@ -995,10 +1130,17 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_create_attachment),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "name", sizeof("name")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+			{ "title", sizeof("title")-1, NULL, 0, 0, 1 /* Allows NULL */, 0 },
+			{ "mimetype", sizeof("mimetype")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "name", sizeof("name")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
 			{ "title", sizeof("title")-1, NULL, 0, 0, 1 /* Allows NULL */, 0, 0, 0 },
 			{ "mimetype", sizeof("mimetype")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 3
 	},
 
@@ -1006,8 +1148,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_serve_attachment),
 		ZEND_ACC_STATIC|ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -1015,8 +1162,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_purge),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+			{ "check_dependencies", sizeof("check_dependencies")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "check_dependencies", sizeof("check_dependencies")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -1024,8 +1176,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_undelete),
 		ZEND_ACC_STATIC|ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -1033,10 +1190,17 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_connect),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "signal", sizeof("signal")-1, NULL, 0, 0, 0, 0 },
+			{ "callback", sizeof("callback")-1, NULL, 0, 0, 0, 0 },
+			{ "user_data", sizeof("user_data")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 2 },
 			{ "signal", sizeof("signal")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "callback", sizeof("callback")-1, NULL, 0, 0, 0, 0, 0, 0 },
 			{ "user_data", sizeof("user_data")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 3
 	},
 
@@ -1044,7 +1208,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_new_query_builder),
 		ZEND_ACC_STATIC|ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1052,7 +1220,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_new_collector),
 		ZEND_ACC_STATIC|ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1060,7 +1232,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_new_reflection_property),
 		ZEND_ACC_STATIC|ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1068,8 +1244,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_set_guid),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "guid", sizeof("guid")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -1077,8 +1258,13 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_emit),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0 },
+			{ "signal", sizeof("signal")-1, NULL, 0, 0, 0, 0 },
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 1 },
 			{ "signal", sizeof("signal")-1, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 1
 	},
 
@@ -1086,7 +1272,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_approve),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1094,7 +1284,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_is_approved),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1102,7 +1296,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_unapprove),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1110,7 +1308,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_lock),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1118,7 +1320,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_is_locked),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1126,7 +1332,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_unlock),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		}, 0
 	},
 
@@ -1134,7 +1344,11 @@ __midgard_php_type_functions[] =
 		ZEND_FN(_php_midgard_object_get_workspace),
 		ZEND_ACC_PUBLIC,
 		{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+			{ NULL, 0, NULL, 0, 0, 0, 0},
+#else
 			{ NULL, 0, NULL, 0, 0, 0, 0, 0, 0 },
+#endif
 		},
 		0,
 		"Get workspace associated with object. Returned workspace is valid per method call." 
