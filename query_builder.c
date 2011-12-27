@@ -84,7 +84,7 @@ static PHP_METHOD(midgard_query_builder, __construct)
 	php_midgard_gobject *php_gobject = __php_objstore_object(zval_object);
 	/* Set user defined class. We might need it when execute is invoked */
 	php_gobject->user_ce = ce;
-	php_gobject->user_class_name = ce->name;
+	php_gobject->user_class_name = (char *)ce->name;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_mqb___construct, 0, 0, 1)
