@@ -516,7 +516,11 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 	return _retval;
 }
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC)
+#else
+zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member TSRMLS_DC)
+#endif
 {
 	if (MGDG(midgard_memory_debug)) {
 		const gchar *propname = Z_STRVAL_P(member);
@@ -564,7 +568,11 @@ static void _convert_value(zval *value, GType vtype)
 	return;
 }
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value, const zend_literal *key TSRMLS_DC)
+#else
+void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC)
+#endif
 {
 	if (MGDG(midgard_memory_debug)) {
 		const gchar *propname = Z_STRVAL_P(prop);
@@ -818,6 +826,7 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	 * initializes properties_table array */
 	object_properties_init(&(php_gobject->zo), class_type); 
 #else
+	zval *tmp;
 	zend_hash_copy(php_gobject->zo.properties,
 			&class_type->default_properties,
 			(copy_ctor_func_t) zval_add_ref,
