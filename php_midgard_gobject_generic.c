@@ -559,7 +559,6 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 		printf("[%p] php_midgard_gobject_write_property(%s)\n", zobject, propname);
 	}
 
-	zend_object_handlers *std_hnd = zend_get_std_object_handlers();
 	GObject *gobject = __php_gobject_ptr(zobject);
 
 	/* Find GObject property */
@@ -595,6 +594,7 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 	//std_hnd->write_property(zobject, prop, value, 1 TSRMLS_CC);
 #else
+	zend_object_handlers *std_hnd = zend_get_std_object_handlers();
 	std_hnd->write_property(zobject, prop, value TSRMLS_CC);
 #endif
 	}
