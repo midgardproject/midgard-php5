@@ -168,7 +168,11 @@ static PHP_METHOD(midgard_user, get)
 		RETURN_NULL();
 
 	/* HACK, there's no safe API for this (or at least is unknown for me) */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	const char *class_name = EG(scope)->name;
+#else
 	char *class_name = EG(scope)->name;
+#endif
 	zend_class_entry *ce = zend_fetch_class(class_name, strlen(class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	php_midgard_gobject_new_with_gobject(return_value, ce, G_OBJECT(user), TRUE TSRMLS_CC);
