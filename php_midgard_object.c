@@ -516,7 +516,11 @@ PHP_FUNCTION(_php_midgard_new_query_builder)
 	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	CHECK_MGD(mgd);
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	const char *_class_name = get_active_class_name(NULL TSRMLS_CC);
+#else
 	char *_class_name = get_active_class_name(NULL TSRMLS_CC);
+#endif
 
 	MidgardQueryBuilder *builder = midgard_query_builder_new(mgd, (gchar *)_class_name);
 
@@ -550,7 +554,11 @@ PHP_FUNCTION(_php_midgard_new_collector)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &propname, &zvalue) == FAILURE)
 		return;
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	const char *_class_name = get_active_class_name(NULL TSRMLS_CC);
+#else
 	char *_class_name = get_active_class_name(NULL TSRMLS_CC);
+#endif
 
 	zval *this_class_name = NULL;
 	MAKE_STD_ZVAL(this_class_name);
@@ -572,7 +580,11 @@ PHP_FUNCTION(_php_midgard_new_reflection_property)
 	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
 	CHECK_MGD(mgd);
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	const char *_class_name = get_active_class_name(NULL TSRMLS_CC);
+#else
 	char *_class_name = get_active_class_name(NULL TSRMLS_CC);
+#endif
 
 	MidgardObjectClass *klass = MIDGARD_OBJECT_GET_CLASS_BY_NAME((const gchar *)_class_name);
 	MidgardReflectionProperty *mrp = midgard_reflection_property_new(MIDGARD_DBOBJECT_CLASS(klass));
@@ -1426,9 +1438,9 @@ __find_class_by_name (const gchar *name)
 static void 
 __add_method_comments(const char *class_name)
 {
+	/*
 	guint j;
-
-	/* FIXME, Rewrite for PHP 5.4
+	FIXME, Rewrite for PHP 5.4
 	for (j = 0; __midgard_php_type_functions[j].fname != NULL; j++) {
 		php_midgard_docs_add_method_comment(class_name, __midgard_php_type_functions[j].fname, __midgard_php_type_functions[j].doc_comment);
 	} */
