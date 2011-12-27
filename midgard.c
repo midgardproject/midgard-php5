@@ -488,11 +488,11 @@ static PHP_GINIT_FUNCTION(midgard2)
 	midgard2_globals->midgard_global_holder = NULL;
 }
 
-static void __free_connections(gpointer key, gpointer val, gpointer ud)
+/* static void __free_connections(gpointer key, gpointer val, gpointer ud)
 {
 	MidgardConnection *cnc = MIDGARD_CONNECTION(val);
 	g_object_unref(cnc);
-}
+} */
 
 PHP_MSHUTDOWN_FUNCTION(midgard2_urlwrapper);
 PHP_MSHUTDOWN_FUNCTION(midgard2)
