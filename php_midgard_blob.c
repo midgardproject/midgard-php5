@@ -130,7 +130,7 @@ static PHP_METHOD(midgard_blob, remove_file)
 
 	_GET_BLOB_OBJECT;
 
-	gboolean rv = midgard_blob_remove_file(blob);
+	gboolean rv = midgard_blob_remove_file(blob, NULL);
 
 	RETURN_BOOL(rv);
 }
