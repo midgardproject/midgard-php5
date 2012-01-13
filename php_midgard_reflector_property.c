@@ -344,14 +344,13 @@ static PHP_METHOD(midgard_reflector_property, get_default_value)
 
 	_GET_MRP_OBJECT;
 
-	GValue val = {0, };
-	gboolean has_value = midgard_reflector_property_get_default_value(mrp, property_name, &val);
+	GValue *val = midgard_reflector_property_get_default_value(mrp, property_name);
 
-	if (!has_value)
+	if (val == NULL)
 		return;
 
-	php_midgard_gvalue2zval(&val, return_value TSRMLS_CC);
-	g_value_unset (&val);
+	php_midgard_gvalue2zval(val, return_value TSRMLS_CC);
+	g_value_unset (val);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_mrp_get_default_value, 0, 0, 1)
