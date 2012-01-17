@@ -22,3 +22,4 @@ php `pyrus get php_dir|tail -1`/pake.php install
 
 # Enable dynamic loading of extensions in PHP
 echo "enable_dl=On" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+
