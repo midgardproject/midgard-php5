@@ -22,9 +22,6 @@
 
 #include <midgard/midgard_executable.h>
 
-static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, guint n_objects, zval *zarray TSRMLS_DC);
-
-
 zend_class_entry *php_midgard_query_executor_class;
 zend_class_entry *php_midgard_query_select_class;
 
@@ -331,31 +328,3 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 	return SUCCESS;
 }
 
-
-
-// ===========================
-// = Helper-functions follow =
-// ===========================
-
-static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, guint n_objects, zval *zarray TSRMLS_DC)
-{
-	if (!objects)
-		return;
-
-	size_t i;
-
-	for (i = 0; i < n_objects; i++) {
-		GObject *object = G_OBJECT(objects[i]);
-		GType object_type = G_OBJECT_TYPE(object);
-		const gchar *g_class_name = g_type_name(object_type);
-
-		zend_class_entry *ce = zend_fetch_class((char *)g_class_name, strlen(g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
-
-		zval *zobject;
-		MAKE_STD_ZVAL(zobject);
-
-		php_midgard_gobject_new_with_gobject(zobject, ce, object, TRUE TSRMLS_CC);
-
-		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
-	}
-}
