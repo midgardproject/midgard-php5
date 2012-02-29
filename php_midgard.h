@@ -231,6 +231,7 @@ PHP_MINIT_FUNCTION(midgard2_base_interface);
 PHP_MINIT_FUNCTION(midgard2_reflector_object);
 PHP_MINIT_FUNCTION(midgard2_reflector_property);
 PHP_MINIT_FUNCTION(midgard2_repligard);
+PHP_MINIT_FUNCTION(midgard2_query_selectors);
 
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const char *name TSRMLS_DC);
