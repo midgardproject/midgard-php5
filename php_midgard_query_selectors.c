@@ -151,6 +151,125 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_row_get_values, 0, 0, 1)
 	ZEND_ARG_INFO(0, name)
 ZEND_END_ARG_INFO()
 
+/*	QuerySelector	*/
+
+static PHP_METHOD(midgard_query_selector, get_connection)
+{
+
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
+	MidgardConnection *mgd = midgard_query_selector_get_connection(selector);
+	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(mgd)));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_selector_get_connection, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_selector, get_query_result)
+{
+
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
+	MidgardQueryResult *result = midgard_query_selector_get_query_result(selector, NULL);
+	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(result)));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_selector_get_query_result, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_selector, get_query_string)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
+	const gchar *query_string = midgard_query_selector_get_query_string(selector);
+	if (query_string == NULL)
+		RETURN_NULL();
+		
+	RETURN_STRING(query_string, 1);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_selector_get_query_string, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+/*	QueryResult	*/
+
+static PHP_METHOD(midgard_query_result, get_columns)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	guint n_objects;
+	MidgardQueryResult *result = MIDGARD_QUERY_RESULT(__php_gobject_ptr(getThis()));
+	MidgardQueryColumn **columns = midgard_query_result_get_columns(result, &n_objects, NULL);
+	array_init(return_value);
+	php_midgard_array_from_unknown_objects((GObject **)columns, n_objects, return_value TSRMLS_CC);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_result_get_columns, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_result, get_objects)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	guint n_objects;
+	MidgardQueryResult *result = MIDGARD_QUERY_RESULT(__php_gobject_ptr(getThis()));
+	GObject **objects = midgard_query_result_get_objects(result, &n_objects, NULL);
+	array_init(return_value);
+	php_midgard_array_from_unknown_objects(objects, n_objects, return_value TSRMLS_CC);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_result_get_objects, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_result, get_rows)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	guint n_objects;
+	MidgardQueryResult *result = MIDGARD_QUERY_RESULT(__php_gobject_ptr(getThis()));
+	MidgardQueryRow **rows = midgard_query_result_get_rows(result, &n_objects, NULL);
+	array_init(return_value);
+	php_midgard_array_from_unknown_objects((GObject **)rows, n_objects, return_value TSRMLS_CC);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_result_get_rows, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_query_result, get_column_names)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	guint n_names;
+	MidgardQueryResult *result = MIDGARD_QUERY_RESULT(__php_gobject_ptr(getThis()));
+	gchar **names = midgard_query_result_get_column_names(result, &n_names, NULL);
+
+	array_init(return_value);
+	if (names == NULL)
+		return;
+
+	guint i;
+	for (i = 0; i < n_names; i++) {
+		add_assoc_string(return_value, (gchar *)names[i], "", 1);
+	}
+	
+	g_free(names);	
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_result_get_column_names, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+
+
 PHP_MINIT_FUNCTION(midgard2_query_selectors)
 {
 	/*	QueryColumn	*/
@@ -188,6 +307,43 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	CLASS_SET_DOC_COMMENT(php_midgard_query_row_class, strdup("Base, abstract class for a row in query result"));
 
 	zend_register_class_alias("midgard_query_row", php_midgard_query_row_class);
+
+	/*	QuerySelector	*/
+	static zend_function_entry midgard_query_selector_methods[] = {
+		PHP_ME(midgard_query_selector,	get_connection,		arginfo_midgard_query_selector_get_connection,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_selector,	get_query_result,	arginfo_midgard_query_selector_get_query_result,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_selector,	get_query_string,	arginfo_midgard_query_selector_get_query_string,	ZEND_ACC_PUBLIC)
+		{NULL, NULL, NULL}
+	};
+
+	static zend_class_entry php_midgard_query_selector_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_query_selector_class_entry, "MidgardQuerySelector", midgard_query_selector_methods);
+
+	php_midgard_query_selector_class = zend_register_internal_class(&php_midgard_query_selector_class_entry TSRMLS_CC);
+	php_midgard_query_selector_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+	php_midgard_query_selector_class->create_object = php_midgard_gobject_new;
+	CLASS_SET_DOC_COMMENT(php_midgard_query_selector_class, strdup("Base, abstract class for a query selector"));
+
+	zend_register_class_alias("midgard_query_selector", php_midgard_query_selector_class);
+
+	/*	QueryResult	*/
+	static zend_function_entry midgard_query_result_methods[] = {
+		PHP_ME(midgard_query_result,	get_objects,		arginfo_midgard_query_result_get_objects,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_result,	get_columns,		arginfo_midgard_query_result_get_columns,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_result,	get_rows,		arginfo_midgard_query_result_get_rows,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_result,	get_column_names,	arginfo_midgard_query_result_get_column_names,	ZEND_ACC_PUBLIC)
+		{NULL, NULL, NULL}
+	};
+
+	static zend_class_entry php_midgard_query_result_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_query_result_class_entry, "MidgardQueryResult", midgard_query_result_methods);
+
+	php_midgard_query_result_class = zend_register_internal_class(&php_midgard_query_result_class_entry TSRMLS_CC);
+	php_midgard_query_result_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+	php_midgard_query_result_class->create_object = php_midgard_gobject_new;
+	CLASS_SET_DOC_COMMENT(php_midgard_query_result_class, strdup("Base, abstract class for a query result"));
+
+	zend_register_class_alias("midgard_query_result", php_midgard_query_result_class);
 
 	return SUCCESS;
 }
