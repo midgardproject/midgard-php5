@@ -112,7 +112,7 @@ static PHP_METHOD(midgard_query_executor, add_order)
 	MidgardQueryProperty *property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property));
 	const gchar *g_direction = (direction == PHP_SORT_ASC) ? "ASC" : "DESC";
 
-	zend_bool result = midgard_query_executor_add_order(executor, property, g_direction);
+	zend_bool result = midgard_query_executor_add_order(executor, MIDGARD_QUERY_HOLDER(property), g_direction);
 
 	RETURN_BOOL(result);
 }
@@ -142,7 +142,7 @@ static PHP_METHOD(midgard_query_executor, add_join)
 	MidgardQueryProperty *left_property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property_left));
 	MidgardQueryProperty *right_property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property_right));
 
-	zend_bool result = midgard_query_executor_add_join(executor, join_type, left_property, right_property);
+	zend_bool result = midgard_query_executor_add_join(executor, join_type, MIDGARD_QUERY_HOLDER(left_property), MIDGARD_QUERY_HOLDER(right_property));
 
 	RETURN_BOOL(result);
 }
@@ -266,7 +266,7 @@ static PHP_METHOD(midgard_query_select, list_objects)
 	MidgardDBObject **objects = midgard_query_select_list_objects(select, &n_objects);
 
 	array_init(return_value);
-	php_midgard_array_from_unknown_objects(objects, n_objects, return_value TSRMLS_CC);
+	php_midgard_array_from_unknown_objects((GObject **)objects, n_objects, return_value TSRMLS_CC);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_select_list_objects, 0, 0, 0)
