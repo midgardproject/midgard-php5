@@ -268,7 +268,130 @@ static PHP_METHOD(midgard_query_result, get_column_names)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_result_get_column_names, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+/*	SqlQueryColumn		*/
 
+/*	SqlQueryConstraint	*/
+
+static PHP_METHOD(midgard_sql_query_constraint, get_column)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardSqlQueryConstraint *constraint = MIDGARD_SQL_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
+	MidgardSqlQueryColumn *column = midgard_sql_query_constraint_get_column(constraint);
+	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(column)));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_constraint_get_column, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_sql_query_constraint, get_holder)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardSqlQueryConstraint *constraint = MIDGARD_SQL_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
+	MidgardQueryHolder *holder = midgard_sql_query_constraint_get_holder(constraint);
+	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(holder)));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_constraint_get_holder, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_sql_query_constraint, get_operator)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardSqlQueryConstraint *constraint = MIDGARD_SQL_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
+	const gchar *operator = midgard_sql_query_constraint_get_operator(constraint);
+	if (operator == NULL)
+		RETURN_NULL();
+
+	RETURN_STRING(operator, 1);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_constraint_get_operator, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_sql_query_constraint, set_operator)
+{
+	char *operator;
+	int op_length;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &operator, &op_length) == FAILURE)
+		return;
+	
+	MidgardSqlQueryConstraint *constraint = MIDGARD_SQL_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
+	GError *error = NULL;
+	midgard_sql_query_constraint_set_operator(constraint, operator, &error);
+	if (error) {
+		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to set operator: %s", error->message);
+		g_error_free(error);
+	}
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_constraint_set_operator, 0, 0, 1)
+	ZEND_ARG_INFO(0, operator)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_sql_query_constraint, set_column)
+{
+	zval *z_column = NULL;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &z_column, &php_midgard_sql_query_column_class) == FAILURE)
+		return;
+	
+	MidgardSqlQueryConstraint *constraint = MIDGARD_SQL_QUERY_CONSTRAINT(__php_gobject_ptr(getThis()));
+	MidgardSqlQueryColumn *column = MIDGARD_SQL_QUERY_COLUMN(__php_gobject_ptr(z_column));
+	GError *error = NULL;
+	midgard_sql_query_constraint_set_column(constraint, column, &error);
+	if (error) {                             
+		zend_throw_exception_ex(NULL, 0 TSRMLS_CC, "Failed to set operator: %s", error->message);
+		g_error_free(error);                                                     
+	}
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_constraint_set_column, 0, 0, 1)
+	ZEND_ARG_INFO(0, operator)
+ZEND_END_ARG_INFO()
+
+/*	SqlQueryResult		*/
+
+/*	SqlQueryRow		*/
+
+/*	SqlQuerySelectData	*/
+
+static PHP_METHOD(midgard_sql_query_select_data, get_columns)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	guint n_objects;
+	MidgardSqlQuerySelectData *select = MIDGARD_SQL_QUERY_SELECT_DATA(__php_gobject_ptr(getThis()));
+	MidgardSqlQueryColumn **columns = midgard_sql_query_select_data_get_columns(select, &n_objects, NULL);
+	array_init(return_value);
+	php_midgard_array_from_unknown_objects((GObject **)columns, n_objects, return_value TSRMLS_CC);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data_get_columns, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_sql_query_select_data, add_column)
+{
+	zval *z_column = NULL;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &z_column, &php_midgard_sql_query_column_class) == FAILURE)
+		return;
+	
+	MidgardSqlQuerySelectData *select = MIDGARD_SQL_QUERY_SELECT_DATA(__php_gobject_ptr(getThis()));
+	MidgardSqlQueryColumn *column = MIDGARD_SQL_QUERY_COLUMN(__php_gobject_ptr(z_column));
+	midgard_sql_query_select_data_add_column(select, column);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data_add_column, 0, 0, 1)
+	ZEND_ARG_INFO(0, operator)
+ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_query_selectors)
 {
@@ -344,6 +467,71 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	CLASS_SET_DOC_COMMENT(php_midgard_query_result_class, strdup("Base, abstract class for a query result"));
 
 	zend_register_class_alias("midgard_query_result", php_midgard_query_result_class);
+
+	/*	SqlQueryResult	*/
+	static zend_class_entry php_midgard_sql_query_result_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_sql_query_result_class_entry, "MidgardSqlQueryResult", NULL);
+
+	php_midgard_sql_query_result_class = zend_register_internal_class_ex(&php_midgard_sql_query_result_class_entry, php_midgard_query_result_class, "MidgardQueryResult" TSRMLS_CC);
+	php_midgard_sql_query_result_class->create_object = php_midgard_gobject_new;
+	CLASS_SET_DOC_COMMENT(php_midgard_query_result_class, strdup("SQL query result"));
+
+	zend_register_class_alias("midgard_sql_query_result", php_midgard_query_result_class);
+
+	/*	SqlQueryColumn	*/
+	static zend_class_entry php_midgard_sql_query_column_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_sql_query_column_class_entry, "MidgardSqlQueryColumn", NULL);
+
+	php_midgard_sql_query_column_class = zend_register_internal_class_ex(&php_midgard_sql_query_column_class_entry, php_midgard_query_column_class, "MidgardSqlQueryColumn" TSRMLS_CC);
+	php_midgard_sql_query_column_class->create_object = php_midgard_gobject_new;
+	CLASS_SET_DOC_COMMENT(php_midgard_query_column_class, strdup("SQL query column"));
+
+	zend_register_class_alias("midgard_sql_query_column", php_midgard_query_column_class);
+
+	/*	SqlQueryRow	*/
+	static zend_class_entry php_midgard_sql_query_row_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_sql_query_row_class_entry, "MidgardSqlQueryRow", NULL);
+
+	php_midgard_sql_query_row_class = zend_register_internal_class_ex(&php_midgard_sql_query_row_class_entry, php_midgard_query_row_class, "MidgardSqlQueryRow" TSRMLS_CC);
+	php_midgard_sql_query_row_class->create_object = php_midgard_gobject_new;
+	CLASS_SET_DOC_COMMENT(php_midgard_query_row_class, strdup("SQL query row"));
+
+	zend_register_class_alias("midgard_sql_query_row", php_midgard_query_row_class);
+
+	/*	SqlQueryConstraint	*/
+	static zend_function_entry midgard_sql_query_constraint_methods[] = {
+		PHP_ME(midgard_sql_query_constraint,	get_column,	arginfo_midgard_sql_query_constraint_get_column,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_constraint,	get_holder,	arginfo_midgard_sql_query_constraint_get_holder,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_constraint,	get_operator,	arginfo_midgard_sql_query_constraint_get_operator,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_constraint,	set_column,	arginfo_midgard_sql_query_constraint_set_column,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_constraint,	set_operator,	arginfo_midgard_sql_query_constraint_set_operator,	ZEND_ACC_PUBLIC)
+		{NULL, NULL, NULL}
+	};
+
+	static zend_class_entry php_midgard_sql_query_constraint_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_sql_query_constraint_class_entry, "MidgardSqlQueryConstraint", midgard_sql_query_constraint_methods);
+
+	php_midgard_sql_query_constraint_class = zend_register_internal_class(&php_midgard_sql_query_constraint_class_entry TSRMLS_CC);
+	php_midgard_sql_query_constraint_class->create_object = php_midgard_gobject_new;
+	CLASS_SET_DOC_COMMENT(php_midgard_sql_query_constraint_class, strdup("SQL query constraint"));
+
+	zend_register_class_alias("midgard_sql_query_constraint", php_midgard_sql_query_constraint_class);
+
+	/*	SqlQuerySelectData	*/
+	static zend_function_entry midgard_sql_query_select_data_methods[] = {
+		PHP_ME(midgard_sql_query_select_data,	get_columns,	arginfo_midgard_sql_query_select_data_get_columns,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_select_data,	add_column,	arginfo_midgard_sql_query_select_data_add_column,	ZEND_ACC_PUBLIC)
+		{NULL, NULL, NULL}
+	};
+
+	static zend_class_entry php_midgard_sql_query_select_data_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_sql_query_select_data_class_entry, "MidgardSqlQuerySelectData", midgard_sql_query_select_data_methods);
+
+	php_midgard_sql_query_select_data_class = zend_register_internal_class(&php_midgard_sql_query_select_data_class_entry TSRMLS_CC);
+	php_midgard_sql_query_select_data_class->create_object = php_midgard_gobject_new;
+	CLASS_SET_DOC_COMMENT(php_midgard_sql_query_select_data_class, strdup("SQL data selector"));
+
+	zend_register_class_alias("midgard_sql_query_select_data", php_midgard_sql_query_select_data_class);
 
 	return SUCCESS;
 }
