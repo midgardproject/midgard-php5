@@ -155,13 +155,6 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_selector, get_connection)
 {
-
-	if (zend_parse_parameters_none() == FAILURE)
-		return;
-
-	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
-	MidgardConnection *mgd = midgard_query_selector_get_connection(selector);
-	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(mgd)));
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_selector_get_connection, 0, 0, 0)
@@ -169,13 +162,6 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_selector, get_query_result)
 {
-
-	if (zend_parse_parameters_none() == FAILURE)
-		return;
-
-	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
-	MidgardQueryResult *result = midgard_query_selector_get_query_result(selector, NULL);
-	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(result)));
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_selector_get_query_result, 0, 0, 0)
@@ -183,15 +169,6 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_selector, get_query_string)
 {
-	if (zend_parse_parameters_none() == FAILURE)
-		return;
-
-	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
-	const gchar *query_string = midgard_query_selector_get_query_string(selector);
-	if (query_string == NULL)
-		RETURN_NULL();
-		
-	RETURN_STRING(query_string, 1);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_selector_get_query_string, 0, 0, 0)
@@ -446,6 +423,56 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data_add_column, 0, 0, 1
 	ZEND_ARG_OBJ_INFO(0, operator, midgard_sql_query_column, 0)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_sql_query_select_data, get_query_result)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
+	GError *error = NULL;
+	MidgardQueryResult *result = midgard_query_selector_get_query_result(selector, &error);
+	if (!result) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to get result. %s", error && error->message ? error->message : "");
+		g_clear_error(&error);
+		return;
+	}
+
+	object_init_ex(return_value, php_midgard_sql_query_result_class);
+	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(result)));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data_get_query_result, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_sql_query_select_data, get_connection)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
+	MidgardConnection *mgd = midgard_query_selector_get_connection(selector);
+	MGD_PHP_SET_GOBJECT(return_value, g_object_ref(G_OBJECT(mgd)));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data_get_connection, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_sql_query_select_data, get_query_string)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardQuerySelector *selector = MIDGARD_QUERY_SELECTOR(__php_gobject_ptr(getThis()));
+	const gchar *query_string = midgard_query_selector_get_query_string(selector);
+	if (query_string == NULL)
+		RETURN_NULL();
+		
+	RETURN_STRING(query_string, 1);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data_get_query_string, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
 PHP_MINIT_FUNCTION(midgard2_query_selectors)
 {
 	/*	QueryColumn	*/
@@ -486,9 +513,9 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 
 	/*	QuerySelector	*/
 	static zend_function_entry midgard_query_selector_methods[] = {
-		PHP_ME(midgard_query_selector,	get_connection,		arginfo_midgard_query_selector_get_connection,		ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_selector,	get_query_result,	arginfo_midgard_query_selector_get_query_result,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_query_selector,	get_query_string,	arginfo_midgard_query_selector_get_query_string,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_query_selector,	get_connection,		arginfo_midgard_query_selector_get_connection,		ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT)
+		PHP_ME(midgard_query_selector,	get_query_result,	arginfo_midgard_query_selector_get_query_result,	ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT)
+		PHP_ME(midgard_query_selector,	get_query_string,	arginfo_midgard_query_selector_get_query_string,	ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT)
 		{NULL, NULL, NULL}
 	};
 
@@ -496,7 +523,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	INIT_CLASS_ENTRY(php_midgard_query_selector_class_entry, "MidgardQuerySelector", midgard_query_selector_methods);
 
 	php_midgard_query_selector_class = zend_register_internal_class(&php_midgard_query_selector_class_entry TSRMLS_CC);
-	php_midgard_query_selector_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+	php_midgard_query_selector_class->ce_flags |= ZEND_ACC_INTERFACE;
 	php_midgard_query_selector_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_selector_class, strdup("Base, abstract class for a query selector"));
 
@@ -577,9 +604,12 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 
 	/*	SqlQuerySelectData	*/
 	static zend_function_entry midgard_sql_query_select_data_methods[] = {
-		PHP_ME(midgard_sql_query_select_data,	__construct,	arginfo_midgard_sql_query_select_data___construct,	ZEND_ACC_PUBLIC)	
-		PHP_ME(midgard_sql_query_select_data,	get_columns,	arginfo_midgard_sql_query_select_data_get_columns,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_sql_query_select_data,	add_column,	arginfo_midgard_sql_query_select_data_add_column,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_select_data,	__construct,		arginfo_midgard_sql_query_select_data___construct,	ZEND_ACC_PUBLIC)	
+		PHP_ME(midgard_sql_query_select_data,	get_columns,		arginfo_midgard_sql_query_select_data_get_columns,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_select_data,	add_column,		arginfo_midgard_sql_query_select_data_add_column,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_select_data,   get_query_result,	arginfo_midgard_sql_query_select_data_get_query_result, ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_select_data,   get_query_string,	arginfo_midgard_sql_query_select_data_get_query_string, ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_query_select_data,   get_connection,		arginfo_midgard_sql_query_select_data_get_connection,	ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
@@ -590,6 +620,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_sql_query_select_data_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_sql_query_select_data_class, strdup("SQL data selector"));
 
+	zend_class_implements(php_midgard_sql_query_select_data_class TSRMLS_CC, 1, php_midgard_query_selector_class);
 	zend_register_class_alias("midgard_sql_query_select_data", php_midgard_sql_query_select_data_class);
 
 	return SUCCESS;
