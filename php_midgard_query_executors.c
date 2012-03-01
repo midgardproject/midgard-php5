@@ -22,7 +22,7 @@
 
 #include <midgard/midgard_executable.h>
 
-zend_class_entry *php_midgard_query_executor_class;
+zend_class_entry *php_midgard_query_executor_class = NULL;
 zend_class_entry *php_midgard_query_select_class;
 
 // midgard_query_executor

@@ -284,6 +284,7 @@ extern zend_class_entry *php_midgard_workspace_storage_class;
 extern zend_class_entry *php_midgard_workspace_class;
 extern zend_class_entry *php_midgard_reflector_object_class;
 extern zend_class_entry *php_midgard_reflector_property_class;
+extern zend_class_entry *php_midgard_query_executor_class;
 
 #define __php_objstore_object(instance) ((php_midgard_gobject *)zend_object_store_get_object(instance TSRMLS_CC))
 #define __php_gobject_ptr(instance) (__php_objstore_object(instance)->gobject)

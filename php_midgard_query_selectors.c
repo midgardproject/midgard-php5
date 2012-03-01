@@ -394,6 +394,27 @@ ZEND_END_ARG_INFO()
 
 /*	SqlQuerySelectData	*/
 
+static PHP_METHOD(midgard_sql_query_select_data, __construct)
+{
+	zval *z_mgd = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &z_mgd, php_midgard_connection_class) == FAILURE) {
+		return;
+	}
+
+	MidgardConnection *_mgd = MIDGARD_CONNECTION(__php_gobject_ptr(z_mgd));
+	MidgardSqlQuerySelectData *select = midgard_sql_query_select_data_new(_mgd);
+	if (!select) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create SqlQuerySelectData");
+		return;
+	}
+	MGD_PHP_SET_GOBJECT(getThis(), select);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data___construct, 0, 0, 1)
+	ZEND_ARG_OBJ_INFO(0, connection, midgard_connection, 0)
+ZEND_END_ARG_INFO()
+
 static PHP_METHOD(midgard_sql_query_select_data, get_columns)
 {
 	if (zend_parse_parameters_none() == FAILURE)
@@ -556,6 +577,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 
 	/*	SqlQuerySelectData	*/
 	static zend_function_entry midgard_sql_query_select_data_methods[] = {
+		PHP_ME(midgard_sql_query_select_data,	__construct,	arginfo_midgard_sql_query_select_data___construct,	ZEND_ACC_PUBLIC)	
 		PHP_ME(midgard_sql_query_select_data,	get_columns,	arginfo_midgard_sql_query_select_data_get_columns,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_sql_query_select_data,	add_column,	arginfo_midgard_sql_query_select_data_add_column,	ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
@@ -564,7 +586,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	static zend_class_entry php_midgard_sql_query_select_data_class_entry;
 	INIT_CLASS_ENTRY(php_midgard_sql_query_select_data_class_entry, "MidgardSqlQuerySelectData", midgard_sql_query_select_data_methods);
 
-	php_midgard_sql_query_select_data_class = zend_register_internal_class(&php_midgard_sql_query_select_data_class_entry TSRMLS_CC);
+	php_midgard_sql_query_select_data_class = zend_register_internal_class_ex(&php_midgard_sql_query_select_data_class_entry, php_midgard_query_executor_class, "MidgardQueryExecutor" TSRMLS_CC);
 	php_midgard_sql_query_select_data_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_sql_query_select_data_class, strdup("SQL data selector"));
 
