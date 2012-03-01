@@ -270,6 +270,38 @@ ZEND_END_ARG_INFO()
 
 /*	SqlQueryColumn		*/
 
+static PHP_METHOD(midgard_sql_query_column, __construct)
+{
+	zval *z_qprop = NULL;
+	char *name = NULL;
+	char *qualifier = NULL;
+	int name_length = 0;
+	int qualifier_length = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Oss",
+				&z_qprop, php_midgard_query_property_class,
+				&name, &name_length,
+				&qualifier, &qualifier_length
+				) == FAILURE
+	   ) {
+		return;
+	}
+
+	MidgardQueryProperty *queryproperty = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_qprop));
+	MidgardSqlQueryColumn *column = midgard_sql_query_column_new(queryproperty, qualifier, name);
+	if (!column) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create SqlQueryColumn");
+		return;
+	}
+	MGD_PHP_SET_GOBJECT(getThis(), column);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_column___construct, 0, 0, 3)
+	ZEND_ARG_OBJ_INFO(0, queryproperty, midgard_query_property, 0)
+	ZEND_ARG_INFO(0, name)
+	ZEND_ARG_INFO(0, qualifier)
+ZEND_END_ARG_INFO()
+
 /*	SqlQueryConstraint	*/
 
 static PHP_METHOD(midgard_sql_query_constraint, get_column)
@@ -479,8 +511,13 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	zend_register_class_alias("midgard_sql_query_result", php_midgard_query_result_class);
 
 	/*	SqlQueryColumn	*/
+	static zend_function_entry midgard_sql_query_column_methods[] = {
+		PHP_ME(midgard_sql_query_column,    __construct,	arginfo_midgard_sql_query_column___construct,	ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+		{NULL, NULL, NULL}
+	};
+
 	static zend_class_entry php_midgard_sql_query_column_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_sql_query_column_class_entry, "MidgardSqlQueryColumn", NULL);
+	INIT_CLASS_ENTRY(php_midgard_sql_query_column_class_entry, "MidgardSqlQueryColumn", midgard_sql_query_column_methods);
 
 	php_midgard_sql_query_column_class = zend_register_internal_class_ex(&php_midgard_sql_query_column_class_entry, php_midgard_query_column_class, "MidgardSqlQueryColumn" TSRMLS_CC);
 	php_midgard_sql_query_column_class->create_object = php_midgard_gobject_new;
