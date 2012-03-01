@@ -434,7 +434,7 @@ static PHP_METHOD(midgard_sql_query_select_data, add_column)
 {
 	zval *z_column = NULL;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &z_column, &php_midgard_sql_query_column_class) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O", &z_column, php_midgard_sql_query_column_class) == FAILURE)
 		return;
 	
 	MidgardSqlQuerySelectData *select = MIDGARD_SQL_QUERY_SELECT_DATA(__php_gobject_ptr(getThis()));
@@ -443,7 +443,7 @@ static PHP_METHOD(midgard_sql_query_select_data, add_column)
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_select_data_add_column, 0, 0, 1)
-	ZEND_ARG_INFO(0, operator)
+	ZEND_ARG_OBJ_INFO(0, operator, midgard_sql_query_column, 0)
 ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_query_selectors)
