@@ -280,8 +280,8 @@ static PHP_METHOD(midgard_sql_query_column, __construct)
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Oss",
 				&z_qprop, php_midgard_query_property_class,
-				&name, &name_length,
-				&qualifier, &qualifier_length
+				&qualifier, &qualifier_length, 
+				&name, &name_length
 				) == FAILURE
 	   ) {
 		return;
