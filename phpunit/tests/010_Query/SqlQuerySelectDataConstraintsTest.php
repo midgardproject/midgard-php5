@@ -17,12 +17,14 @@ class SqlQuerySelectDataConstraintsTest extends MidgardTest
     const SNIPPET_SDIR_ID = "snippets_sdir_id";
 
     const SNIPPETDIR_QUALIFIER = "snippetdir_q";
-    const SNIPPETDIR_NAME = "snippetdir_name";
+    const SNIPPETDIR_NAME = "Snippetdir";
+    const SNIPPETDIR_NAME_COLUMN = "snippetdir_name";
+    const SNIPPETDIR_ID = "snippetdir_id";
 
     private function createSnippetDir()
     {
         $sdirA = new midgard_snippetdir();
-        $sdirA->name = "Snippetdir";
+        $sdirA->name = self::SNIPPETDIR_NAME;
         $this->assertTrue($sdirA->create());
         $this->assertEquals($this->mgd->get_error_string(), "MGD_ERR_OK");
 
@@ -109,7 +111,7 @@ class SqlQuerySelectDataConstraintsTest extends MidgardTest
         $column = new MidgardSqlQueryColumn(
             new MidgardQueryProperty("name", $storage),
             self::SNIPPETDIR_QUALIFIER,
-            self::SNIPPETDIR_NAME            
+            self::SNIPPETDIR_NAME_COLUMN            
         );
         $this->select->add_column($column);
     }
@@ -230,7 +232,7 @@ class SqlQuerySelectDataConstraintsTest extends MidgardTest
         $this->assertCount(3, $columns);
         $names = $result->get_column_names();
         $this->assertCount(3, $names);
-        $colnames = array(self::SNIPPET_NAME, self::SNIPPET_ID, self::SNIPPETDIR_NAME);
+        $colnames = array(self::SNIPPET_NAME, self::SNIPPET_ID, self::SNIPPETDIR_NAME_COLUMN);
         foreach ($names as $name) {
             $this->assertContains($names[0], $colnames);
             $this->assertContains($names[1], $colnames);
@@ -263,6 +265,95 @@ class SqlQuerySelectDataConstraintsTest extends MidgardTest
         }
     }
 
+    private function prepareJoin()
+    {
+        $this->addSdirColumns();
+
+        // snippetdir_q.id AS snippetdir_id
+        $sdir_storage = $this->default_sdir_storage;
+        $column = new MidgardSqlQueryColumn(
+            new MidgardQueryProperty("id", $sdir_storage),
+            self::SNIPPETDIR_QUALIFIER,
+            self::SNIPPETDIR_ID            
+        );
+        $this->select->add_column($column);
+
+        // snippet_q.snippetdir AS snippets_sdir_id 
+        $storage = $this->default_snippet_storage;
+        $column = new MidgardSqlQueryColumn(
+            new MidgardQueryProperty("snippetdir", $storage),
+            self::SNIPPET_QUALIFIER,
+            self::SNIPPET_SDIR_ID
+        );
+        $this->select->add_column($column);
+
+        // JOIN ON (snippetdir_q.id = snippet_q.snippetdir)
+        $this->select->add_join(
+            "INNER", 
+            new MidgardSqlQueryColumn(
+                new MidgardQueryProperty("snippetdir", $storage),
+                self::SNIPPET_QUALIFIER,
+                self::SNIPPET_SDIR_ID
+            ),
+            new MidgardSqlQueryColumn(
+                new MidgardQueryProperty("id", $sdir_storage),
+                self::SNIPPETDIR_QUALIFIER,
+                self::SNIPPETDIR_ID
+            )
+        );
+    }
+
+    private function addSnippetNameConstraint()
+    {
+        $this->select->set_constraint(
+            new MidgardSqlQueryConstraint(
+                new MidgardSqlQueryColumn(
+                    new MidgardQueryProperty("name", $this->default_snippet_storage),
+                    self::SNIPPET_QUALIFIER
+                ),
+                "=",
+                new MidgardQueryValue(self::SNIPPET_NAME_A)
+            )
+        );
+    }
+
+    public function testAddJoin()
+    {
+        $this->prepareJoin();
+        $this->addSnippetNameConstraint();
+        $this->select->execute();
+        echo $this->select->get_query_string();
+        $result = $this->select->get_query_result();
+        $rows = $result->get_rows();
+        $this->assertCount(1, $rows);
+
+        $values = $rows[0]->get_values();
+        $this->assertCount(5, $values);
+        $this->assertEquals($values[0], self::SNIPPET_NAME_A);
+        // DO not test ids, those depends on provider
+        $this->assertEquals($values[2], self::SNIPPETDIR_NAME);
+        // snippet.snippetdir = snippetdir.id
+        $this->assertEquals($values[3], $values[4]);
+    }
+
+    public function testAddJoinAddOrderASC()
+    {
+        $this->prepareJoin();
+        $this->select->add_order(
+            new MidgardSqlQueryColumn(
+                new MidgardQueryProperty("name", $this->default_snippet_storage),
+                self::SNIPPET_QUALIFIER
+            )
+        );
+        $this->select->execute();
+        echo $this->select->get_query_string();
+        $result = $this->select->get_query_result();
+        $rows = $result->get_rows();
+        $this->assertCount(3, $rows);
+        $this->assertEquals($rows[0]->get_value(self::SNIPPET_NAME_COLUMN), self::SNIPPET_NAME_A);
+        $this->assertEquals($rows[1]->get_value(self::SNIPPET_NAME_COLUMN), self::SNIPPET_NAME_B);
+        $this->assertEquals($rows[2]->get_value(self::SNIPPET_NAME_COLUMN), self::SNIPPET_NAME_C);
+    }
 }
 
 ?>
