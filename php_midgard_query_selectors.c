@@ -115,8 +115,14 @@ static PHP_METHOD(midgard_query_row, get_value)
 		return;
 
 	MidgardQueryRow *row = MIDGARD_QUERY_ROW(__php_gobject_ptr(getThis()));
-	const GValue *value = midgard_query_row_get_value(row, (const gchar *)name, NULL); 
-	
+	GError *error = NULL;
+	const GValue *value = midgard_query_row_get_value(row, (const gchar *)name, &error); 
+	if (error || value == NULL) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, 
+				"Failed to get value. %s", error && error->message ? error->message : "Unknown reason");
+                return;
+	}
+
 	php_midgard_gvalue2zval(value, return_value TSRMLS_CC);	
 }
 

@@ -99,7 +99,7 @@ static PHP_METHOD(midgard_query_executor, add_order)
 	zval *z_property = NULL;
 	long direction = PHP_SORT_ASC;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O|l", &z_property, php_midgard_query_property_class, &direction) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O|l", &z_property, php_midgard_query_holder_class, &direction) == FAILURE) {
 		return;
 	}
 
@@ -109,16 +109,16 @@ static PHP_METHOD(midgard_query_executor, add_order)
 	}
 
 	MidgardQueryExecutor *executor = MIDGARD_QUERY_EXECUTOR(__php_gobject_ptr(getThis()));
-	MidgardQueryProperty *property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property));
+	MidgardQueryHolder *holder = MIDGARD_QUERY_HOLDER(__php_gobject_ptr(z_property));
 	const gchar *g_direction = (direction == PHP_SORT_ASC) ? "ASC" : "DESC";
 
-	zend_bool result = midgard_query_executor_add_order(executor, MIDGARD_QUERY_HOLDER(property), g_direction);
+	zend_bool result = midgard_query_executor_add_order(executor, holder, g_direction);
 
 	RETURN_BOOL(result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_executor_add_order, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, property, midgard_query_property, 0)
+	ZEND_ARG_OBJ_INFO(0, property, midgard_query_holder, 0)
 	ZEND_ARG_INFO(0, direction)
 ZEND_END_ARG_INFO()
 
