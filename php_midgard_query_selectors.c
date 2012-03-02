@@ -236,7 +236,7 @@ static PHP_METHOD(midgard_query_result, get_column_names)
 
 	guint i;
 	for (i = 0; i < n_names; i++) {
-		add_assoc_string(return_value, (gchar *)names[i], "", 1);
+		add_index_string(return_value, i, (gchar *)names[i], 1);
 	}
 	
 	g_free(names);	
