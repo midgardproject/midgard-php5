@@ -255,7 +255,7 @@ static PHP_METHOD(midgard_sql_query_column, __construct)
 	int name_length = 0;
 	int qualifier_length = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Oss",
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Os|s",
 				&z_qprop, php_midgard_query_property_class,
 				&qualifier, &qualifier_length, 
 				&name, &name_length
@@ -280,6 +280,38 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_column___construct, 0, 0, 3)
 ZEND_END_ARG_INFO()
 
 /*	SqlQueryConstraint	*/
+
+static PHP_METHOD(midgard_sql_query_constraint, __construct)
+{
+	zval *z_column = NULL;
+	char *operator = NULL;
+	int op_length = 0;
+	zval *z_holder = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "OsO",
+				&z_column, php_midgard_sql_query_column_class,
+				&operator, &op_length, 
+				&z_holder, php_midgard_query_holder_class
+				) == FAILURE
+	   ) {
+		return;
+	}
+
+	MidgardSqlQueryColumn *column = MIDGARD_SQL_QUERY_COLUMN(__php_gobject_ptr(z_column));
+	MidgardQueryHolder *holder = MIDGARD_QUERY_HOLDER(__php_gobject_ptr(z_holder));
+	MidgardSqlQueryConstraint *constraint = midgard_sql_query_constraint_new(column, operator, holder);
+	if (!column) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to create SqlQueryColumn");
+		return;
+	}
+	MGD_PHP_SET_GOBJECT(getThis(), constraint);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_query_constraint___construct, 0, 0, 3)
+	ZEND_ARG_OBJ_INFO(0, column, midgard_sql_query_column, 0)
+	ZEND_ARG_INFO(0, operator)
+	ZEND_ARG_OBJ_INFO(0, holder, midgard_query_holder, 0)
+ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_sql_query_constraint, get_column)
 {
@@ -585,6 +617,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 
 	/*	SqlQueryConstraint	*/
 	static zend_function_entry midgard_sql_query_constraint_methods[] = {
+		PHP_ME(midgard_sql_query_constraint,	__construct,	arginfo_midgard_sql_query_constraint___construct,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_sql_query_constraint,	get_column,	arginfo_midgard_sql_query_constraint_get_column,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_sql_query_constraint,	get_holder,	arginfo_midgard_sql_query_constraint_get_holder,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_sql_query_constraint,	get_operator,	arginfo_midgard_sql_query_constraint_get_operator,	ZEND_ACC_PUBLIC)
@@ -596,7 +629,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	static zend_class_entry php_midgard_sql_query_constraint_class_entry;
 	INIT_CLASS_ENTRY(php_midgard_sql_query_constraint_class_entry, "MidgardSqlQueryConstraint", midgard_sql_query_constraint_methods);
 
-	php_midgard_sql_query_constraint_class = zend_register_internal_class(&php_midgard_sql_query_constraint_class_entry TSRMLS_CC);
+	php_midgard_sql_query_constraint_class = zend_register_internal_class_ex(&php_midgard_sql_query_constraint_class_entry, php_midgard_query_constraint_simple_class, "MidgardQueryConstraintSimple" TSRMLS_CC);
 	php_midgard_sql_query_constraint_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_sql_query_constraint_class, strdup("SQL query constraint"));
 
