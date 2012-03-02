@@ -6,4 +6,5 @@ sudo /usr/bin/pear install -f pear
 sudo /usr/bin/pear channel-discover pear.phpunit.de
 sudo /usr/bin/pear channel-discover pear.symfony-project.com
 sudo /usr/bin/pear install --alldeps phpunit/PHPUnit
+sh -c "cd tests/phpunit&&ls"
 sh -c "cd tests/phpunit&&php -c midgard2.ini /usr/bin/phpunit -c phpunit_sqlite.xml.dist"
