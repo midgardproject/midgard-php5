@@ -599,10 +599,11 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	static zend_class_entry php_midgard_sql_query_column_class_entry;
 	INIT_CLASS_ENTRY(php_midgard_sql_query_column_class_entry, "MidgardSqlQueryColumn", midgard_sql_query_column_methods);
 
-	php_midgard_sql_query_column_class = zend_register_internal_class_ex(&php_midgard_sql_query_column_class_entry, php_midgard_query_column_class, "MidgardSqlQueryColumn" TSRMLS_CC);
+	php_midgard_sql_query_column_class = zend_register_internal_class_ex(&php_midgard_sql_query_column_class_entry, php_midgard_query_holder_class, "MidgardSqlQueryColumn" TSRMLS_CC);
 	php_midgard_sql_query_column_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_column_class, strdup("SQL query column"));
 
+	zend_class_implements(php_midgard_sql_query_column_class TSRMLS_CC, 1, php_midgard_query_column_class);
 	zend_register_class_alias("midgard_sql_query_column", php_midgard_query_column_class);
 
 	/*	SqlQueryRow	*/

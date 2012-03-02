@@ -131,16 +131,16 @@ static PHP_METHOD(midgard_query_executor, add_join)
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sOO",
 			&join_type, &join_type_len,
-			&z_property_left, php_midgard_query_property_class,
-			&z_property_right, php_midgard_query_property_class
+			&z_property_left, php_midgard_query_holder_class,
+			&z_property_right, php_midgard_query_holder_class
 		) == FAILURE
 	) {
 		return;
 	}
 
 	MidgardQueryExecutor *executor = MIDGARD_QUERY_EXECUTOR(__php_gobject_ptr(getThis()));
-	MidgardQueryProperty *left_property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property_left));
-	MidgardQueryProperty *right_property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property_right));
+	MidgardQueryHolder *left_property = MIDGARD_QUERY_HOLDER(__php_gobject_ptr(z_property_left));
+	MidgardQueryHolder *right_property = MIDGARD_QUERY_HOLDER(__php_gobject_ptr(z_property_right));
 
 	zend_bool result = midgard_query_executor_add_join(executor, join_type, MIDGARD_QUERY_HOLDER(left_property), MIDGARD_QUERY_HOLDER(right_property));
 
@@ -149,8 +149,8 @@ static PHP_METHOD(midgard_query_executor, add_join)
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_executor_add_join, 0, 0, 3)
 	ZEND_ARG_INFO(0, join_type)
-	ZEND_ARG_OBJ_INFO(0, left_property, midgard_query_property, 0)
-	ZEND_ARG_OBJ_INFO(0, right_property, midgard_query_property, 0)
+	ZEND_ARG_OBJ_INFO(0, left_property, midgard_query_holder, 0)
+	ZEND_ARG_OBJ_INFO(0, right_property, midgard_query_holder, 0)
 ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_executor, execute)
