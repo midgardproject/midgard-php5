@@ -63,3 +63,5 @@ const gchar 	*php_midgard_docs_get_method_comment 	(const gchar *classname, cons
 # define CLASS_SET_DOC_COMMENT(_cptr, __comment) \
 	_cptr->doc_comment = __comment;
 #endif
+
+void php_midgard_array_from_unknown_objects(GObject **objects, guint n_objects, zval *zarray TSRMLS_DC);

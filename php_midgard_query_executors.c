@@ -22,10 +22,7 @@
 
 #include <midgard/midgard_executable.h>
 
-static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, guint n_objects, zval *zarray TSRMLS_DC);
-
-
-zend_class_entry *php_midgard_query_executor_class;
+zend_class_entry *php_midgard_query_executor_class = NULL;
 zend_class_entry *php_midgard_query_select_class;
 
 // midgard_query_executor
@@ -102,7 +99,7 @@ static PHP_METHOD(midgard_query_executor, add_order)
 	zval *z_property = NULL;
 	long direction = PHP_SORT_ASC;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O|l", &z_property, php_midgard_query_property_class, &direction) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "O|l", &z_property, php_midgard_query_holder_class, &direction) == FAILURE) {
 		return;
 	}
 
@@ -112,16 +109,16 @@ static PHP_METHOD(midgard_query_executor, add_order)
 	}
 
 	MidgardQueryExecutor *executor = MIDGARD_QUERY_EXECUTOR(__php_gobject_ptr(getThis()));
-	MidgardQueryProperty *property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property));
+	MidgardQueryHolder *holder = MIDGARD_QUERY_HOLDER(__php_gobject_ptr(z_property));
 	const gchar *g_direction = (direction == PHP_SORT_ASC) ? "ASC" : "DESC";
 
-	zend_bool result = midgard_query_executor_add_order(executor, property, g_direction);
+	zend_bool result = midgard_query_executor_add_order(executor, holder, g_direction);
 
 	RETURN_BOOL(result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_executor_add_order, 0, 0, 1)
-	ZEND_ARG_OBJ_INFO(0, property, midgard_query_property, 0)
+	ZEND_ARG_OBJ_INFO(0, property, midgard_query_holder, 0)
 	ZEND_ARG_INFO(0, direction)
 ZEND_END_ARG_INFO()
 
@@ -134,26 +131,26 @@ static PHP_METHOD(midgard_query_executor, add_join)
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sOO",
 			&join_type, &join_type_len,
-			&z_property_left, php_midgard_query_property_class,
-			&z_property_right, php_midgard_query_property_class
+			&z_property_left, php_midgard_query_holder_class,
+			&z_property_right, php_midgard_query_holder_class
 		) == FAILURE
 	) {
 		return;
 	}
 
 	MidgardQueryExecutor *executor = MIDGARD_QUERY_EXECUTOR(__php_gobject_ptr(getThis()));
-	MidgardQueryProperty *left_property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property_left));
-	MidgardQueryProperty *right_property = MIDGARD_QUERY_PROPERTY(__php_gobject_ptr(z_property_right));
+	MidgardQueryHolder *left_property = MIDGARD_QUERY_HOLDER(__php_gobject_ptr(z_property_left));
+	MidgardQueryHolder *right_property = MIDGARD_QUERY_HOLDER(__php_gobject_ptr(z_property_right));
 
-	zend_bool result = midgard_query_executor_add_join(executor, join_type, left_property, right_property);
+	zend_bool result = midgard_query_executor_add_join(executor, join_type, MIDGARD_QUERY_HOLDER(left_property), MIDGARD_QUERY_HOLDER(right_property));
 
 	RETURN_BOOL(result);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_executor_add_join, 0, 0, 3)
 	ZEND_ARG_INFO(0, join_type)
-	ZEND_ARG_OBJ_INFO(0, left_property, midgard_query_property, 0)
-	ZEND_ARG_OBJ_INFO(0, right_property, midgard_query_property, 0)
+	ZEND_ARG_OBJ_INFO(0, left_property, midgard_query_holder, 0)
+	ZEND_ARG_OBJ_INFO(0, right_property, midgard_query_holder, 0)
 ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_query_executor, execute)
@@ -269,7 +266,7 @@ static PHP_METHOD(midgard_query_select, list_objects)
 	MidgardDBObject **objects = midgard_query_select_list_objects(select, &n_objects);
 
 	array_init(return_value);
-	php_midgard_array_from_unknown_objects(objects, n_objects, return_value TSRMLS_CC);
+	php_midgard_array_from_unknown_objects((GObject **)objects, n_objects, return_value TSRMLS_CC);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_query_select_list_objects, 0, 0, 0)
@@ -331,31 +328,3 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 	return SUCCESS;
 }
 
-
-
-// ===========================
-// = Helper-functions follow =
-// ===========================
-
-static void php_midgard_array_from_unknown_objects(MidgardDBObject **objects, guint n_objects, zval *zarray TSRMLS_DC)
-{
-	if (!objects)
-		return;
-
-	size_t i;
-
-	for (i = 0; i < n_objects; i++) {
-		GObject *object = G_OBJECT(objects[i]);
-		GType object_type = G_OBJECT_TYPE(object);
-		const gchar *g_class_name = g_type_name(object_type);
-
-		zend_class_entry *ce = zend_fetch_class((char *)g_class_name, strlen(g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
-
-		zval *zobject;
-		MAKE_STD_ZVAL(zobject);
-
-		php_midgard_gobject_new_with_gobject(zobject, ce, object, TRUE TSRMLS_CC);
-
-		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
-	}
-}

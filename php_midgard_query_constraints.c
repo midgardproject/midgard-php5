@@ -23,7 +23,7 @@
 static void php_midgard_array_from_constraints(MidgardQueryConstraintSimple **objects, guint n_objects, zval *zarray TSRMLS_DC);
 
 
-zend_class_entry *php_midgard_query_constraint_simple_class;
+zend_class_entry *php_midgard_query_constraint_simple_class = NULL;
 zend_class_entry *php_midgard_query_constraint_class;
 zend_class_entry *php_midgard_query_constraint_group_class;
 
