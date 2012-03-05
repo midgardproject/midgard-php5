@@ -322,7 +322,7 @@ class SqlQuerySelectDataConstraintsTest extends MidgardTest
         $this->prepareJoin();
         $this->addSnippetNameConstraint();
         $this->select->execute();
-        echo $this->select->get_query_string();
+        //echo $this->select->get_query_string();
         $result = $this->select->get_query_result();
         $rows = $result->get_rows();
         $this->assertCount(1, $rows);
@@ -337,22 +337,132 @@ class SqlQuerySelectDataConstraintsTest extends MidgardTest
     }
 
     public function testAddJoinAddOrderASC()
-    {
+    {   
+        /*
+        SELECT 
+            snippet_q.name AS sname, 
+            snippet_q.id AS snippet_id, 
+            snippetdir_q.name AS snippetdir_name, 
+            snippetdir_q.id AS snippetdir_id, 
+            snippet_q.snippetdir AS snippets_sdir_id
+        FROM snippet AS snippet_q
+            INNER JOIN snippetdir AS snippetdir_q ON (snippet_q.snippetdir = snippetdir_q.id)
+        WHERE 1=1 AND 0<1
+        ORDER BY snippet_q.name ASC
+         */
         $this->prepareJoin();
         $this->select->add_order(
             new MidgardSqlQueryColumn(
                 new MidgardQueryProperty("name", $this->default_snippet_storage),
                 self::SNIPPET_QUALIFIER
-            )
+            ),
+            SORT_ASC
         );
         $this->select->execute();
-        echo $this->select->get_query_string();
+        //echo $this->select->get_query_string();
         $result = $this->select->get_query_result();
         $rows = $result->get_rows();
         $this->assertCount(3, $rows);
-        $this->assertEquals($rows[0]->get_value(self::SNIPPET_NAME_COLUMN), self::SNIPPET_NAME_A);
-        $this->assertEquals($rows[1]->get_value(self::SNIPPET_NAME_COLUMN), self::SNIPPET_NAME_B);
-        $this->assertEquals($rows[2]->get_value(self::SNIPPET_NAME_COLUMN), self::SNIPPET_NAME_C);
+        $this->assertEquals($rows[0]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_A);
+        $this->assertEquals($rows[0]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+        $this->assertEquals($rows[1]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_B);
+        $this->assertEquals($rows[1]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+        $this->assertEquals($rows[2]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_C);
+        $this->assertEquals($rows[2]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+
+        try {
+            $rows[0]->get_value("Doesntexist");
+        } catch (Exception $e) {
+            //expected
+        }
+    }
+
+    public function testAddJoinAddOrderDESC()
+    {   
+        /*
+        SELECT 
+            snippet_q.name AS sname, 
+            snippet_q.id AS snippet_id, 
+            snippetdir_q.name AS snippetdir_name, 
+            snippetdir_q.id AS snippetdir_id, 
+            snippet_q.snippetdir AS snippets_sdir_id
+        FROM snippet AS snippet_q
+            INNER JOIN snippetdir AS snippetdir_q ON (snippet_q.snippetdir = snippetdir_q.id)
+        WHERE 1=1 AND 0<1
+        ORDER BY snippet_q.name DESC
+         */
+        $this->prepareJoin();
+        $this->select->add_order(
+            new MidgardSqlQueryColumn(
+                new MidgardQueryProperty("name", $this->default_snippet_storage),
+                self::SNIPPET_QUALIFIER
+            ),
+            SORT_DESC
+        );
+        $this->select->execute();
+        $result = $this->select->get_query_result();
+        $rows = $result->get_rows();
+        $this->assertCount(3, $rows);
+        $this->assertEquals($rows[0]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_C);
+        $this->assertEquals($rows[0]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+        $this->assertEquals($rows[1]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_B);
+        $this->assertEquals($rows[1]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+        $this->assertEquals($rows[2]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_A);
+        $this->assertEquals($rows[2]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+
+        try {
+            $rows[0]->get_value("Doesntexist");
+        } catch (Exception $e) {
+            //expected
+        }
+    }
+
+    public function testAddJoinAddOrderDESCASC()
+    {   
+        /*
+        SELECT 
+            snippet_q.name AS sname, 
+            snippet_q.id AS snippet_id, 
+            snippetdir_q.name AS snippetdir_name, 
+            snippetdir_q.id AS snippetdir_id, 
+            snippet_q.snippetdir AS snippets_sdir_id
+        FROM snippet AS snippet_q
+            INNER JOIN snippetdir AS snippetdir_q ON (snippet_q.snippetdir = snippetdir_q.id)
+        WHERE 1=1 AND 0<1
+        ORDER BY snippet_q.name DESC, snippet_q.id ASC
+         */
+        $this->prepareJoin();
+        $this->select->add_order(
+            new MidgardSqlQueryColumn(
+                new MidgardQueryProperty("name", $this->default_snippet_storage),
+                self::SNIPPET_QUALIFIER
+            ),
+            SORT_DESC
+        );
+        $this->select->add_order(
+            new MidgardSqlQueryColumn(
+                new MidgardQueryProperty("id", $this->default_snippet_storage),
+                self::SNIPPET_QUALIFIER
+            ),
+            SORT_ASC
+        );
+        $this->select->execute();
+        //echo $this->select->get_query_string();
+        $result = $this->select->get_query_result();
+        $rows = $result->get_rows();
+        $this->assertCount(3, $rows);
+        $this->assertEquals($rows[0]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_C);
+        $this->assertEquals($rows[0]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+        $this->assertEquals($rows[1]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_B);
+        $this->assertEquals($rows[1]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+        $this->assertEquals($rows[2]->get_value(self::SNIPPET_NAME), self::SNIPPET_NAME_A);
+        $this->assertEquals($rows[2]->get_value(self::SNIPPETDIR_NAME_COLUMN), self::SNIPPETDIR_NAME);
+
+        try {
+            $rows[0]->get_value("Doesntexist");
+        } catch (Exception $e) {
+            //expected
+        }
     }
 }
 
