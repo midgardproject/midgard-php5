@@ -34,7 +34,7 @@ var_dump($cls->getDocComment());
 var_dump($cls->listSignals());
 
 $cls = new midgard_reflection_method('MyTest', 'myMethod');
-var_dump($cls->getDocComment());
+//var_dump($cls->getDocComment());
 
 $cls = new midgard_reflection_method($cls, 'getDocComment');
 var_dump($cls->getDocComment());
@@ -67,9 +67,6 @@ string(%d) "/**
  */"
 array(0) {
 }
-string(%d) "/**
-     * Hi, method
-     */"
 string(%d) "returns doc_comment of method"
 array(5) {
   [0]=>
