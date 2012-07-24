@@ -15,7 +15,6 @@ if (ini_get('enable_dl') != 1) {
 }
 
 ini_set('midgard.http', 'Off');
-dl('midgard2.so');
 
 $cfg = new midgard_config();
 $cfg->read_file_at_path($_SERVER['PAKE_MIDGARD_CFG']);

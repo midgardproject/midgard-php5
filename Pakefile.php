@@ -119,8 +119,8 @@ function run_clean_test_db($task, $args, $long_args)
 function run_enable_midgard()
 {
     pake_echo_comment('Enabling midgard2 extension');
-    if (extension_loaded('midgard2')) {
-        throw new LogicException('Please disable midgard2-extension in php.ini. test-suite will enable it automatically');
+    if (!extension_loaded('midgard2')) {
+        throw new LogicException('Please load midgard2-extension in php.ini');
     }
 
     if (ini_get('enable_dl') != 1) {
@@ -128,7 +128,7 @@ function run_enable_midgard()
     }
 
     ini_set('midgard.http', 'Off');
-    dl('midgard2.so');
+    //dl('midgard2.so');
 }
 
 // Support tools
