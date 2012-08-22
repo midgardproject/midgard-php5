@@ -583,6 +583,9 @@ PHP_RINIT_FUNCTION(midgard2)
 
 PHP_RSHUTDOWN_FUNCTION(midgard2)
 {
+	if (!php_midgard_engine_is_enabled(TSRMLS_C))
+		return SUCCESS;
+
 	MGDG(can_deliver_signals) = 0;
 
 	if (MGDG(midgard_memory_debug)) {
