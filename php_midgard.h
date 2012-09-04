@@ -117,6 +117,7 @@ ZEND_BEGIN_MODULE_GLOBALS(midgard2)
 	zend_bool superglobals_compat;
 	zend_bool valgrind_friendly;
 	zend_bool glib_loghandler;
+	char *schema_path;
 ZEND_END_MODULE_GLOBALS(midgard2)
 
 ZEND_EXTERN_MODULE_GLOBALS(midgard2)

@@ -185,7 +185,8 @@ STD_PHP_INI_BOOLEAN("midgard.engine",              "1", PHP_INI_ALL,    OnUpdate
 STD_PHP_INI_BOOLEAN("midgard.memory_debug",        "0", PHP_INI_ALL,    OnUpdateBool,   midgard_memory_debug,       zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.superglobals_compat", "0", PHP_INI_SYSTEM, OnUpdateBool,   superglobals_compat,        zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.valgrind_friendly",   "0", PHP_INI_SYSTEM, OnUpdateBool,   valgrind_friendly,          zend_midgard2_globals, midgard2_globals)
-STD_PHP_INI_BOOLEAN("midgard.glib_loghandler",	"0", PHP_INI_SYSTEM, OnUpdateBool,   glib_loghandler,          zend_midgard2_globals, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.glib_loghandler",	   "0", PHP_INI_SYSTEM, OnUpdateBool,   glib_loghandler,            zend_midgard2_globals, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.schema_path",	   "0", PHP_INI_SYSTEM, OnUpdateString, schema_path,	            zend_midgard2_globals, midgard2_globals)
 PHP_INI_END()
 
 static zend_bool php_midgard_engine_is_enabled(TSRMLS_D)
@@ -233,6 +234,31 @@ static zend_bool php_midgard_initialize_configs(TSRMLS_D)
 	g_strfreev(files);
 
 	return TRUE;
+}
+
+static void php_midgard_initialize_schema_from_path(TSRMLS_D)
+{
+	const char *user_defined_path = MGDG(schema_path);
+	if (user_defined_path == NULL)
+		return;
+
+	char **paths = g_strsplit_set(user_defined_path, ";:", 0);
+
+	if (paths == NULL)
+		return;
+
+	int i = 0;
+	while (paths[i] != NULL) {
+
+		/* midgard_global_schema is already initialized */
+		zend_bool success = midgard_schema_read_dir(midgard_global_schema, paths[i]);
+		if (success == FALSE) {
+			php_error(E_WARNING, "Failed to read schema from given '%s' directory.", paths[i]);
+		}
+		i++;
+	}
+
+	g_strfreev(paths);
 }
 
 static void php_midgard_initialize_schema(TSRMLS_D)
@@ -327,6 +353,9 @@ PHP_MINIT_FUNCTION(midgard2)
 
 	/* register Gtype types from schemas */
 	php_midgard_initialize_schema(TSRMLS_C);
+
+	/* register GType types from user defined paths */
+	php_midgard_initialize_schema_from_path(TSRMLS_C);
 
 	/* Initialize handlers */
 	memcpy(&php_midgard_gobject_handlers, zend_get_std_object_handlers(),
