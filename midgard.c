@@ -186,7 +186,7 @@ STD_PHP_INI_BOOLEAN("midgard.memory_debug",        "0", PHP_INI_ALL,    OnUpdate
 STD_PHP_INI_BOOLEAN("midgard.superglobals_compat", "0", PHP_INI_SYSTEM, OnUpdateBool,   superglobals_compat,        zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.valgrind_friendly",   "0", PHP_INI_SYSTEM, OnUpdateBool,   valgrind_friendly,          zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.glib_loghandler",	   "0", PHP_INI_SYSTEM, OnUpdateBool,   glib_loghandler,            zend_midgard2_globals, midgard2_globals)
-STD_PHP_INI_BOOLEAN("midgard.schema_path",	   "0", PHP_INI_SYSTEM, OnUpdateString, schema_path,	            zend_midgard2_globals, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.schema_path",	   "",  PHP_INI_SYSTEM, OnUpdateString, schema_path,	            zend_midgard2_globals, midgard2_globals)
 PHP_INI_END()
 
 static zend_bool php_midgard_engine_is_enabled(TSRMLS_D)
