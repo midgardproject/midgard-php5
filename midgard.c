@@ -239,25 +239,26 @@ static zend_bool php_midgard_initialize_configs(TSRMLS_D)
 static void php_midgard_initialize_schema_from_path(TSRMLS_D)
 {
 	const char *user_defined_path = MGDG(schema_path);
-	if (user_defined_path == NULL)
+	if (user_defined_path == NULL
+			|| (user_defined_path && *user_defined_path =='\0'))
 		return;
 
 	char **paths = g_strsplit_set(user_defined_path, ";:", 0);
-
 	if (paths == NULL)
 		return;
 
-	int i = 0;
-	while (paths[i] != NULL) {
-
-		/* midgard_global_schema is already initialized */
-		zend_bool success = midgard_schema_read_dir(midgard_global_schema, paths[i]);
+	int i;
+	MidgardSchema *schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
+	for(i = 0; paths[i] != NULL; i++) {
+		if (*paths[i] == '\0')
+			continue;
+		zend_bool success = midgard_schema_read_dir(schema, paths[i]);
 		if (success == FALSE) {
 			php_error(E_WARNING, "Failed to read schema from given '%s' directory.", paths[i]);
 		}
-		i++;
 	}
 
+	g_object_unref (schema);
 	g_strfreev(paths);
 }
 
