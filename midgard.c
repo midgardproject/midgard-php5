@@ -574,7 +574,7 @@ PHP_RINIT_FUNCTION(midgard2)
 		/* all_configs is set during MINIT */
 		if (MGDG(all_configs) == NULL) {
 			php_error(E_ERROR, "[Midgard2 rinit] Can not handle request without midgard connection");
-			return FAILURE;
+			return SUCCESS;
 		}
 
 		// preinitialization of connection (in the future it won't be needed)
