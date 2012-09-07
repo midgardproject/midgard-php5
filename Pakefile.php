@@ -43,7 +43,7 @@ function run_init_test_db()
     putenv('MIDGARD_ENV_GLOBAL_SHAREDIR='._SRC_DIR_.'/tests/share'.'');
     putenv('PAKE_MIDGARD_CFG='._SRC_DIR_.'/tests/test.cfg');
 
-    pake_sh(_get_php_executable().' -c '.escapeshellarg(_SRC_DIR_.'/tests').' '.escapeshellarg(_SRC_DIR_.'/pake/create_database.php'), false);
+    pake_sh(_get_php_executable().' -c '.escapeshellarg(_SRC_DIR_.'/tests/test.ini').' '.escapeshellarg(_SRC_DIR_.'/pake/create_database.php'), false);
 }
 
 function run_init_tests($task, $args, $long_args)
@@ -119,8 +119,8 @@ function run_clean_test_db($task, $args, $long_args)
 function run_enable_midgard()
 {
     pake_echo_comment('Enabling midgard2 extension');
-    if (extension_loaded('midgard2')) {
-        throw new LogicException('Please disable midgard2-extension in php.ini. test-suite will enable it automatically');
+    if (!extension_loaded('midgard2')) {
+        throw new LogicException('Please load midgard2-extension in php.ini');
     }
 
     if (ini_get('enable_dl') != 1) {
@@ -128,7 +128,7 @@ function run_enable_midgard()
     }
 
     ini_set('midgard.http', 'Off');
-    dl('midgard2.so');
+    //dl('midgard2.so');
 }
 
 // Support tools

@@ -6,8 +6,8 @@ if (!isset($_SERVER['MIDGARD_ENV_GLOBAL_SHAREDIR']))
 if (!isset($_SERVER['PAKE_MIDGARD_CFG']))
     throw new Exception('PAKE_MIDGARD_CFG environment variable is not set');
 
-if (extension_loaded('midgard2')) {
-    throw new LogicException('Please disable midgard2-extension in php.ini. test-suite will enable it automatically');
+if (!extension_loaded('midgard2')) {
+    throw new LogicException('Please enable midgard2-extension in php.ini');
 }
 
 if (ini_get('enable_dl') != 1) {
@@ -15,7 +15,6 @@ if (ini_get('enable_dl') != 1) {
 }
 
 ini_set('midgard.http', 'Off');
-dl('midgard2.so');
 
 $cfg = new midgard_config();
 $cfg->read_file_at_path($_SERVER['PAKE_MIDGARD_CFG']);
