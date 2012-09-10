@@ -152,7 +152,7 @@ static PHP_METHOD(midgard_object_reference, get_workspace)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_object_reference_get_workspace, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-PHP_MINIT_FUNCTION(midgard2_models)
+PHP_MINIT_FUNCTION(midgard2_model)
 {
 	/*	Model	*/
 	static zend_function_entry midgard_model_methods[] = {
