@@ -179,7 +179,7 @@ PHP_MINIT_FUNCTION(midgard2_model)
 	};
 
 	static zend_class_entry php_midgard_model_reference_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_model_reference_class_entry, "MidgardModelRefrence", midgard_model_reference_methods);
+	INIT_CLASS_ENTRY(php_midgard_model_reference_class_entry, "MidgardModelReference", midgard_model_reference_methods);
 
 	php_midgard_model_reference_class = zend_register_internal_class(&php_midgard_model_reference_class_entry TSRMLS_CC);
 	php_midgard_model_reference_class->ce_flags |= ZEND_ACC_INTERFACE;
