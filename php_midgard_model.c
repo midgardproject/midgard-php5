@@ -145,7 +145,8 @@ static PHP_METHOD(midgard_object_reference, get_workspace)
 
 	if (workspace == NULL)
 		RETURN_NULL();
-	
+
+	object_init_ex(return_value, php_midgard_workspace_class);
 	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(workspace));
 }
 
@@ -164,7 +165,7 @@ PHP_MINIT_FUNCTION(midgard2_model)
 	INIT_CLASS_ENTRY(php_midgard_model_class_entry, "MidgardModel", midgard_model_methods);
 
 	php_midgard_model_class = zend_register_internal_class(&php_midgard_model_class_entry TSRMLS_CC);
-	php_midgard_model_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+	php_midgard_model_class->ce_flags |= ZEND_ACC_INTERFACE;
 	php_midgard_model_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_model_class, strdup("Base, abstract class for any model"));
 
@@ -181,7 +182,7 @@ PHP_MINIT_FUNCTION(midgard2_model)
 	INIT_CLASS_ENTRY(php_midgard_model_reference_class_entry, "MidgardModelRefrence", midgard_model_reference_methods);
 
 	php_midgard_model_reference_class = zend_register_internal_class(&php_midgard_model_reference_class_entry TSRMLS_CC);
-	php_midgard_model_reference_class->ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+	php_midgard_model_reference_class->ce_flags |= ZEND_ACC_INTERFACE;
 	php_midgard_model_reference_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_model_reference_class, strdup("Base, abstract class for any reference model"));
 
@@ -197,8 +198,7 @@ PHP_MINIT_FUNCTION(midgard2_model)
 	static zend_class_entry php_midgard_object_reference_class_entry;
 	INIT_CLASS_ENTRY(php_midgard_object_reference_class_entry, "MidgardObjectReference", midgard_object_reference_methods);
 
-	php_midgard_object_reference_class = zend_register_internal_class_ex(&php_midgard_object_reference_class_entry, php_midgard_model_reference_class, 
-			"MidgardObjectReference" TSRMLS_CC);
+	php_midgard_object_reference_class = zend_register_internal_class(&php_midgard_object_reference_class_entry TSRMLS_CC); 
 	php_midgard_object_reference_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_model_class, strdup("Object which holds reference"));
 
