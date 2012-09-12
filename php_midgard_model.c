@@ -155,21 +155,20 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_model)
 {
+	zend_class_entry *model_interface = php_midgard_get_class_ptr_by_name("MidgardModel" TSRMLS_CC);
+	zend_class_entry *model_reference_interface = php_midgard_get_class_ptr_by_name("MidgardModelReference" TSRMLS_CC);
+
 	/*	Model	*/
 	static zend_function_entry midgard_model_methods[] = {
 		PHP_ME(midgard_model,	get_name,	arginfo_midgard_model_get_name,	ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
-	static zend_class_entry php_midgard_model_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_model_class_entry, "MidgardModel", midgard_model_methods);
-
-	php_midgard_model_class = zend_register_internal_class(&php_midgard_model_class_entry TSRMLS_CC);
-	php_midgard_model_class->ce_flags |= ZEND_ACC_INTERFACE;
-	php_midgard_model_class->create_object = php_midgard_gobject_new;
-	CLASS_SET_DOC_COMMENT(php_midgard_model_class, strdup("Base, abstract class for any model"));
-
-	zend_register_class_alias("midgard_model", php_midgard_model_class);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	model_interface->info.internal.builtin_functions = midgard_model_methods;
+#else
+	model_interface->builtin_functions = midgard_model_methods;
+#endif
 
 	/*	ModelReference	*/
 	static zend_function_entry midgard_model_reference_methods[] = {
@@ -178,15 +177,11 @@ PHP_MINIT_FUNCTION(midgard2_model)
 		{NULL, NULL, NULL}
 	};
 
-	static zend_class_entry php_midgard_model_reference_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_model_reference_class_entry, "MidgardModelReference", midgard_model_reference_methods);
-
-	php_midgard_model_reference_class = zend_register_internal_class(&php_midgard_model_reference_class_entry TSRMLS_CC);
-	php_midgard_model_reference_class->ce_flags |= ZEND_ACC_INTERFACE;
-	php_midgard_model_reference_class->create_object = php_midgard_gobject_new;
-	CLASS_SET_DOC_COMMENT(php_midgard_model_reference_class, strdup("Base, abstract class for any reference model"));
-
-	zend_register_class_alias("midgard_model_reference", php_midgard_model_reference_class);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	model_reference_interface->info.internal.builtin_functions = midgard_model_methods;
+#else
+	model_reference_interface->builtin_functions = midgard_model_methods;
+#endif
 
 	/*	ObjectReference	*/
 	static zend_function_entry midgard_object_reference_methods[] = {
@@ -200,10 +195,10 @@ PHP_MINIT_FUNCTION(midgard2_model)
 
 	php_midgard_object_reference_class = zend_register_internal_class(&php_midgard_object_reference_class_entry TSRMLS_CC); 
 	php_midgard_object_reference_class->create_object = php_midgard_gobject_new;
-	CLASS_SET_DOC_COMMENT(php_midgard_model_class, strdup("Object which holds reference"));
+	CLASS_SET_DOC_COMMENT(php_midgard_object_reference_class, strdup("Object which holds reference"));
 
-	zend_class_implements(php_midgard_object_reference_class TSRMLS_CC, 1, php_midgard_model_class);
-	zend_class_implements(php_midgard_object_reference_class TSRMLS_CC, 1, php_midgard_model_reference_class);
+	zend_class_implements(php_midgard_object_reference_class TSRMLS_CC, 1, model_interface);
+	zend_class_implements(php_midgard_object_reference_class TSRMLS_CC, 1, model_reference_interface);
 	zend_register_class_alias("midgard_object_reference", php_midgard_object_reference_class);
 
 	return SUCCESS;
