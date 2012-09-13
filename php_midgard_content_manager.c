@@ -56,7 +56,7 @@ static PHP_METHOD(midgard_content_manager, create_job)
 	zval *z_reference = NULL;
 	zval *z_model = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ioO!O", &type, &z_content, &z_reference, &z_model) == FAILURE)
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "loO!O", &type, &z_content, &z_reference, &z_model) == FAILURE)
 		return;
 
 	MidgardContentManager *manager = MIDGARD_CONTENT_MANAGER(__php_gobject_ptr(getThis()));
