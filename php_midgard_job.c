@@ -127,6 +127,7 @@ ZEND_END_ARG_INFO()
 
 static PHP_METHOD(midgard_sql_content_manager_job, __construct)
 {
+	php_gobject_constructor(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_content_manager_job___construct, 0, 0, 1)
