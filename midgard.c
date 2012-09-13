@@ -350,6 +350,15 @@ PHP_MINIT_FUNCTION(midgard2)
 
 	midgard_init();
 
+	/* Implicitly initialize Midgard types.
+	 * With GObject Introspection it's done out of the box */
+	GType _init_type;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_LOAD;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_CREATE;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_UPDATE;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_DELETE;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_PURGE;
+
 	REGISTER_INI_ENTRIES();
 
 	/* register Gtype types from schemas */
