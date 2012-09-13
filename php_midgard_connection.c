@@ -585,6 +585,33 @@ ZEND_BEGIN_ARG_INFO_EX (arginfo_midgard_connection_set_workspace, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO (0, workspace, midgard_workspace_storage, 0)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD (midgard_connection, get_content_manager)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardConnection *mgd =__midgard_connection_get_ptr(getThis());
+	CHECK_MGD(mgd);
+	GError *error = NULL;
+	const MidgardContentManager *manager = midgard_connection_get_content_manager(mgd, &error);
+	if (error) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC,
+				"Failed to get content manager. %s", error && error->message ? error->message : "Unknown reason");
+		return;
+	}
+
+	if (!manager)
+		return;
+
+	const char *g_class_name = G_OBJECT_TYPE_NAME (manager);
+	zend_class_entry *ce = zend_fetch_class ((char *) g_class_name, strlen (g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
+
+	php_midgard_gobject_new_with_gobject (return_value, ce, G_OBJECT(manager), TRUE TSRMLS_CC);
+}
+
+ZEND_BEGIN_ARG_INFO(arginfo_midgard_connection_get_content_manager, 0)
+ZEND_END_ARG_INFO()
+
 int __serialize_cnc_hook(zval *zobject, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC)
 {
 	php_error(E_WARNING, "Unable to serialize midgard_connection object");
@@ -626,6 +653,7 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 		PHP_ME(midgard_connection, is_enabled_quota,     arginfo_midgard_connection_is_enabled_quota,      ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, get_workspace,        arginfo_midgard_connection_get_workspace,         ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_connection, set_workspace,        arginfo_midgard_connection_set_workspace,         ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_connection, get_content_manager,  arginfo_midgard_connection_get_content_manager,   ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
