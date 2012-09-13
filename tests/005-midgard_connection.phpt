@@ -23,9 +23,14 @@ var_dump($str1 === $str2);
 
 var_dump($mgd->open_config($cfg));
 
+$manager = $mgd->get_content_manager();
+var_dump(is_object($manager));
+var_dump($manager instanceof MidgardSqlContentManager);
 ?>
 ===DONE===
 --EXPECTF--
+bool(true)
+bool(true)
 bool(true)
 bool(true)
 bool(true)
