@@ -57,7 +57,7 @@ if test "$PHP_MIDGARD2" != "no"; then
 	    php_midgard_query_constraints.c php_midgard_reflector_object.c php_midgard_reflector_property.c \ 
             php_midgard_query_executors.c php_midgard_g_mainloop.c php_midgard_workspace_storage.c php_midgard_base_interface.c \
 	    php_midgard_repligard.c php_midgard_query_selectors.c php_midgard_model.c php_midgard_job.c php_gobject.c \
-	    php_midgard_content_manager.c, $ext_shared)
+	    php_midgard_content_manager.c php_midgard_pool.c, $ext_shared)
         PHP_ADD_EXTENSION_DEP(midgard2, spl)
     else
         AC_MSG_ERROR(Ooops ! no pkg-config found .... )

@@ -359,6 +359,7 @@ PHP_MINIT_FUNCTION(midgard2)
 	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_DELETE;
 	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_PURGE;
 	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER;
+	_init_type = MIDGARD_TYPE_EXECUTION_POOL;
 
 	REGISTER_INI_ENTRIES();
 
@@ -422,6 +423,7 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_model)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_job)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_content_manager)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_pool)(INIT_FUNC_ARGS_PASSTHRU);
 
 	/* Register midgard_metadata class */
 	static zend_class_entry midgard_metadata_class_entry;
