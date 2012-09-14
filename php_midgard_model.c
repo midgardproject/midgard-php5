@@ -108,7 +108,7 @@ static PHP_METHOD(midgard_object_reference, __construct)
 	int name_length = 0;
 	zval *z_workspace = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s!sO",
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|sO",
 				&id, &id_length,
 				&name, &name_length, 
 				&z_workspace, php_midgard_workspace_class
