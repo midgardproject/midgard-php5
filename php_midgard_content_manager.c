@@ -115,27 +115,36 @@ PHP_MINIT_FUNCTION(midgard2_content_manager)
 
 	/*	ContentManager	*/
 	static zend_function_entry midgard_content_manager_methods[] = {
-		PHP_ME(midgard_content_manager,	get_connection,	arginfo_midgard_content_manager_get_connection,	ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_content_manager,	create_job,	arginfo_midgard_content_manager_create_job,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_content_manager,	get_connection,	arginfo_midgard_content_manager_get_connection,	ZEND_ACC_PUBLIC | ZEND_ACC_ABSTRACT)
+		PHP_ME(midgard_content_manager,	create_job,	arginfo_midgard_content_manager_create_job,	ZEND_ACC_PUBLIC | ZEND_ACC_ABSTRACT)
 		{NULL, NULL, NULL}
 	};
 
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 	content_manager_interface->info.internal.builtin_functions = midgard_content_manager_methods;
+	zend_register_functions(content_manager_interface, content_manager_interface->info.internal.builtin_functions, &content_manager_interface->function_table, MODULE_PERSISTENT TSRMLS_CC);
 #else
 	content_manager_interface->builtin_functions = midgard_content_manager_methods;
+	zend_register_functions(content_manager_interface, content_manager_interface->builtin_functions, &content_manager_interface->function_table, MODULE_PERSISTENT TSRMLS_CC);
 #endif
 
 	/*	SqlContentManager	*/
 
-	static zend_class_entry php_midgard_sql_content_manager_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_sql_content_manager_class_entry, "MidgardSqlContentManager", NULL);
+	static zend_function_entry midgard_sql_content_manager_methods[] = {
+		PHP_ME(midgard_sql_content_manager,	__construct,	arginfo_midgard_sql_content_manager___construct,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_content_manager,		get_connection,	arginfo_midgard_content_manager_get_connection,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_content_manager,		create_job,	arginfo_midgard_content_manager_create_job,		ZEND_ACC_PUBLIC)
+	};
 
+	static zend_class_entry php_midgard_sql_content_manager_class_entry;
+	INIT_CLASS_ENTRY(php_midgard_sql_content_manager_class_entry, "MidgardSqlContentManager", midgard_sql_content_manager_methods);
 	php_midgard_sql_content_manager_class = zend_register_internal_class(&php_midgard_sql_content_manager_class_entry TSRMLS_CC); 
-	php_midgard_sql_content_manager_class->create_object = php_midgard_gobject_new;
-	CLASS_SET_DOC_COMMENT(php_midgard_sql_content_manager_class, strdup("ContentManager implementation for SQL storage"));
 
 	zend_class_implements(php_midgard_sql_content_manager_class TSRMLS_CC, 1, content_manager_interface);
+	php_midgard_sql_content_manager_class->create_object = php_midgard_gobject_new;
+	php_midgard_sql_content_manager_class->ce_flags = 0;
+	CLASS_SET_DOC_COMMENT(php_midgard_sql_content_manager_class, strdup("ContentManager implementation for SQL storage"));
+
 	zend_register_class_alias("midgard_sql_content_manager", php_midgard_sql_content_manager_class);
 
 	return SUCCESS;
