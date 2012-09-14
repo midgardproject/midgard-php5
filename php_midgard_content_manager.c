@@ -56,21 +56,25 @@ static PHP_METHOD(midgard_content_manager, create_job)
 	zval *z_reference = NULL;
 	zval *z_model = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "loO!O", &type, &z_content, &z_reference, &z_model) == FAILURE)
+	zend_class_entry *reference_class = php_midgard_get_class_ptr_by_name("MidgardObjectReference" TSRMLS_CC);
+	zend_class_entry *model_class = php_midgard_get_class_ptr_by_name("MidgardModel" TSRMLS_CC);
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "loO|O", &type, &z_content, 
+				&z_reference, reference_class, &z_model, model_class) == FAILURE)
 		return;
 
 	MidgardContentManager *manager = MIDGARD_CONTENT_MANAGER(__php_gobject_ptr(getThis()));
 	GObject *gobject =  G_OBJECT(__php_gobject_ptr(z_content));
-	MidgardObjectReference *reference = MIDGARD_OBJECT_REFERENCE(__php_gobject_ptr(z_content));
+	MidgardObjectReference *reference = MIDGARD_OBJECT_REFERENCE(__php_gobject_ptr(z_reference));
 	MidgardModel *model = NULL;
 
 	if (z_model)
-		model = MIDGARD_MODEL(__php_gobject_ptr(z_content));
+		model = MIDGARD_MODEL(__php_gobject_ptr(z_model));
 
 	GError *error = NULL;
 	MidgardContentManagerJob *job = midgard_content_manager_create_job(manager, type, gobject, reference, model, &error);
 
-	if (error) {
+	if (!job || error) {
 		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC,
 				"Failed to create new job. %s", error && error->message ? error->message : "Unknown reason");
 		return;
@@ -78,7 +82,7 @@ static PHP_METHOD(midgard_content_manager, create_job)
 
 	zend_class_entry *job_class_entry = php_midgard_get_class_ptr_by_name(G_OBJECT_TYPE_NAME(job) TSRMLS_CC);
 	object_init_ex(return_value, job_class_entry);
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(return_value));
+	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(job));
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_content_manager_create_job, 0, 0, 4)
