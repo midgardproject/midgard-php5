@@ -253,7 +253,7 @@ void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gch
 #define CHECK_MGD(handle) \
 { \
 	if (!handle) { \
-		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to get connection"); \
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "CHECK_MGD - Failed to get connection"); \
 		return; \
 	} \
 	const gchar *_check_cname_space = ""; \
