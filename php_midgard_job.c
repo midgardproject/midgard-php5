@@ -17,7 +17,7 @@
 
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
-
+#include "php_gobject.h"
 #include "php_midgard__helpers.h"
 
 /* midgard core classes */
@@ -144,7 +144,7 @@ static PHP_METHOD(midgard_sql_content_manager_job, get_connection)
 	MidgardConnection *connection = midgard_sql_content_manager_job_get_connection(job, &error);
 	if (error) {
 		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC,
-				"Failed to get connection. %s", error && error->message ? error->message : "Unknown reason");
+				"SqlContentManager - Failed to get connection. %s", error && error->message ? error->message : "Unknown reason");
 		return;
 	}
 
