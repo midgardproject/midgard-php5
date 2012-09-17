@@ -120,9 +120,6 @@ static PHP_METHOD(midgard_content_manager_job, get_model)
 	if (!model)
 		RETURN_NULL();
 
-	zend_class_entry *model_class = php_midgard_get_class_ptr_by_name(G_OBJECT_TYPE_NAME(model) TSRMLS_CC);
-
-	object_init_ex(return_value, model_class);
 	php_midgard_gobject_init(return_value, G_OBJECT_TYPE_NAME(model), G_OBJECT(model), TRUE TSRMLS_CC);
 }
 
