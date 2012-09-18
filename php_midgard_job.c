@@ -231,6 +231,18 @@ static PHP_METHOD(midgard_executable, execute_async)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_executable_execute_async, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+/*	Signals	*/
+static PHP_METHOD(midgard_sql_content_manager_job, connect)
+{
+	php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_content_manager_job_connect, 0, 0, 2)
+	ZEND_ARG_INFO(0, signal)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, user_data)
+ZEND_END_ARG_INFO()
+
 PHP_MINIT_FUNCTION(midgard2_job)
 {
 	zend_class_entry *executable_interface = php_midgard_get_class_ptr_by_name("MidgardExecutable" TSRMLS_CC);
@@ -274,6 +286,7 @@ PHP_MINIT_FUNCTION(midgard2_job)
 	static zend_function_entry midgard_sql_content_manager_job_methods[] = {
 		PHP_ME(midgard_sql_content_manager_job,	__construct,	arginfo_midgard_sql_content_manager_job___construct,	ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_sql_content_manager_job,	get_connection,	arginfo_midgard_sql_content_manager_job_get_connection,	ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_sql_content_manager_job,	connect,	arginfo_midgard_sql_content_manager_job_connect,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_job,	is_running,	arginfo_midgard_job_is_running,		ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_job,	is_executed,	arginfo_midgard_job_is_executed,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_job,	is_failed,	arginfo_midgard_job_is_failed,		ZEND_ACC_PUBLIC)
