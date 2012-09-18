@@ -163,6 +163,74 @@ static PHP_METHOD(midgard_sql_content_manager_job, get_connection)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_content_manager_job_get_connection, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+/*	Validable	*/
+static PHP_METHOD(midgard_validable, is_valid)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardValidable *validable = MIDGARD_VALIDABLE(__php_gobject_ptr(getThis()));
+	RETURN_BOOL(midgard_validable_is_valid(validable));
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_validable_is_valid, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_validable, validate)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardValidable *validable = MIDGARD_VALIDABLE(__php_gobject_ptr(getThis()));
+	GError *error = NULL;
+	midgard_validable_validate(validable, &error);
+	if (error) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC,
+				"Validation error. %s", error && error->message ? error->message : "Unknown reason");
+		g_clear_error(&error);
+	}
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_validable_validate, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+/*	Executable	*/
+static PHP_METHOD(midgard_executable, execute)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardExecutable *executable = MIDGARD_EXECUTABLE(__php_gobject_ptr(getThis()));
+	GError *error = NULL;
+	midgard_executable_execute(executable, &error);
+	if (error) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC,
+				"Execution error. %s", error && error->message ? error->message : "Unknown reason");
+		g_clear_error(&error);
+	}
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_executable_execute, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_executable, execute_async)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardExecutable *executable = MIDGARD_EXECUTABLE(__php_gobject_ptr(getThis()));
+	GError *error = NULL;
+	midgard_executable_execute_async(executable, &error);
+	if (error) {
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC,
+				"Async execution error. %s", error && error->message ? error->message : "Unknown reason");
+		g_clear_error(&error);
+	}
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_executable_execute_async, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
 PHP_MINIT_FUNCTION(midgard2_job)
 {
 	zend_class_entry *executable_interface = php_midgard_get_class_ptr_by_name("MidgardExecutable" TSRMLS_CC);
@@ -212,6 +280,10 @@ PHP_MINIT_FUNCTION(midgard2_job)
 		PHP_ME(midgard_content_manager_job,	get_content_object,	arginfo_midgard_content_manager_job_get_content_object,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_content_manager_job,	get_reference,		arginfo_midgard_content_manager_job_get_reference,	ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_content_manager_job,	get_model,		arginfo_midgard_content_manager_job_get_model,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_validable,		is_valid,		arginfo_midgard_validable_is_valid,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_validable,		validate,		arginfo_midgard_validable_validate,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_executable,		execute,		arginfo_midgard_executable_execute,		ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_executable,		execute_async,		arginfo_midgard_executable_execute_async,	ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
