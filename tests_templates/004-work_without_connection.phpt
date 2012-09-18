@@ -18,5 +18,5 @@ try {
 ?>
 ===DONE===
 --EXPECTF--
-Failed to get connection
+CHECK_MGD - Failed to get connection
 ===DONE===
