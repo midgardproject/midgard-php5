@@ -154,8 +154,10 @@ static PHP_METHOD(midgard_sql_content_manager_job, get_connection)
 	if (connection == NULL)
 		RETURN_NULL();
 
-	object_init_ex(return_value, php_midgard_connection_class);
-	MGD_PHP_SET_GOBJECT(return_value, G_OBJECT(connection));
+	php_midgard_gobject_new_with_gobject (return_value, php_midgard_connection_class, G_OBJECT (connection), TRUE TSRMLS_CC);
+	/* Add reference, it's mandatory only for current MidgardConnection bindings.
+	 * Not valid per generic GObject reference */
+	Z_ADDREF_P(return_value);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_sql_content_manager_job_get_connection, 0, 0, 0)
