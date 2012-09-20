@@ -48,11 +48,29 @@ void php_gobject_constructor(INTERNAL_FUNCTION_PARAMETERS)
 	}
 
 	guint n_params = 0;
+	guint i;
+	GObject *gobject = NULL;
 	GParameter *parameters = php_midgard_array_to_gparameter(zval_array, &n_params TSRMLS_CC);
 
-	GObject *gobject = g_object_newv(object_type, n_params, parameters);
-
-	PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
+	if (n_params == 0) {
+		gobject = g_object_new(object_type, NULL);
+	} else {
+		GObjectClass *klass = g_type_class_ref(object_type);
+		for (i = 0; i < n_params; i++) {
+			GParamSpec *pspec = g_object_class_find_property(klass, parameters[i].name);
+			if (!pspec) {
+				zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0 TSRMLS_CC, 
+						"Property '%s' not registered for class '%s'", parameters[i].name, php_classname);
+				PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
+				g_type_class_unref(klass);
+				return;
+			
+			}
+		}
+		gobject = g_object_newv(object_type, n_params, parameters);
+		PHP_MGD_FREE_GPARAMETERS(parameters, n_params);
+		g_type_class_unref(klass);
+	}
 
 	MGD_PHP_SET_GOBJECT_G(getThis(), gobject);
 }
