@@ -83,7 +83,7 @@ echo "execute\n";
 $pool = new MidgardExecutionPool(array('max-n-threads' => 2));
 $pool->push($job);
 $pool->push($job2);
-sleep(2);
+sleep(5);
 unset($pool);
 var_dump($msg);
 var_dump($msg2);
@@ -105,6 +105,8 @@ var_dump(strlen($content_copy->guid) > 1);
 var_dump(strlen($content2_copy->guid) > 1);
 var_dump($content_copy->name);
 var_dump($content2_copy->name);
+$content->purge(false);
+$content2->purge(false);
 ?>
 ===DONE===
 --EXPECTF--
