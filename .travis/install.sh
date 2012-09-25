@@ -6,7 +6,7 @@ pyrus install -f http://pear.indeyets.ru/get/pake-1.6.3.tgz
 
 # Options
 MIDGARD_LIBS_VERSION=10.05.7
-MIDGARD_EXT_VERSION=ratatoskr
+MIDGARD_EXT_VERSION=gjallarhorn
 
 # Install Midgard2 library dependencies from OBS
 sudo apt-get install -y dbus libglib2.0-dev libgda-4.0-4 libgda-4.0-dev libxml2-dev libdbus-1-dev libdbus-glib-1-dev valgrind php-pear
