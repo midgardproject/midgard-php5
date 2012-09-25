@@ -8,7 +8,9 @@ pyrus install -f http://pear.indeyets.ru/get/pake-1.6.3.tgz
 MIDGARD_LIBS_VERSION=10.05.7
 MIDGARD_EXT_VERSION=gjallarhorn
 
-# Install Midgard2 library dependencies from OBS
+# Install Midgard2 library dependencies
+sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu precise-security main restricted universe multiverse"
+sudo apt-get --quiet update
 sudo apt-get install -y dbus libglib2.0-dev libgda-4.0-4 libgda-4.0-dev libxml2-dev libdbus-1-dev libdbus-glib-1-dev valgrind php-pear
 
 # Build Midgard2 core from recent tarball
