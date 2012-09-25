@@ -16,6 +16,7 @@ ZEND_API zval* zend_call_method__mgd(zval **object_pp, zend_class_entry *obj_ce,
 # define Z_SET_ISREF_P(ptr) (ptr)->is_ref = 1
 # define Z_REFCOUNT_P(ptr) (ptr)->refcount
 # define Z_ADDREF_P(ptr) (ptr)->refcount++
+# define Z_ADDREF_PP(pptr) Z_ADDREF_P(*(pptr))
 # define Z_DELREF_P(ptr) (ptr)->refcount--
 # define Z_DELREF_PP(pptr) Z_DELREF_P(*(pptr))
 # define zend_parse_parameters_none() zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "")
@@ -48,6 +49,19 @@ zend_class_entry *php_date_get_timezone_ce(void);
 void 		php_midgard_docs_add_class 		(const gchar *classname);
 void		php_midgard_docs_add_method_comment 	(const char *classname, const char *method, const char *comment);
 const gchar 	*php_midgard_docs_get_method_comment 	(const gchar *classname, const gchar *method);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+#define php_mgd_register_auto_global(name) zend_register_auto_global(#name, sizeof(#name)-1, 0, NULL TSRMLS_CC);
+#else
+#define php_mgd_register_auto_global(name) zend_register_auto_global(#name, sizeof(#name)-1, NULL TSRMLS_CC);
+#endif
 
-#define php_mgd_register_auto_global(name) \
-		zend_register_auto_global(#name, sizeof(#name)-1, NULL TSRMLS_CC);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+# define CLASS_SET_DOC_COMMENT(_cptr, __comment) \
+	_cptr->info.user.doc_comment = __comment; \
+	_cptr->info.user.doc_comment_len = strlen(__comment);
+#else
+# define CLASS_SET_DOC_COMMENT(_cptr, __comment) \
+	_cptr->doc_comment = __comment;
+#endif
+
+void php_midgard_array_from_unknown_objects(GObject **objects, guint n_objects, zval *zarray TSRMLS_DC);

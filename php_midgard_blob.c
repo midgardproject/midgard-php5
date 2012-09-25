@@ -130,7 +130,7 @@ static PHP_METHOD(midgard_blob, remove_file)
 
 	_GET_BLOB_OBJECT;
 
-	gboolean rv = midgard_blob_remove_file(blob);
+	gboolean rv = midgard_blob_remove_file(blob, NULL);
 
 	RETURN_BOOL(rv);
 }
@@ -215,7 +215,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_blob)
 {
-	static function_entry blob_methods[] = {
+	static zend_function_entry blob_methods[] = {
 		PHP_ME(midgard_blob, __construct,   arginfo_midgard_blob___construct,   ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_blob, read_content,  arginfo_midgard_blob_read_content,  ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_blob, write_content, arginfo_midgard_blob_write_content, ZEND_ACC_PUBLIC)
@@ -227,11 +227,13 @@ PHP_MINIT_FUNCTION(midgard2_blob)
 	};
 
 	static zend_class_entry php_midgard_blob_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_blob_class_entry, "midgard_blob", blob_methods);
+	INIT_CLASS_ENTRY(php_midgard_blob_class_entry, "MidgardBlob", blob_methods);
 
 	php_midgard_blob_class = zend_register_internal_class(&php_midgard_blob_class_entry TSRMLS_CC);
 	php_midgard_blob_class->create_object = php_midgard_gobject_new;
-	php_midgard_blob_class->doc_comment = strdup("Wrapper around midgard_attachment object, which provides high-level API for working with larget binary entities");
+	CLASS_SET_DOC_COMMENT(php_midgard_blob_class, strdup("Wrapper around midgard_attachment object, which provides high-level API for working with larget binary entities"));
+
+	zend_register_class_alias("midgard_blob", php_midgard_blob_class);
 
 	return SUCCESS;
 }

@@ -6,6 +6,7 @@ test of midgard_connection in CLI-mode
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+report_memleaks = On
 --FILE--
 <?php
 $cfg = new midgard_config();
@@ -22,11 +23,19 @@ var_dump($str1 === $str2);
 
 var_dump($mgd->open_config($cfg));
 
+$manager = $mgd->get_content_manager();
+var_dump(is_object($manager));
+var_dump($manager instanceof MidgardSqlContentManager);
 ?>
 ===DONE===
 --EXPECTF--
 bool(true)
 bool(true)
+<<<<<<< HEAD
+=======
+bool(true)
+bool(true)
+>>>>>>> gjallarhorn
 bool(true)
 bool(true)
 ===DONE===

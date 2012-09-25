@@ -41,4 +41,19 @@
         </property>
     </type>
 
+    <type name="ztype" table="ztype" parent="atype">
+        <property name="id" type="unsigned integer" primaryfield="id">
+            <description>Local non-replication-safe database identifier</description>
+        </property>
+        <property name="owner" type="unsigned integer" link="atype:id" parentfield="owner">
+            <description>Link to A-table</description>
+        </property>
+        <property name="z1" type="string">
+            <description>Z1-field</description>
+        </property>
+        <property name="z2" type="string">
+            <description>Z2-field</description>
+        </property>
+    </type>
+
 </Schema>

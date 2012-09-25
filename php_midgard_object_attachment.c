@@ -32,8 +32,9 @@ PHP_FUNCTION(_php_midgard_object_list_attachments)
 
 	array_init(return_value);
 
+	guint n_objects;
 	MidgardObject *mobj = __midgard_object_get_ptr(getThis());
-	MidgardObject **objects = midgard_object_list_attachments(mobj);
+	MidgardObject **objects = midgard_object_list_attachments(mobj, &n_objects);
 
 	if (objects) {
 		php_midgard_array_from_objects((GObject **)objects, "midgard_attachment", return_value TSRMLS_CC);

@@ -2,6 +2,7 @@
 *.lo
 .deps
 .libs/
+autom4te.cache/
 Makefile*
 acinclude.m4
 aclocal.m4
@@ -23,3 +24,12 @@ modules/
 pakePhpExtensionTask.yaml
 run-tests.php
 tmp-php.ini
+/tests/midgard.log
+/tests/test.cfg
+/tests/test.db
+/tests/*.sh
+/tests/*.php
+/tests/*.log
+/tests/*.out
+/tests/*.exp
+/tests/*.diff

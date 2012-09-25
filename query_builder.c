@@ -52,6 +52,7 @@ static PHP_METHOD(midgard_query_builder, __construct)
 	if (ce == NULL) {
 		php_error(E_WARNING, "Didn't find %s class", classname);
 		php_midgard_error_exception_force_throw(mgd, MGD_ERR_INVALID_OBJECT TSRMLS_CC);
+		return;
 	}
 
 	zend_class_entry *base_ce = php_midgard_get_baseclass_ptr(ce);
@@ -83,7 +84,7 @@ static PHP_METHOD(midgard_query_builder, __construct)
 	php_midgard_gobject *php_gobject = __php_objstore_object(zval_object);
 	/* Set user defined class. We might need it when execute is invoked */
 	php_gobject->user_ce = ce;
-	php_gobject->user_class_name = ce->name;
+	php_gobject->user_class_name = (char *)ce->name;
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_mqb___construct, 0, 0, 1)
@@ -231,16 +232,13 @@ static PHP_METHOD(midgard_query_builder, execute)
 		return;
 
 	/* TODO: Should use iterator, instead, and create objects lazily */
-	/* Initialize zend objects for the same class which was used to initialize Query Builder */
 	for (i = 0; i < n_objects; i++) {
 		GObject *gobject = objects[i];
-		zval *zobject;
 
-		/* TODO: Simplify code below. If possible. */
+		zval *zobject;
 		MAKE_STD_ZVAL(zobject);
-		object_init_ex(zobject, ce); /* Initialize new object for which QB has been created for */
-		MGD_PHP_SET_GOBJECT(zobject, gobject); // inject our gobject
-		zend_call_method_with_0_params(&zobject, ce, &ce->constructor, "__construct", NULL); /* Call class constructor on given instance */
+
+		php_midgard_gobject_new_with_gobject(zobject, ce, gobject, TRUE TSRMLS_CC);
 
 		zend_hash_next_index_insert(HASH_OF(return_value), &zobject, sizeof(zval *), NULL);
 	}
@@ -373,7 +371,7 @@ ZEND_END_ARG_INFO()
 
 PHP_MINIT_FUNCTION(midgard2_query_builder)
 {
-	static function_entry query_builder_methods[] = {
+	static zend_function_entry query_builder_methods[] = {
 		PHP_ME(midgard_query_builder, __construct,                  arginfo_mqb___construct,                  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_query_builder, add_constraint,               arginfo_mqb_add_constraint,               ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_query_builder, add_constraint_with_property, arginfo_mqb_add_constraint_with_property, ZEND_ACC_PUBLIC)
@@ -390,10 +388,12 @@ PHP_MINIT_FUNCTION(midgard2_query_builder)
 
 	static zend_class_entry query_builder_class_entry;
 
-	INIT_CLASS_ENTRY(query_builder_class_entry, "midgard_query_builder", query_builder_methods);
+	INIT_CLASS_ENTRY(query_builder_class_entry, "MidgardQueryBuilder", query_builder_methods);
 	php_midgard_query_builder_class = zend_register_internal_class(&query_builder_class_entry TSRMLS_CC);
 	php_midgard_query_builder_class->create_object = php_midgard_gobject_new;
-	php_midgard_query_builder_class->doc_comment = strdup("API for building complex data-queries");
+	CLASS_SET_DOC_COMMENT(php_midgard_query_builder_class, strdup("API for building complex data-queries"));
+
+	zend_register_class_alias("midgard_query_builder", php_midgard_query_builder_class);
 
 	return SUCCESS;
 }

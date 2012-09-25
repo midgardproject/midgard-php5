@@ -9,10 +9,13 @@ if (!class_exists('midgard_dbus')) die("skip DBus support is not enabled");
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+report_memleaks = On
 --FILE--
 <?php
 $cfg = new midgard_config();
 $cfg->read_file_at_path(dirname(__FILE__).'/test.cfg');
+$mgd = midgard_connection::get_instance();
+$mgd->open_config($cfg);
 
 try {
     $dbus = new midgard_dbus('/test');
@@ -30,4 +33,5 @@ try {
 ?>
 ===DONE===
 --EXPECTF--
+MISSED ERROR
 ===DONE===

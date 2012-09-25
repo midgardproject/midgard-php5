@@ -11,6 +11,17 @@ midgard.configuration_file=[[CFG_FILE]]
 report_memleaks = On
 --FILE--
 <?php
+function my_callback($obj)
+{
+    echo "Callback called\n";
+    if (null === $obj)
+        echo "NULL\n";
+    elseif ($obj instanceof midgard_connection)
+        echo "midgard_connection\n";
+    else
+        echo "UNKNOWN!!\n";
+}
+
 $login = 'bug1478';
 $authtype = 'Plaintext';
 
@@ -24,22 +35,16 @@ unset($user);
 $params = array("login" => $login, "authtype" => $authtype);
 $user2 = new midgard_user($params);
 
+unset($login, $authtype, $params);
+
 $mgd = midgard_connection::get_instance();
-
-function my_callback($obj)
-{
-    echo "Callback called\n";
-    if (null === $obj)
-        echo "NULL\n";
-    elseif ($obj instanceof midgard_connection)
-        echo "midgard_connection\n";
-    else
-        echo "UNKNOWN!!\n";
-}
-
 $mgd->connect('auth-changed', 'my_callback', array());
+unset($mgd);
 
 var_dump($user2->login());
+
+// cleanup
+$user2->delete();
 ?>
 ===DONE===
 --EXPECTF--

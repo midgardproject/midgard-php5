@@ -52,9 +52,6 @@ zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_mgdschema_class_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_mgdschema_class_ptr_by_name(const char *name TSRMLS_DC);
 
-/* Initialize all properties of G_TYPE_OBJECT type and add it to zend's objects store */
-void php_midgard_init_properties_objects(zval *zobject TSRMLS_DC);
-
 /* Routines */
 int __serialize_object_hook(zval *zobject,
 	unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC);
@@ -68,7 +65,6 @@ void php_midgard_gobject_unset_property(zval *object, zval *member TSRMLS_DC);
 void php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAMETERS);
 void php_midgard_object_class_connect_default(INTERNAL_FUNCTION_PARAMETERS);
 
-const char* g_class_name_to_php_class_name(const gchar *g_class_name);
 const gchar* php_class_name_to_g_class_name(const char *php_class_name);
 
 #endif /* PHP_MIDGARD_GOBJECT_GENERIC  */

@@ -48,7 +48,7 @@ static PHP_METHOD(midgard_storage, create_class_storage)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_create(mgd, classname);
+	zend_bool rv = (zend_bool) midgard_storage_create(mgd, php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
@@ -66,7 +66,7 @@ static PHP_METHOD(midgard_storage, update_class_storage)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_update(mgd_handle(TSRMLS_C), classname);
+	zend_bool rv = (zend_bool) midgard_storage_update(mgd_handle(TSRMLS_C), php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
@@ -84,7 +84,7 @@ static PHP_METHOD(midgard_storage, delete_class_storage)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_delete(mgd_handle(TSRMLS_C), classname);
+	zend_bool rv = (zend_bool) midgard_storage_delete(mgd_handle(TSRMLS_C), php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
@@ -102,7 +102,7 @@ static PHP_METHOD(midgard_storage, class_storage_exists)
 		return;
 	}
 
-	zend_bool rv = (zend_bool) midgard_storage_exists(mgd_handle(TSRMLS_C), classname);
+	zend_bool rv = (zend_bool) midgard_storage_exists(mgd_handle(TSRMLS_C), php_class_name_to_g_class_name(classname));
 	RETURN_BOOL(rv);
 }
 
@@ -113,7 +113,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_storage)
 {
-	static function_entry midgard_storage_methods[] = {
+	static zend_function_entry midgard_storage_methods[] = {
 		PHP_ME(midgard_storage, create_base_storage,  arginfo_midgard_storage_create_base_storage,  ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_storage, create_class_storage, arginfo_midgard_storage_create_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_storage, update_class_storage, arginfo_midgard_storage_update_class_storage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -123,11 +123,13 @@ PHP_MINIT_FUNCTION(midgard2_storage)
 	};
 
 	static zend_class_entry php_midgard_storage_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_storage_class_entry, "midgard_storage", midgard_storage_methods);
+	INIT_CLASS_ENTRY(php_midgard_storage_class_entry, "MidgardStorage", midgard_storage_methods);
 
 	php_midgard_storage_class = zend_register_internal_class(&php_midgard_storage_class_entry TSRMLS_CC);
 	php_midgard_storage_class->create_object = NULL;
-	php_midgard_storage_class->doc_comment = strdup("Collection of static methods for managing underlying data storage");
+	CLASS_SET_DOC_COMMENT(php_midgard_storage_class, strdup("Collection of static methods for managing underlying data storage"));
+
+	zend_register_class_alias("midgard_storage", php_midgard_storage_class);
 
 	return SUCCESS;
 }

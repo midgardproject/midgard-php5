@@ -13,4 +13,42 @@
         <property name="y" use="xtype:y" />
     </view>
 
+    <view name="noguidview" table="atype">
+        <join type="left" class="xtype">
+            <condition left="atype:id" right="xtype:owner" />
+        </join>
+
+        <property name="id" use="atype:id" />
+        <property name="a" use="atype:a" />
+        <property name="b" use="atype:b" />
+        <property name="x" use="xtype:x" />
+        <property name="y" use="xtype:y" />
+    </view>
+
+<!-- https://github.com/midgardproject/midgard-core/issues#issue/86
+    <view name="view_on_view" table="ztype">
+        <join type="left" class="noguidview">
+            <condition left="noguidview:id" right="ztype:owner" />
+        </join>
+
+        <property name="id" use="noguidview:id" />
+        <property name="a"  use="noguidview:a" />
+        <property name="b"  use="noguidview:b" />
+        <property name="x"  use="noguidview:x" />
+        <property name="y"  use="noguidview:y" />
+        <property name="z1" use="ztype:z1" />
+        <property name="z2" use="ztype:z2" />
+    </view>
+-->
+
+<!-- https://github.com/midgardproject/midgard-core/issues#issue/88
+    <view name="constraintview" table="atype">
+        <join type="left" class="xtype">
+            <condition left="atype:id" right="xtype:owner" />
+        </join>
+
+        <constraint property="xtype:id" operator="&lt;>" value="0" value_type="unsigned integer" />
+    </view>
+-->
+
 </Schema>

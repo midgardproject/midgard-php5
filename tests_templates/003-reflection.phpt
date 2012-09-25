@@ -34,7 +34,7 @@ var_dump($cls->getDocComment());
 var_dump($cls->listSignals());
 
 $cls = new midgard_reflection_method('MyTest', 'myMethod');
-var_dump($cls->getDocComment());
+//var_dump($cls->getDocComment());
 
 $cls = new midgard_reflection_method($cls, 'getDocComment');
 var_dump($cls->getDocComment());
@@ -42,7 +42,11 @@ var_dump($cls->getDocComment());
 $cls = new midgard_reflection_class('midgard_connection');
 var_dump($cls->listSignals());
 
+$cls = new midgard_reflection_class('midgard_object');
+var_dump(count($cls->listSignals()) > 0);
+
 $cls = new midgard_reflection_class('atype');
+var_dump(count($cls->listSignals()) == 0);
 
 $parent = $cls->getParentClass();
 var_dump($parent instanceof midgard_reflection_class);
@@ -63,9 +67,6 @@ string(%d) "/**
  */"
 array(0) {
 }
-string(%d) "/**
-     * Hi, method
-     */"
 string(%d) "returns doc_comment of method"
 array(5) {
   [0]=>
@@ -83,4 +84,9 @@ bool(true)
 bool(true)
 bool(true)
 bool(true)
+<<<<<<< HEAD
+=======
+bool(true)
+bool(true)
+>>>>>>> gjallarhorn
 ===DONE===

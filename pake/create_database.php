@@ -6,8 +6,8 @@ if (!isset($_SERVER['MIDGARD_ENV_GLOBAL_SHAREDIR']))
 if (!isset($_SERVER['PAKE_MIDGARD_CFG']))
     throw new Exception('PAKE_MIDGARD_CFG environment variable is not set');
 
-if (extension_loaded('midgard2')) {
-    throw new LogicException('Please disable midgard2-extension in php.ini. test-suite will enable it automatically');
+if (!extension_loaded('midgard2')) {
+    throw new LogicException('Please enable midgard2-extension in php.ini');
 }
 
 if (ini_get('enable_dl') != 1) {
@@ -15,7 +15,6 @@ if (ini_get('enable_dl') != 1) {
 }
 
 ini_set('midgard.http', 'Off');
-dl('midgard2.so');
 
 $cfg = new midgard_config();
 $cfg->read_file_at_path($_SERVER['PAKE_MIDGARD_CFG']);
@@ -36,19 +35,16 @@ foreach ($re->getClasses() as $class_ref) {
     $class_mgd_ref = new midgard_reflection_class($class_ref->getName());
     $parent_class = $class_mgd_ref->getParentClass();
 
-    if (!$parent_class)
-        continue;
-
-    if (!in_array($parent_class->getName(), array("midgard_dbobject", "midgard_object", "midgard_view")))
-        continue;
-
-    // skip abstract classes
-    if (in_array($class_mgd_ref->getName(), array("midgard_dbobject", "midgard_object", "midgard_view")))
-        continue;
-
     $name = $class_mgd_ref->getName();
+    if (!is_subclass_of ($name, 'MidgardDBObject')
+        || $class_mgd_ref->isAbstract()) {
+            continue;
+    }
+
     echo 'midgard_storage: create_class_storage('.$name.")\n";
-    midgard_storage::create_class_storage($name);
+    if (true !== midgard_storage::create_class_storage($name)) {
+        throw new Exception('Failed to create storage for "'.$name.': "'.midgard_connection::get_instance()->get_error_string());
+    }
 }
 
 exit(0);

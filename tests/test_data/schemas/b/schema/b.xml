@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+
+	<type name="test_b_type" table="test_b_type">
+		<property name="name"/>
+	</type>
+
+</Schema>

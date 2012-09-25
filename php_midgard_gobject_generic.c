@@ -24,11 +24,20 @@
 
 #include "php_midgard__helpers.h"
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 2
+#define Z_OBJ_P(zval_p) \
+	        ((zend_object*)(EG(objects_store).object_buckets[Z_OBJ_HANDLE_P(zval_p)].bucket.obj.object))
+#endif
+
 /* GVALUE ROUTINES */
 
 static zend_bool php_midgard_gvalue_from_zval(const zval *zvalue, GValue *gvalue TSRMLS_DC)
 {
 	g_assert(zvalue != NULL);
+
+	if (MGDG(midgard_memory_debug)) {
+		printf("php_midgard_gvalue_from_zval(z=%p [refcount=%d], g=%p)\n", zvalue, Z_REFCOUNT_P((zval *)zvalue), gvalue);
+	}
 
 	HashTable *zhash;
 	GValueArray *array;
@@ -135,13 +144,15 @@ GValue *php_midgard_zval2gvalue(const zval *zvalue TSRMLS_DC)
 
 	GValue *gvalue = g_new0(GValue, 1);
 
-	if (!php_midgard_gvalue_from_zval(zvalue, gvalue TSRMLS_CC))
+	if (!php_midgard_gvalue_from_zval(zvalue, gvalue TSRMLS_CC)) {
+		g_free(gvalue);
 		return NULL;
+	}
 
 	return gvalue;
 }
 
-zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
+zend_bool php_midgard_gvalue2zval(const GValue *gvalue, zval *zvalue TSRMLS_DC)
 {
 	g_assert(gvalue);
 	g_assert(zvalue);
@@ -237,10 +248,12 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 					if (!gclass_name)
 						return FALSE;
 
-					const char *php_class_name = g_class_name_to_php_class_name(gclass_name);
-
 					g_object_ref(gobject_property);
-					php_midgard_gobject_init(zvalue, php_class_name, gobject_property, TRUE TSRMLS_CC);
+					php_midgard_gobject_init(zvalue, gclass_name, gobject_property, TRUE TSRMLS_CC);
+
+					if (MGDG(midgard_memory_debug)) {
+						printf("php_midgard_gvalue2zval: [%p] refcount=%d, gobj=%p, glib refcount=%d\n", zvalue, Z_REFCOUNT_P(zvalue), gobject_property, gobject_property->ref_count);
+					}
 
 					return TRUE;
 				} else {
@@ -293,9 +306,13 @@ zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC)
 /* OBJECTS ROUTINES */
 
 /* check if there is glib-property of object linked to zval */
-int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_DC)
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type, const zend_literal *key TSRMLS_DC)
+#else
+int php_midgard_gobject_has_property(zval *zobject, zval *prop, int check_type TSRMLS_DC)
+#endif
 {
-	GObject *gobject = __php_gobject_ptr(zobject);
+	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
 	char *prop_name = Z_STRVAL_P(prop);
 
 	if (prop_name == NULL) {
@@ -308,66 +325,77 @@ int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_
 		return 0;
 	}
 
-	GParamSpec *pspec = g_object_class_find_property(G_OBJECT_GET_CLASS(gobject), prop_name);
-
-	if (!pspec) {
-		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
-		return std_hnd->has_property(zobject, prop, BP_VAR_NA TSRMLS_CC);
+	if (MGDG(midgard_memory_debug)) {
+		printf("[%p] php_midgard_gobject_has_property(%s, check_type=%d). object's refcount=%d\n", zobject, prop_name, check_type, Z_REFCOUNT_P(zobject));
+		printf("[%p] ----> gobject: %p, ref_count = %d\n", zobject, php_gobject, php_gobject->gobject->ref_count);
 	}
 
-	if (type == 2) {
-		return 1;
-	}
+	GObjectClass *klass = G_OBJECT_GET_CLASS(php_gobject->gobject);
+	GParamSpec *pspec = g_object_class_find_property(klass, prop_name);
 
-	GValue pval = {0, };
-	g_value_init(&pval, pspec->value_type);
-	g_object_get_property(gobject, prop_name, &pval);
+	int result = -1;
 
-	int _retval = 0;
-
-	switch (pspec->value_type) {
-		case G_TYPE_STRING:
-		{
-			const gchar *emptystr = g_value_get_string(&pval);
-
-			_retval = 1;
-			if (!emptystr || *emptystr == '\0' || (*emptystr == '0' && *++emptystr == '\0'))
-				_retval = 0;
+	if (check_type == 2) {
+		// key exists, value is not important
+		if (pspec != NULL) {
+			return TRUE;
 		}
-			break;
+	} else {
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		zval *value = php_midgard_gobject_read_property(zobject, prop, BP_VAR_IS, key TSRMLS_CC);
+#else
+		zval *value = php_midgard_gobject_read_property(zobject, prop, BP_VAR_IS TSRMLS_CC);
+#endif
+		Z_ADDREF_P(value);
 
-		case G_TYPE_INT:
-			_retval = (g_value_get_int(&pval) != 0);
-			break;
+		if (MGDG(midgard_memory_debug)) {
+			printf("[%p] ----> property: %p, ref_count = %d\n", zobject, value, Z_REFCOUNT_P(value));
+		}
 
-		case G_TYPE_UINT:
-			_retval = (g_value_get_uint(&pval) != 0);
-			break;
+		if (check_type == 0) {
+			// value is not null
+			result = (Z_TYPE_P(value) != IS_NULL);
+		} else {
+			// value can be casted to TRUE
+			result = zend_is_true(value);
+		}
 
-		case G_TYPE_OBJECT:
-			_retval = (NULL != g_value_get_object(&pval));
-			break;
-
-		default:
-			_retval = 1;
-			break;
+		zval_ptr_dtor(&value);
 	}
 
-	g_value_unset(&pval);
-	return _retval;
+	if (-1 == result) {
+		zend_object *zobj = Z_OBJ_P(zobject);
+		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		if (zobj->properties != NULL
+				&& zobj->properties_table != NULL) {
+			result = std_hnd->has_property(zobject, prop, check_type, key TSRMLS_CC);
+		} else {
+			return 0;
+		}
+#else
+			result = std_hnd->has_property(zobject, prop, check_type TSRMLS_CC);
+#endif
+	}
+
+	return result;
 }
 
 /* Read Zend object property using underlying GObject's one */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type, const zend_literal *key TSRMLS_DC)
+#else
 zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRMLS_DC)
+#endif
 {
 	zval *_retval = NULL;
-	zend_object_handlers *std_hnd;
 	gboolean is_native_property = FALSE;
-	gboolean is_datetime_property = FALSE;
 	GParamSpec *pspec = NULL;
 	GObjectClass *klass = NULL;
+	int silent = (type == BP_VAR_IS);
 
 	const gchar *propname = Z_STRVAL_P(prop);
+	int proplen = Z_STRLEN_P(prop) + 1;
 
 	if (propname == NULL || *propname == '\0')
 		php_error(E_ERROR, "Can not read empty property name");
@@ -383,70 +411,82 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 
 		/* Find GObject property */
 		if (G_IS_OBJECT_CLASS(klass)) {
-			const gchar *propname = Z_STRVAL_P(prop);
-
-			pspec =	g_object_class_find_property(klass, propname);
+			pspec = g_object_class_find_property(klass, propname);
 
 			if (pspec != NULL) {
 				is_native_property = TRUE;
+
+				if (!(pspec->flags & G_PARAM_READABLE)) {
+					MAKE_STD_ZVAL(_retval);
+					ZVAL_NULL(_retval);
+					Z_DELREF_P(_retval); // we don't have local reference, so need to decrement refcount
+
+					return _retval;
+				}
 			}
 		}
 	}
 
 	/* If found, get property's gvalue. Create zval from it and return */
 	if (is_native_property) {
+		gboolean is_datetime_property = FALSE;
 		if (MIDGARD_IS_DBOBJECT_CLASS(klass)) {
 			is_datetime_property = php_midgard_is_property_timestamp(MIDGARD_DBOBJECT_CLASS(klass), propname);
 		}
 
-		/* Property of object type. $obj->metadata for example. */
-		if (pspec->value_type == G_TYPE_OBJECT) {
+		GType prop_type = G_PARAM_SPEC_VALUE_TYPE(pspec);
+
+		if (is_datetime_property) {
+			/* Datetime property. $obj->metadata->created for example. */
+			if (MGDG(midgard_memory_debug)) {
+				php_printf("==========> DateTime\n");
+			}
+
+			_retval = php_midgard_datetime_object_from_property(zobject, propname TSRMLS_CC);
+			Z_DELREF_P(_retval); //remove extra reference
+
+			if (MGDG(midgard_memory_debug)) {
+				printf("[%p] property's tmp-var refcount: %d [%s]\n", zobject, Z_REFCOUNT_P(_retval), propname);
+			}
+		} else if (G_TYPE_IS_OBJECT(prop_type) || G_TYPE_IS_INTERFACE(prop_type)) {
+			/* Property of object type. $obj->metadata for example. */
 			if (MGDG(midgard_memory_debug)) {
 				php_printf("==========> G_TYPE_OBJECT\n");
 			}
 
 			zval **property;
-			if (zend_hash_find(Z_OBJPROP_P(zobject), Z_STRVAL_P(prop), Z_STRLEN_P(prop)+1 ,(void **) &property) == SUCCESS) {
+			int hf_ret = zend_hash_find(Z_OBJPROP_P(zobject), propname, proplen, (void **) &property);
+
+			if (hf_ret == SUCCESS) {
 				_retval = *property;
 				// zval_add_ref(property);
-			} else {
-				MAKE_STD_ZVAL(_retval);
-				ZVAL_NULL(_retval);
-				return _retval;
-			}
-		/* Datetime property. $obj->metadata->created for example. */
-		} else if (is_datetime_property) {
-			if (MGDG(midgard_memory_debug)) {
-				php_printf("==========> DateTime\n");
-			}
 
-			zval **dtp;
-			if (zend_hash_find(Z_OBJPROP_P(zobject), Z_STRVAL_P(prop), Z_STRLEN_P(prop)+1 ,(void **) &dtp) == SUCCESS
-				&& Z_TYPE_PP(dtp) == IS_OBJECT)
-			{
-				if (Z_REFCOUNT_P(*dtp) < 2) {
-					/* FIXME, property value (object) seems to be duplicated here */
-					_retval = php_midgard_datetime_object_from_property(zobject, Z_STRVAL_P(prop) TSRMLS_CC);
-					zend_hash_update(Z_OBJPROP_P(zobject), (gchar *) propname, strlen(propname)+1, (void *)&_retval, sizeof(zval *), NULL);
-					Z_DELREF_P(_retval);
-					Z_ADDREF_P(*dtp);
-				} else {
-					_retval = *dtp;
+				if (MGDG(midgard_memory_debug)) {
+					printf("==========> found\n");
+					printf("==========> property's tmp-var refcount: %d [%s]\n", Z_REFCOUNT_P(_retval), propname);
+					GObject *gobj = __php_gobject_ptr(_retval);
+					printf("==========> property's gobject: %p [refcount: %d]\n", gobj, gobj->ref_count);
 				}
 			} else {
-				_retval = php_midgard_datetime_object_from_property(zobject, propname TSRMLS_CC);
-				zend_hash_update(Z_OBJPROP_P(zobject), (gchar *) propname, strlen(propname)+1, (void *)&_retval, sizeof(zval *), NULL);
-				Z_DELREF_P(_retval);
+				if (MGDG(midgard_memory_debug)) {
+					php_printf("==========> NOT found\n");
+				}
+
+				MAKE_STD_ZVAL(_retval);
+				ZVAL_NULL(_retval);
+				Z_DELREF_P(_retval); // we don't have local reference, so need to decrement refcount
+
+				return _retval;
 			}
-		/* Property of generic type. String, int, float, etc */
 		} else {
+			/* Property of generic type. String, int, float, etc */
 			if (MGDG(midgard_memory_debug)) {
 				php_printf("==========> scalar\n");
 			}
 
 			GValue pval = {0, };
 			g_value_init(&pval, pspec->value_type);
-			g_object_get_property(gobject, Z_STRVAL_P(prop), &pval);
+			g_object_get_property(gobject, propname, &pval);
 
 			MAKE_STD_ZVAL(_retval);
 			php_midgard_gvalue2zval(&pval, _retval TSRMLS_CC);
@@ -464,14 +504,23 @@ zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRM
 		 * Piotras: I have no idea what type should be passed instead
 		 * of BP_VAR_NA. The point is to throw warning when property
 		 * is not registered for (sub)class. */
-		std_hnd = zend_get_std_object_handlers();
-		_retval = std_hnd->read_property(zobject, prop, BP_VAR_NA TSRMLS_CC);
+		zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA, key TSRMLS_CC);
+#else
+		_retval = std_hnd->read_property(zobject, prop, silent ? BP_VAR_IS : BP_VAR_NA TSRMLS_CC);
+#endif
+
 	}
 
 	return _retval;
 }
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC)
+#else
 zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member TSRMLS_DC)
+#endif
 {
 	if (MGDG(midgard_memory_debug)) {
 		const gchar *propname = Z_STRVAL_P(member);
@@ -519,13 +568,17 @@ static void _convert_value(zval *value, GType vtype)
 	return;
 }
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value, const zend_literal *key TSRMLS_DC)
+#else
 void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC)
+#endif
 {
 	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] php_midgard_gobject_write_property()\n", zobject);
+		const gchar *propname = Z_STRVAL_P(prop);
+		printf("[%p] php_midgard_gobject_write_property(%s)\n", zobject, propname);
 	}
 
-	zend_object_handlers *std_hnd = zend_get_std_object_handlers();
 	GObject *gobject = __php_gobject_ptr(zobject);
 
 	/* Find GObject property */
@@ -557,9 +610,14 @@ void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value T
 			
 			g_free(gvalue);
 		}
-	}
-
+	} else { /* Fallback to zend */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	//std_hnd->write_property(zobject, prop, value, 1 TSRMLS_CC);
+#else
+	zend_object_handlers *std_hnd = zend_get_std_object_handlers();
 	std_hnd->write_property(zobject, prop, value TSRMLS_CC);
+#endif
+	}
 
 	return;
 }
@@ -573,77 +631,11 @@ void php_midgard_gobject_unset_property(zval *object, zval *member TSRMLS_DC)
 	zval_ptr_dtor(&member);
 }
 
-/* "Register" object's properties ( constructor time ) */
-// void php_midgard_zendobject_register_properties(zval *zobject, GObject *gobject TSRMLS_DC)
-// {
-// 	if (gobject == NULL)
-// 		return;
-// 
-// 	guint n_prop, i;
-// 	zval *tmp_object;
-// 	const gchar *gclass_name;
-// 	GValue pval = {0, };
-// 
-// 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &n_prop);
-// 
-// 	for (i = 0; i < n_prop; i++) {
-// 		switch (props[i]->value_type) {
-// 			case G_TYPE_STRING:
-// 				add_property_string(zobject, (char*)props[i]->name, "", 1);
-// 				break;
-// 
-// 			case G_TYPE_UINT:
-// 			case G_TYPE_INT:
-// 				add_property_long(zobject, (char*)props[i]->name, 0);
-// 				break;
-// 
-// 			case G_TYPE_BOOLEAN:
-// 				add_property_bool(zobject, (char*)props[i]->name, FALSE);
-// 				break;
-// 
-// 			case G_TYPE_FLOAT:
-// 			case G_TYPE_DOUBLE:
-// 				add_property_double(zobject, (char*)props[i]->name, 0);
-// 				break;
-// 
-// 			case G_TYPE_OBJECT:
-// 				g_value_init(&pval, props[i]->value_type);
-// 				g_object_get_property(gobject, (char*)props[i]->name, &pval);
-// 				gclass_name = g_type_name(G_OBJECT_TYPE(G_OBJECT(g_value_get_object(&pval))));
-// 
-// 				if (gclass_name) {
-// 					const char *php_class_name = g_class_name_to_php_class_name(gclass_name);
-// 					zend_class_entry *ce = php_midgard_get_class_ptr_by_name(php_class_name TSRMLS_CC);
-// 
-// 					if (NULL != ce) {
-// 						MAKE_STD_ZVAL(tmp_object);
-// 						object_init_ex(tmp_object, ce);
-// 						php_midgard_zendobject_register_properties(tmp_object, G_OBJECT(g_value_get_object(&pval) TSRMLS_CC));
-// 						add_property_zval(zobject, (gchar*)props[i]->name, tmp_object);
-// 					}
-// 				}
-// 				break;
-// 
-// 			default:
-// 				add_property_unset(zobject, (gchar*)props[i]->name);
-// 				break;
-// 		}
-// 	}
-// 
-// 	g_free(props);
-// 
-// 	return;
-// }
-
 /* Get object's properties */
 HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 {
 	if (zobject == NULL)
 		return NULL;
-
-	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] php_midgard_zendobject_get_properties(%s)\n", zobject, Z_OBJCE_P(zobject)->name);
-	}
 
 	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
 
@@ -651,7 +643,8 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 		php_error(E_ERROR, "Underlying object is not GObject");
 
 	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] ----> gobject: %p\n", zobject, php_gobject->gobject);
+		printf("[%p] php_midgard_zendobject_get_properties(%s)\n", zobject, Z_OBJCE_P(zobject)->name);
+		printf("[%p] ----> gobject: %p, ref_count = %d\n", zobject, php_gobject->gobject, php_gobject->gobject->ref_count);
 	}
 
 	GObject *gobject = php_gobject->gobject;
@@ -659,14 +652,41 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 	GParamSpec **props = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
 
 	for (i = 0; i < propn; i++) {
+		if (props[i]->flags & G_PARAM_CONSTRUCT_ONLY) {
+			continue;
+		}
+
+		if (!(props[i]->flags & G_PARAM_READABLE)) {
+			// not readable
+			continue;
+		}
+
+		if (php_gobject->has_properties) {
+			if (G_TYPE_IS_OBJECT(props[i]->value_type) || G_TYPE_IS_INTERFACE(props[i]->value_type)) {
+				// do not reinit objects
+				continue;
+			}
+
+			if (props[i]->value_type == MGD_TYPE_TIMESTAMP) {
+				// do not reinit datetime objects (to keep var_dump() happy)
+				continue;
+			}
+		}
+
 		GValue pval = {0, };
 		g_value_init(&pval, props[i]->value_type);
 		g_object_get_property(gobject, (gchar*)props[i]->name, &pval);
 
 		zval *tmp;
-		MAKE_STD_ZVAL(tmp);
 
-		php_midgard_gvalue2zval(&pval, tmp TSRMLS_CC);
+		if (props[i]->value_type == MGD_TYPE_TIMESTAMP) {
+			// link it to object
+			tmp = php_midgard_datetime_object_from_property(zobject, props[i]->name TSRMLS_CC);
+		} else {
+			MAKE_STD_ZVAL(tmp);
+			php_midgard_gvalue2zval(&pval, tmp TSRMLS_CC);
+		}
+
 		zend_hash_update(php_gobject->zo.properties,
 				props[i]->name, strlen(props[i]->name)+1,
 				(void *)&tmp, sizeof(zval *), NULL);
@@ -679,6 +699,8 @@ HashTable *php_midgard_zendobject_get_properties(zval *zobject TSRMLS_DC)
 	if (MGDG(midgard_memory_debug)) {
 		printf("[%p] <= php_midgard_zendobject_get_properties()\n", zobject);
 	}
+
+	php_gobject->has_properties = TRUE;
 
 	return php_gobject->zo.properties;
 }
@@ -771,84 +793,19 @@ static void __php_midgard_gobject_dtor(void *object TSRMLS_DC)
 	object = NULL;
 }
 
-void php_midgard_init_properties_objects(zval *zobject TSRMLS_DC)
-{
-	if (zobject == NULL)
-		return;
-
-	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] php_midgard_init_properties_objects\n", zobject);
-	}
-
-	php_midgard_gobject *php_gobject = __php_objstore_object(zobject);
-	GObject *gobject = php_gobject->gobject;
-
-	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] ==> gobject = [%p]\n", zobject, gobject);
-	}
-
-	if (!gobject)
-		return;
-
-	guint propn, i;
-	GParamSpec **pspecs = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject), &propn);
-
-	for (i = 0; i < propn; i++) {
-		/* Property which is not object type will be initialized in read_property hook.
-		 * Workaround for PHP read/write property bug */
-		if (G_TYPE_FUNDAMENTAL(pspecs[i]->value_type) != G_TYPE_OBJECT)
-			continue;
-
-		GValue oval = {0, };
-		g_value_init(&oval, G_TYPE_OBJECT);
-		g_object_get_property(gobject, pspecs[i]->name, &oval);
-
-		GObject *prop_gobject = g_value_get_object(&oval);
-		if (!prop_gobject) {
-			g_value_unset(&oval);
-			continue;
-		}
-
-		const char *php_class_name = g_class_name_to_php_class_name(G_OBJECT_TYPE_NAME(prop_gobject));
-		zend_class_entry *ce = php_midgard_get_baseclass_ptr_by_name(php_class_name TSRMLS_CC);
-
-		if (ce == NULL) {
-			php_error(E_NOTICE, "Didn't find class for \"%s\" property", pspecs[i]->name);
-			g_value_unset(&oval);
-			continue;
-		}
-
-		zval *prop_zobject;
-		MAKE_STD_ZVAL(prop_zobject);
-
-		php_midgard_gvalue2zval(&oval, prop_zobject TSRMLS_CC);
-		g_value_unset(&oval);
-
-		zend_update_property(Z_OBJCE_P(zobject), zobject,
-                             pspecs[i]->name, strlen(pspecs[i]->name),
-                             prop_zobject TSRMLS_CC);
-
-		Z_DELREF_P(prop_zobject); // property holds reference now. remove local one
-	}
-
-	g_free(pspecs);
-
-	php_gobject->has_properties = TRUE;
-
-	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] <= php_midgard_init_properties_objects\n", zobject);
-	}
-}
-
 /* Object constructor */
 zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC)
 {
 	php_midgard_gobject *php_gobject;
 	zend_object_value retval;
-	zval *tmp;
 
 	php_gobject = ecalloc(1, sizeof(php_midgard_gobject));
 	zend_object_std_init(&php_gobject->zo, class_type TSRMLS_CC);
+
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	ALLOC_HASHTABLE((&php_gobject->zo)->properties);
+	zend_hash_init((&php_gobject->zo)->properties, 0, NULL, ZVAL_PTR_DTOR, 0);
+#endif
 
 	if (MGDG(midgard_memory_debug)) {
 		printf("[%p] php_midgard_gobject_new(%s)\n", &php_gobject->zo, class_type->name);
@@ -864,10 +821,17 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	php_gobject->user_ce = NULL;
 	php_gobject->user_class_name = NULL;
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	/* Not sure if this is required, we need to initialize 'properties' hash, which this function 
+	 * initializes properties_table array */
+	object_properties_init(&(php_gobject->zo), class_type); 
+#else
+	zval *tmp;
 	zend_hash_copy(php_gobject->zo.properties,
 			&class_type->default_properties,
 			(copy_ctor_func_t) zval_add_ref,
 			(void *) &tmp, sizeof(zval *));
+#endif
 
 	retval.handle = zend_objects_store_put(php_gobject,
 			(zend_objects_store_dtor_t)zend_objects_destroy_object,
@@ -891,7 +855,7 @@ void php_midgard_gobject_init(zval *zvalue, const char *php_classname, GObject *
 		MAKE_STD_ZVAL(zvalue);
 
 	if (MGDG(midgard_memory_debug)) {
-		printf("[%p] php_midgard_gobject_init(%s)\n", zvalue, php_classname);
+		printf("[%p] php_midgard_gobject_init(%s, %p [gobject refcount = %d])\n", zvalue, php_classname, gobject, gobject->ref_count);
 	}
 
 	ce = php_midgard_get_class_ptr_by_name(php_classname TSRMLS_CC);
@@ -929,6 +893,13 @@ zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce)
 		return ce;
 	}
 
+	GType g_class_type = g_type_from_name(ce->name);
+	if (g_class_type != G_TYPE_INVALID) {
+		if (g_type_is_a (g_class_type, MIDGARD_TYPE_DBOBJECT)) {
+			return ce;
+		}
+	}
+
 	if (ce->parent == php_midgard_dbobject_class
 			|| ce->parent == php_midgard_object_class
 			|| ce->parent == php_midgard_view_class
@@ -944,6 +915,13 @@ zend_class_entry *php_midgard_get_mgdschema_class_ptr(zend_class_entry *ce)
 	g_assert(ce != NULL);
 
 	zend_class_entry *tmp = ce;
+
+	GType g_class_type = g_type_from_name(ce->name);
+	if (g_class_type != G_TYPE_INVALID) {
+		if (g_type_is_a (g_class_type, MIDGARD_TYPE_DBOBJECT)) {
+			return tmp;
+		}
+	}
 
 	while (
 		tmp->parent
@@ -1152,51 +1130,11 @@ CLEAN_AND_RETURN_NULL:
 	return NULL;
 }
 
-const char* g_class_name_to_php_class_name(const char *g_class_name)
-{
-	if (strcmp(g_class_name, "MidgardMetadata") == 0) {
-		return "midgard_metadata";
-	} else if (strcmp(g_class_name, "MidgardConnection") == 0) {
-		return "midgard_connection";
-	} else if (strcmp(g_class_name, "MidgardQueryStorage") == 0) {
-		return "midgard_query_storage";
-	} else if (strcmp(g_class_name, "MidgardQueryProperty") == 0) {
-		return "midgard_query_property";
-	} else if (strcmp(g_class_name, "MidgardQueryValue") == 0) {
-		return "midgard_query_value";
-	} else if (strcmp(g_class_name, "MidgardUser") == 0) {
-		return "midgard_user";
-	} else if (strcmp(g_class_name, "MidgardView") == 0) {
-		return "midgard_view";
-	} else if (strcmp(g_class_name, "MidgardDBObject") == 0) {
-		return "midgard_dbobject";
-	} else if (strcmp(g_class_name, "MidgardConfig") == 0) {
-		return "midgard_config";
-	}
-
-	return g_class_name;
-}
-
 const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 {
-	if (strcmp(php_class_name, "midgard_metadata") == 0) {
-		return "MidgardMetadata";
-	} else if (strcmp(php_class_name, "midgard_connection") == 0) {
-		return "MidgardConnection";
-	} else if (strcmp(php_class_name, "midgard_query_storage") == 0) {
-		return "MidgardQueryStorage";
-	} else if (strcmp(php_class_name, "midgard_query_property") == 0) {
-		return "MidgardQueryProperty";
-	} else if (strcmp(php_class_name, "midgard_query_value") == 0) {
-		return "MidgardQueryValue";
-	} else if (strcmp(php_class_name, "midgard_user") == 0) {
-		return "MidgardUser";
-	} else if (strcmp(php_class_name, "midgard_view") == 0) {
-		return "MidgardView";
-	} else if (strcmp(php_class_name, "midgard_dbobject") == 0) {
-		return "MidgardDBObject";
-	} else if (strcmp(php_class_name, "midgard_config") == 0) {
-		return "MidgardConfig";
-	}
+	zend_class_entry *ce = php_midgard_get_class_ptr_by_name(php_class_name TSRMLS_CC);
+	if (ce)
+		return ce->name;
+
 	return php_class_name;
 }

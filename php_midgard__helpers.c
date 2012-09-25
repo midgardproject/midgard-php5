@@ -99,7 +99,7 @@ static zval* zend_call_method_va__mgd(zval **object_pp, zend_class_entry *obj_ce
 	}
 	return *retval_ptr_ptr;
 }
-#elif PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 3
+#elif PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 3
 static zval* zend_call_method_va__mgd(zval **object_pp, zend_class_entry *obj_ce, zend_function **fn_proxy, char *function_name, int function_name_len, zval **retval_ptr_ptr, int param_count, zval*** params TSRMLS_DC)
 {
 	int result;
@@ -196,3 +196,22 @@ ZEND_API zval* zend_call_method__mgd(zval **object_pp, zend_class_entry *obj_ce,
 	return zend_call_method_va__mgd(object_pp, obj_ce, fn_proxy, function_name, function_name_len, retval_ptr_ptr, param_count, params TSRMLS_CC);
 }
 
+void php_midgard_array_from_unknown_objects(GObject **objects, guint n_objects, zval *zarray TSRMLS_DC)
+{
+	if (!objects)
+		return;
+
+	size_t i;
+	
+	for (i = 0; i < n_objects; i++) {
+		GObject *object = objects[i];
+		GType object_type = G_OBJECT_TYPE(object);
+		const gchar *g_class_name = g_type_name(object_type);
+		
+		zend_class_entry *ce = zend_fetch_class((char *)g_class_name, strlen(g_class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);		
+		zval *zobject;
+		MAKE_STD_ZVAL(zobject);
+		php_midgard_gobject_new_with_gobject(zobject, ce, object, TRUE TSRMLS_CC);
+		zend_hash_next_index_insert(HASH_OF(zarray), &zobject, sizeof(zval *), NULL);
+	}
+}

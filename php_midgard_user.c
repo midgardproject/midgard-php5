@@ -62,8 +62,6 @@ static PHP_METHOD(midgard_user, __construct)
 	} else {
 		// we already have gobject injected
 	}
-
-	php_midgard_init_properties_objects(zval_object TSRMLS_CC);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user___construct, 0, 1, 1)
@@ -83,7 +81,8 @@ static PHP_METHOD(midgard_user, set_person)
 		return;
 
 	_GET_USER_OBJECT;
-	rv = midgard_user_set_person(user, __midgard_object_get_ptr(zobject));
+	MidgardObject *person = __midgard_object_get_ptr(zobject);
+	rv = midgard_user_set_person(user, person);
 	RETURN_BOOL (rv);
 }
 
@@ -104,15 +103,13 @@ static PHP_METHOD(midgard_user, get_person)
 
 	_GET_USER_OBJECT;
 
-	const MidgardObject *person = midgard_user_get_person(user);
+	MidgardObject *person = midgard_user_get_person(user);
 
 	if (person == NULL)
 		RETURN_NULL();
 
+	g_object_ref(person); // we need to keep additional reference, because midgard_user_get_person doesn't transfer
 	php_midgard_gobject_new_with_gobject(return_value, person_ce, G_OBJECT(person), TRUE TSRMLS_CC);
-
-	Z_SET_ISREF_P(return_value);
-	zval_add_ref(&return_value);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user_get_person, 0, 1, 0)
@@ -171,13 +168,14 @@ static PHP_METHOD(midgard_user, get)
 		RETURN_NULL();
 
 	/* HACK, there's no safe API for this (or at least is unknown for me) */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	const char *class_name = EG(scope)->name;
+#else
 	char *class_name = EG(scope)->name;
+#endif
 	zend_class_entry *ce = zend_fetch_class(class_name, strlen(class_name), ZEND_FETCH_CLASS_AUTO TSRMLS_CC);
 
 	php_midgard_gobject_new_with_gobject(return_value, ce, G_OBJECT(user), TRUE TSRMLS_CC);
-
-	Z_SET_ISREF_P(return_value);
-	zval_add_ref(&return_value);
 }
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_user_get, 0, 1, 1)
@@ -311,7 +309,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_user)
 {
-	static function_entry midgard_user_methods[] = {
+	static zend_function_entry midgard_user_methods[] = {
 		PHP_ME(midgard_user, get,         arginfo_midgard_user_get,         ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user, query,       arginfo_midgard_user_query,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_user, __construct, arginfo_midgard_user___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -328,13 +326,17 @@ PHP_MINIT_FUNCTION(midgard2_user)
 	};
 
 	static zend_class_entry php_midgard_user_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_user_class_entry, "midgard_user", midgard_user_methods);
+	INIT_CLASS_ENTRY(php_midgard_user_class_entry, "MidgardUser", midgard_user_methods);
 
 	php_midgard_user_class = zend_register_internal_class_ex(&php_midgard_user_class_entry, NULL, "midgard_dbobject" TSRMLS_CC);
 
 	/* Set function to initialize underlying data */
 	php_midgard_user_class->create_object = php_midgard_gobject_new;
-	php_midgard_user_class->doc_comment = strdup("Midgard's Authentication API");
+	CLASS_SET_DOC_COMMENT(php_midgard_user_class, strdup("Midgard's Authentication API"));
+	php_midgard_user_class->serialize = php_midgard_serialize_dbobject_hook;
+	php_midgard_user_class->unserialize = php_midgard_unserialize_dbobject_hook;
+
+	zend_register_class_alias("midgard_user", php_midgard_user_class);
 
 	return SUCCESS;
 }

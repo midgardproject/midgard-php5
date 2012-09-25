@@ -57,7 +57,7 @@
 
 #if HAVE_MIDGARD
 
-#define PHP_MIDGARD2_EXTNAME "midgard2"
+#define PHP_MIDGARD2_EXTNAME MIDGARD_PACKAGE_NAME
 #define PHP_MIDGARD2_EXTVER MIDGARD_LIB_VERSION
 #define PHP_MIDGARD2_WRAPPER "midgard"
 #define PHP_MIDGARD2_STREAMTYPE "midgard2stream"
@@ -115,6 +115,9 @@ ZEND_BEGIN_MODULE_GLOBALS(midgard2)
 	zend_bool midgard_http;
 	zend_bool midgard_memory_debug;
 	zend_bool superglobals_compat;
+	zend_bool valgrind_friendly;
+	zend_bool glib_loghandler;
+	char *schema_path;
 ZEND_END_MODULE_GLOBALS(midgard2)
 
 ZEND_EXTERN_MODULE_GLOBALS(midgard2)
@@ -154,17 +157,24 @@ PHP_FUNCTION(_php_midgard_object_parameter);
 PHP_FUNCTION(_php_midgard_object_connect);
 
 /* Underlying GObject bindings */
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type, const zend_literal *key TSRMLS_DC);
+zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member, const zend_literal *key TSRMLS_DC);
+void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value, const zend_literal *key TSRMLS_DC);
+int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type, const zend_literal *key TSRMLS_DC);
+#else
 zval *php_midgard_gobject_read_property(zval *zobject, zval *prop, int type TSRMLS_DC);
 zval **php_midgard_gobject_get_property_ptr_ptr(zval *object, zval *member TSRMLS_DC);
 void php_midgard_gobject_write_property(zval *zobject, zval *prop, zval *value TSRMLS_DC);
-// void php_midgard_zendobject_register_properties (zval *zobject, GObject *gobject);
 int php_midgard_gobject_has_property(zval *zobject, zval *prop, int type TSRMLS_DC);
+#endif
+
 HashTable *php_midgard_zendobject_get_properties (zval *zobject TSRMLS_DC);
 
 void php_midgard_array_from_objects(GObject **objects, const gchar *class_name, zval *zarray TSRMLS_DC);
 
 GValue *php_midgard_zval2gvalue(const zval *zvalue TSRMLS_DC);
-zend_bool php_midgard_gvalue2zval(GValue *gvalue, zval *zvalue TSRMLS_DC);
+zend_bool php_midgard_gvalue2zval(const GValue *gvalue, zval *zvalue TSRMLS_DC);
 
 GParameter *php_midgard_array_to_gparameter(zval *params, guint *n_params TSRMLS_DC);
 
@@ -180,6 +190,10 @@ gboolean php_midgard_is_derived_from_class(const gchar *classname,
 		return; \
 	} \
 }
+
+/* DBObject routines and hooks */
+int php_midgard_serialize_dbobject_hook(zval *zobject, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC);
+int php_midgard_unserialize_dbobject_hook(zval **zobject, zend_class_entry *ce, const unsigned char *buffer, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
 
 /* closures */
 void php_midgard_object_connect_class_closures(GObject *object, zval *zobject TSRMLS_DC);
@@ -211,6 +225,18 @@ PHP_MINIT_FUNCTION(midgard2_key_config);
 PHP_MINIT_FUNCTION(midgard2_key_config_file);
 PHP_MINIT_FUNCTION(midgard2_reflection_workaround);
 PHP_MINIT_FUNCTION(midgard2_query);
+PHP_MINIT_FUNCTION(midgard2_g_mainloop);
+PHP_MINIT_FUNCTION(midgard2_workspaces);
+PHP_MINIT_FUNCTION(midgard2_base_abstract);
+PHP_MINIT_FUNCTION(midgard2_base_interface);
+PHP_MINIT_FUNCTION(midgard2_reflector_object);
+PHP_MINIT_FUNCTION(midgard2_reflector_property);
+PHP_MINIT_FUNCTION(midgard2_repligard);
+PHP_MINIT_FUNCTION(midgard2_query_selectors);
+PHP_MINIT_FUNCTION(midgard2_model);
+PHP_MINIT_FUNCTION(midgard2_job);
+PHP_MINIT_FUNCTION(midgard2_content_manager);
+PHP_MINIT_FUNCTION(midgard2_pool);
 
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const char *name TSRMLS_DC);
@@ -223,10 +249,23 @@ void php_midgard_error_exception_force_throw(MidgardConnection *mgd, gint errcod
 /* Logging */
 void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gchar *msg, gpointer userdata);
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 #define CHECK_MGD(handle) \
 { \
 	if (!handle) { \
-		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "Failed to get connection"); \
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "CHECK_MGD - Failed to get connection"); \
+		return; \
+	} \
+	const gchar *_check_cname_space = ""; \
+	const gchar *_check_class_name = get_active_class_name(&_check_cname_space TSRMLS_CC); \
+	g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, " %s%s%s(...)", \
+		_check_class_name, _check_cname_space, get_active_function_name(TSRMLS_C)); \
+}
+#else
+#define CHECK_MGD(handle) \
+{ \
+	if (!handle) { \
+		zend_throw_exception_ex(ce_midgard_error_exception, 0 TSRMLS_CC, "CHECK_MGD - Failed to get connection"); \
 		return; \
 	} \
 	gchar *_check_cname_space = NULL; \
@@ -234,7 +273,7 @@ void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level, const gch
 	g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, " %s%s%s(...)", \
 		_check_class_name, _check_cname_space, get_active_function_name(TSRMLS_C)); \
 }
-
+#endif
 
 /* RAGNAROEK COMPATIBLE*/
 
@@ -246,6 +285,12 @@ extern zend_class_entry *php_midgard_reflection_property_class;
 extern zend_class_entry *php_midgard_user_class;
 extern zend_class_entry *ce_midgard_error_exception;
 extern zend_class_entry *php_midgard_datetime_class;
+extern zend_class_entry *php_midgard_workspace_storage_class;
+extern zend_class_entry *php_midgard_workspace_class;
+extern zend_class_entry *php_midgard_reflector_object_class;
+extern zend_class_entry *php_midgard_reflector_property_class;
+extern zend_class_entry *php_midgard_query_executor_class;
+extern zend_class_entry *php_midgard_query_constraint_simple_class;
 
 #define __php_objstore_object(instance) ((php_midgard_gobject *)zend_object_store_get_object(instance TSRMLS_CC))
 #define __php_gobject_ptr(instance) (__php_objstore_object(instance)->gobject)
