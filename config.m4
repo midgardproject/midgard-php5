@@ -28,7 +28,7 @@ if test "$PHP_MIDGARD2" != "no"; then
             MIDGARD2_INCLINE=`$PKG_CONFIG --cflags midgard2`
             MIDGARD2_LIBLINE=`$PKG_CONFIG --libs midgard2`
         else
-            AC_MSG_ERROR([Midgard2 version 10.05.6 or greater required.])
+            AC_MSG_ERROR([Midgard2 version 12.09 or greater required.])
         fi
 
         PHP_EVAL_INCLINE($MIDGARD2_INCLINE)
