@@ -1,0 +1,13 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+
+before_script:
+  - ./.travis/install.sh
+
+script: ./.travis/test.sh
+
+notifications:
+    irc: "irc.freenode.org#midgard"

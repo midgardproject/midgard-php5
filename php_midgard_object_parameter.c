@@ -140,7 +140,7 @@ PHP_FUNCTION(_php_midgard_object_get_parameter)
 
 	char *domain, *name;
 	int domain_length, name_length;
-	const GValue *gvalue;
+	const GValue *gvalue = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &domain, &domain_length, &name, &name_length) != SUCCESS) {
 		return;
@@ -152,7 +152,7 @@ PHP_FUNCTION(_php_midgard_object_get_parameter)
 	if (gvalue == NULL)
 		RETURN_NULL();
 
-	php_midgard_gvalue2zval((GValue *)gvalue, return_value TSRMLS_CC);
+	php_midgard_gvalue2zval(gvalue, return_value TSRMLS_CC);
 }
 
 PHP_FUNCTION(_php_midgard_object_set_parameter)
@@ -178,11 +178,11 @@ PHP_FUNCTION(_php_midgard_object_set_parameter)
 	if (strval == NULL)
 		strval = "";
 
-	GValue sval = {0, };
-	g_value_init(&sval, G_TYPE_STRING);
-	g_value_set_string(&sval, strval);
+	GValue *sval = g_new0 (GValue, 1);
+	g_value_init(sval, G_TYPE_STRING);
+	g_value_set_string(sval, strval);
 
-	gboolean rv = midgard_object_set_parameter(mobj, domain, name, (GValue *)&sval);
+	gboolean rv = midgard_object_set_parameter(mobj, domain, name, sval);
 
 	RETURN_BOOL(rv);
 }

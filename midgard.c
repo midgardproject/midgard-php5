@@ -56,7 +56,8 @@ GHashTable *mgdg_config_files = NULL;
 /* Every user visible function must have an entry in midgard_functions[].
  */
 #include "php_midgard_functions.h"
-function_entry midgard2_functions[] = {
+
+zend_function_entry midgard2_functions[] = {
 	PHP_FE(mgd_version, NULL)
 	PHP_FE(mgd_is_guid, NULL)
 	/* Undocumented */
@@ -153,6 +154,7 @@ static PHP_GINIT_FUNCTION(midgard2);
 
 static zend_module_dep midgard2_deps[] = {
 	ZEND_MOD_REQUIRED("date")
+	ZEND_MOD_REQUIRED("spl")
 	{NULL, NULL, NULL}
 };
 
@@ -182,8 +184,9 @@ STD_PHP_INI_BOOLEAN("midgard.http",                "0", PHP_INI_SYSTEM, OnUpdate
 STD_PHP_INI_BOOLEAN("midgard.engine",              "1", PHP_INI_ALL,    OnUpdateBool,   midgard_engine,             zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.memory_debug",        "0", PHP_INI_ALL,    OnUpdateBool,   midgard_memory_debug,       zend_midgard2_globals, midgard2_globals)
 STD_PHP_INI_BOOLEAN("midgard.superglobals_compat", "0", PHP_INI_SYSTEM, OnUpdateBool,   superglobals_compat,        zend_midgard2_globals, midgard2_globals)
-// quota isn't used?
-// STD_PHP_INI_BOOLEAN("midgard.quota",        "0", PHP_INI_ALL,    OnUpdateBool, midgard_quota,        midgard2_globals *, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.valgrind_friendly",   "0", PHP_INI_SYSTEM, OnUpdateBool,   valgrind_friendly,          zend_midgard2_globals, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.glib_loghandler",	   "0", PHP_INI_SYSTEM, OnUpdateBool,   glib_loghandler,            zend_midgard2_globals, midgard2_globals)
+STD_PHP_INI_BOOLEAN("midgard.schema_path",	   "",  PHP_INI_SYSTEM, OnUpdateString, schema_path,	            zend_midgard2_globals, midgard2_globals)
 PHP_INI_END()
 
 static zend_bool php_midgard_engine_is_enabled(TSRMLS_D)
@@ -231,6 +234,32 @@ static zend_bool php_midgard_initialize_configs(TSRMLS_D)
 	g_strfreev(files);
 
 	return TRUE;
+}
+
+static void php_midgard_initialize_schema_from_path(TSRMLS_D)
+{
+	const char *user_defined_path = MGDG(schema_path);
+	if (user_defined_path == NULL
+			|| (user_defined_path && *user_defined_path =='\0'))
+		return;
+
+	char **paths = g_strsplit_set(user_defined_path, ";:", 0);
+	if (paths == NULL)
+		return;
+
+	int i;
+	MidgardSchema *schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
+	for(i = 0; paths[i] != NULL; i++) {
+		if (*paths[i] == '\0')
+			continue;
+		zend_bool success = midgard_schema_read_dir(schema, paths[i]);
+		if (success == FALSE) {
+			php_error(E_WARNING, "Failed to read schema from given '%s' directory.", paths[i]);
+		}
+	}
+
+	g_object_unref (schema);
+	g_strfreev(paths);
 }
 
 static void php_midgard_initialize_schema(TSRMLS_D)
@@ -283,6 +312,10 @@ static void php_midgard_initialize_schema(TSRMLS_D)
 		midgard_schema_init(midgard_global_schema, path);
 		zend_bool success = midgard_schema_read_dir(midgard_global_schema, share_dir);
 
+		if (FALSE == success) {
+			// FIXME: die in pain
+		}
+
 		g_free(share_dir);
 		g_free(path);
 	}
@@ -309,7 +342,7 @@ PHP_MINIT_FUNCTION(midgard2)
 										  NULL);
 
 	//g_log_set_always_fatal(G_LOG_LEVEL_CRITICAL);
-	//g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_CRITICAL);
+	//g_log_set_fatal_mask("GLib-GObject", G_LOG_LEVEL_WARNING);
 
 	/* Get DateTime class pointer and set global */
 	zend_datetime_class_ptr = php_date_get_date_ce();
@@ -317,10 +350,24 @@ PHP_MINIT_FUNCTION(midgard2)
 
 	midgard_init();
 
+	/* Implicitly initialize Midgard types.
+	 * With GObject Introspection it's done out of the box */
+	GType _init_type;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_LOAD;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_CREATE;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_UPDATE;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_DELETE;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER_JOB_PURGE;
+	_init_type = MIDGARD_TYPE_SQL_CONTENT_MANAGER;
+	_init_type = MIDGARD_TYPE_EXECUTION_POOL;
+
 	REGISTER_INI_ENTRIES();
 
 	/* register Gtype types from schemas */
 	php_midgard_initialize_schema(TSRMLS_C);
+
+	/* register GType types from user defined paths */
+	php_midgard_initialize_schema_from_path(TSRMLS_C);
 
 	/* Initialize handlers */
 	memcpy(&php_midgard_gobject_handlers, zend_get_std_object_handlers(),
@@ -347,8 +394,6 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_config)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_blob)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_object_class)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_collector)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_connection)(INIT_FUNC_ARGS_PASSTHRU);
 	if (midgard_dbus_is_enabled()) {
@@ -358,19 +403,35 @@ PHP_MINIT_FUNCTION(midgard2)
 	PHP_MINIT(midgard2_datetime)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_error)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_transaction)(INIT_FUNC_ARGS_PASSTHRU);
-	PHP_MINIT(midgard2_view)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_storage)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config_context)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config_file_context)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_key_config_file)(INIT_FUNC_ARGS_PASSTHRU);
 	PHP_MINIT(midgard2_query)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_g_mainloop)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_workspaces)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_base_interface)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_base_abstract)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_object)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_user)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_view)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_reflector_object)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_reflector_property)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_repligard)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_query_selectors)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_model)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_job)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_content_manager)(INIT_FUNC_ARGS_PASSTHRU);
+	PHP_MINIT(midgard2_pool)(INIT_FUNC_ARGS_PASSTHRU);
 
 	/* Register midgard_metadata class */
 	static zend_class_entry midgard_metadata_class_entry;
-	INIT_CLASS_ENTRY(midgard_metadata_class_entry, "midgard_metadata", NULL);
+	INIT_CLASS_ENTRY(midgard_metadata_class_entry, "MidgardMetadata", NULL);
 	midgard_metadata_class = zend_register_internal_class(&midgard_metadata_class_entry TSRMLS_CC);
 	midgard_metadata_class->create_object = php_midgard_gobject_new;
+
+	zend_register_class_alias("midgard_metadata", midgard_metadata_class);
 
 #define MGD_PHP_REGISTER_CONSTANT(name) \
 	REGISTER_LONG_CONSTANT(#name, name, CONST_CS | CONST_PERSISTENT)
@@ -453,6 +514,11 @@ PHP_MINIT_FUNCTION(midgard2)
 
 	php_midgard_log_enabled = TRUE;
 
+	if (MGDG(glib_loghandler)) {
+		g_log_set_handler("GLib", G_LOG_LEVEL_MASK, php_midgard_log_errors, NULL);
+		g_log_set_handler("GLib-GObject", G_LOG_LEVEL_MASK, php_midgard_log_errors, NULL);
+	}
+
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("MINIT done (pid = %d)\n", getpid());
 	}
@@ -468,11 +534,11 @@ static PHP_GINIT_FUNCTION(midgard2)
 	midgard2_globals->midgard_global_holder = NULL;
 }
 
-static void __free_connections(gpointer key, gpointer val, gpointer ud)
+/* static void __free_connections(gpointer key, gpointer val, gpointer ud)
 {
 	MidgardConnection *cnc = MIDGARD_CONNECTION(val);
 	g_object_unref(cnc);
-}
+} */
 
 PHP_MSHUTDOWN_FUNCTION(midgard2_urlwrapper);
 PHP_MSHUTDOWN_FUNCTION(midgard2)
@@ -513,7 +579,7 @@ PHP_MSHUTDOWN_FUNCTION(midgard2)
 PHP_RINIT_FUNCTION(midgard2)
 {
 	if (!php_midgard_engine_is_enabled(TSRMLS_C))
-		return FAILURE;
+		return SUCCESS;
 
 	if (MGDG(midgard_memory_debug)) {
 		php_printf("RINIT\n");
@@ -523,14 +589,21 @@ PHP_RINIT_FUNCTION(midgard2)
 		/* all_configs is set during MINIT */
 		if (MGDG(all_configs) == NULL) {
 			php_error(E_ERROR, "[Midgard2 rinit] Can not handle request without midgard connection");
-			return FAILURE;
+			return SUCCESS;
 		}
 
 		// preinitialization of connection (in the future it won't be needed)
 		zval *instance;
 		zend_call_method_with_0_params(NULL, php_midgard_connection_class, NULL, "get_instance",
 									   &instance);
+		if (MGDG(midgard_memory_debug)) {
+			php_printf("---> got connection: %p, refcount=%d\n", instance, Z_REFCOUNT_P(instance));
+		}
+
+#if PHP_MAJOR_VERSION > 5 || PHP_MINOR_VERSION >= 3
+		// 5.2 doesn't add reference, no need to take it away
 		zval_ptr_dtor(&instance);
+#endif
 	}
 
 	if (MGDG(connection_established) == FALSE) {
@@ -555,6 +628,9 @@ PHP_RINIT_FUNCTION(midgard2)
 
 PHP_RSHUTDOWN_FUNCTION(midgard2)
 {
+	if (!php_midgard_engine_is_enabled(TSRMLS_C))
+		return SUCCESS;
+
 	MGDG(can_deliver_signals) = 0;
 
 	if (MGDG(midgard_memory_debug)) {
@@ -581,7 +657,7 @@ PHP_RSHUTDOWN_FUNCTION(midgard2)
 	}
 	php_midgard_gobject_closure_hash_free();
 
-	if (MGDG(midgard_memory_debug)) {
+	if (MGDG(valgrind_friendly)) {
 		/* It's not safe, but allow valgrind to print function names.
 		 * It simply forces Zend to not unload midgard module */
 		zend_module_entry *module;
@@ -589,7 +665,6 @@ PHP_RSHUTDOWN_FUNCTION(midgard2)
 								MIDGARD_PACKAGE_NAME, strlen(MIDGARD_PACKAGE_NAME) + 1,
 								(void**)&module);
 		if (rv == SUCCESS) {
-			php_printf("---> disable module handle\n");
 			module->handle = 0;
 		}
 	}
@@ -652,7 +727,11 @@ MidgardConnection *mgd_handle(TSRMLS_D)
 								   &instance);
 
 	MidgardConnection *connection = __midgard_connection_get_ptr(instance);
+
+#if PHP_MAJOR_VERSION > 5 || PHP_MINOR_VERSION >= 3
+	// 5.2 doesn't add reference, no need to take it away
 	zval_ptr_dtor(&instance);
+#endif
 	return connection;
 }
 

@@ -17,6 +17,8 @@
 #include "php_midgard.h"
 #include "php_midgard_gobject.h"
 
+#include "php_midgard__helpers.h"
+
 #include <zend_exceptions.h>
 
 static zend_class_entry *php_midgard_dbus_class;
@@ -72,23 +74,58 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_dbus_send, 0, 0, 2)
 	ZEND_ARG_INFO(0, use_session)
 ZEND_END_ARG_INFO()
 
+static PHP_METHOD(midgard_dbus, connect)
+{
+	MidgardConnection *mgd = mgd_handle(TSRMLS_C);
+	CHECK_MGD(mgd);
+
+	php_midgard_gobject_connect(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_dbus_connect, 0, 0, 2)
+	ZEND_ARG_INFO(0, signal)
+	ZEND_ARG_INFO(0, callback)
+	ZEND_ARG_INFO(0, user_data)
+ZEND_END_ARG_INFO()
+
+static PHP_METHOD(midgard_dbus, get_message)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	MidgardDbus *mbus = MIDGARD_DBUS(__php_gobject_ptr(getThis()));
+	const gchar *msg = midgard_dbus_get_message(mbus);
+
+	if (msg)
+		RETURN_STRING((char*)msg, 1);
+
+	RETURN_NULL();
+}
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_midgard_dbus_get_message, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_dbus)
 {
 
-	static function_entry midgard_dbus_methods[] = {
+	static zend_function_entry midgard_dbus_methods[] = {
 		PHP_ME(midgard_dbus, __construct, arginfo_midgard_dbus___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_dbus, send,        arginfo_midgard_dbus_send,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+		PHP_ME(midgard_dbus, connect,	  arginfo_midgard_dbus_connect,     ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_dbus, get_message, arginfo_midgard_dbus_get_message, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_dbus_class_entry;
 
-	INIT_CLASS_ENTRY(php_midgard_dbus_class_entry, "midgard_dbus", midgard_dbus_methods);
+	INIT_CLASS_ENTRY(php_midgard_dbus_class_entry, "MidgardDbus", midgard_dbus_methods);
 
 	php_midgard_dbus_class = zend_register_internal_class(&php_midgard_dbus_class_entry TSRMLS_CC);
 	php_midgard_dbus_class->create_object = php_midgard_gobject_new;
-	php_midgard_dbus_class->doc_comment = strdup("Sender of DBUS messages");
+	CLASS_SET_DOC_COMMENT(php_midgard_dbus_class, strdup("Sender of DBUS messages"));
+
+	zend_register_class_alias("midgard_dbus", php_midgard_dbus_class);
 
 	return SUCCESS;
 }

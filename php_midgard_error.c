@@ -150,7 +150,7 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_error)
 {
-	static function_entry midgard_error_methods[] = {
+	static zend_function_entry midgard_error_methods[] = {
 		PHP_ME(midgard_error, __construct, arginfo_midgard_error___construct, ZEND_ACC_PRIVATE | ZEND_ACC_CTOR)
 		PHP_ME(midgard_error, error,       arginfo_midgard_error_error,       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_error, critical,    arginfo_midgard_error_critical,    ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -165,7 +165,7 @@ PHP_MINIT_FUNCTION(midgard2_error)
 	INIT_CLASS_ENTRY(php_midgard_error_class_entry, "midgard_error", midgard_error_methods);
 
 	php_midgard_error_class = zend_register_internal_class(&php_midgard_error_class_entry TSRMLS_CC);
-	php_midgard_error_class->doc_comment = strdup("Collection of static methods, which can be used to send core-level log-messages");
+	CLASS_SET_DOC_COMMENT(php_midgard_error_class, strdup("Collection of static methods, which can be used to send core-level log-messages"));
 
 	return SUCCESS;
 }

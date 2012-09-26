@@ -113,6 +113,44 @@ class midgard_documentor
         return $classes;
     }
 
+    public static function get_midgard_abstract_classes()
+    {
+        $classes = array();
+
+        $all_classes = self::get_classes();
+
+        if (empty($all_classes))
+            return $classes;
+
+        foreach ($all_classes as $refclass)
+        {
+            if ($refclass->isAbstract() === false) {
+                continue;
+            }             
+            $classes[] = $refclass;
+        } 
+        return $classes;
+    }
+
+    public static function get_midgard_interfaces()
+    {
+        $classes = array();
+
+        $all_classes = self::get_classes();
+
+        if (empty($all_classes))
+            return $classes;
+
+        foreach ($all_classes as $refclass)
+        {
+            if ($refclass->isInterface() === false) {
+                continue;
+            }             
+            $classes[] = $refclass;
+        } 
+        return $classes;
+    }
+
     public function create_footer()
     {
 
@@ -130,6 +168,22 @@ class midgard_documentor
         $midgard_base_classes = self::get_midgard_base_classes();
 
         foreach ($midgard_base_classes as $refclass)
+        {
+            $this->add_to_index($refclass);
+        }
+    
+        $this->index_buffer .= "<h2> Abstract classes </h2>";       
+        $midgard_abstract_classes = self::get_midgard_abstract_classes();
+
+        foreach ($midgard_abstract_classes as $refclass)
+        {
+            $this->add_to_index($refclass);
+        }
+
+        $this->index_buffer .= "<h2> Interfaces </h2>";       
+        $midgard_interfaces = self::get_midgard_interfaces();
+
+        foreach ($midgard_interfaces as $refclass)
         {
             $this->add_to_index($refclass);
         }

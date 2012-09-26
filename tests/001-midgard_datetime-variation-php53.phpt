@@ -12,6 +12,7 @@ midgard_datetime tests (additional test for php 5.3)
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+report_memleaks = On
 --FILE--
 <?php
 // testing chain-calls

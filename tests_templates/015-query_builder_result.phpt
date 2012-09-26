@@ -19,12 +19,16 @@ $obj->a = 'example.com';
 $obj->create();
 
 $arr = (array)$obj;
+unset($arr['metadata']);
 ksort($arr);
+
 $string1 = var_export($arr, true);
 
 $obj = new atype($obj->id);
 $arr = (array)$obj;
+unset($arr['metadata']);
 ksort($arr);
+
 $string2 = var_export($arr, true);
 
 $query = new midgard_query_builder('atype');
@@ -32,7 +36,9 @@ var_dump($query->count() == 1);
 $res = $query->execute();
 
 $arr = (array)$res[0];
+unset($arr['metadata']);
 ksort($arr);
+
 $string3 = var_export($arr, true);
 
 $query2 = atype::new_query_builder();
@@ -40,7 +46,9 @@ var_dump($query2->count() == 1);
 $res = $query2->execute();
 
 $arr = (array)$res[0];
+unset($arr['metadata']);
 ksort($arr);
+
 $string4 = var_export($arr, true);
 
 var_dump($obj->delete());

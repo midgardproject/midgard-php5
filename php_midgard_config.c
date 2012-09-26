@@ -130,16 +130,9 @@ static PHP_METHOD(midgard_config, list_files)
 {
 	RETVAL_FALSE;
 	zend_bool user = FALSE;
-	zval *zval_object = getThis();
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|b", &user) == FAILURE) {
 		return;
-	}
-
-	MidgardConfig *config = NULL;
-
-	if (zval_object) {
-		config = (MidgardConfig *) __php_gobject_ptr(zval_object);
 	}
 
 	array_init(return_value);
@@ -188,23 +181,25 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_config)
 {
-	static function_entry midgard_config_methods[] = {
+	static zend_function_entry midgard_config_methods[] = {
 		PHP_ME(midgard_config, __construct,       arginfo_midgard_config___construct,       ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(midgard_config, save_file,         arginfo_midgard_config_save_file,         ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_config, read_file,         arginfo_midgard_config_read_file,         ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_config, read_file_at_path, arginfo_midgard_config_read_file_at_path, ZEND_ACC_PUBLIC)
 		PHP_ME(midgard_config, read_data,         arginfo_midgard_config_read_data,         ZEND_ACC_PUBLIC)
-		PHP_ME(midgard_config, list_files,        arginfo_midgard_config_list_files,        ZEND_ACC_PUBLIC)
+		PHP_ME(midgard_config, list_files,        arginfo_midgard_config_list_files,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 		PHP_ME(midgard_config, create_blobdir,    arginfo_midgard_config_create_blobdir,    ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_config_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_config_class_entry, "midgard_config", midgard_config_methods);
+	INIT_CLASS_ENTRY(php_midgard_config_class_entry, "MidgardConfig", midgard_config_methods);
 
 	php_midgard_config_class = zend_register_internal_class(&php_midgard_config_class_entry TSRMLS_CC);
 	php_midgard_config_class->create_object = php_midgard_gobject_new;
-	php_midgard_config_class->doc_comment = strdup("Represents Midgard unified configuration file");
+	CLASS_SET_DOC_COMMENT(php_midgard_config_class, strdup("Represents Midgard unified configuration file"));
+	
+	zend_register_class_alias("midgard_config", php_midgard_config_class);
 
 	return SUCCESS;
 }

@@ -60,18 +60,20 @@ ZEND_END_ARG_INFO()
 /* Initialize ZEND&PHP class */
 PHP_MINIT_FUNCTION(midgard2_key_config_file)
 {
-	static function_entry midgard_key_config_file_methods[] = {
+	static zend_function_entry midgard_key_config_file_methods[] = {
 		PHP_ME(midgard_key_config_file, __construct, arginfo_midgard_key_config_file___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		{NULL, NULL, NULL}
 	};
 
 	static zend_class_entry php_midgard_key_config_file_class_entry;
-	INIT_CLASS_ENTRY(php_midgard_key_config_file_class_entry, "midgard_key_config_file", midgard_key_config_file_methods);
+	INIT_CLASS_ENTRY(php_midgard_key_config_file_class_entry, "MidgardKeyConfigFile", midgard_key_config_file_methods);
 
 	php_midgard_key_config_file_class = zend_register_internal_class_ex(&php_midgard_key_config_file_class_entry, NULL, "midgard_key_config" TSRMLS_CC);
 
-	php_midgard_key_config_file_class->doc_comment = strdup("File based key-value (ini like) configurations");
+	CLASS_SET_DOC_COMMENT(php_midgard_key_config_file_class, strdup("File based key-value (ini like) configurations"));
 	php_midgard_key_config_file_class->create_object = php_midgard_gobject_new;
+
+	zend_register_class_alias("midgard_key_config_file", php_midgard_key_config_file_class);
 
 	return SUCCESS;
 }

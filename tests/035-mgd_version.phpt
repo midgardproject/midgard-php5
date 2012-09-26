@@ -8,6 +8,7 @@ if (!extension_loaded("midgard2")) die("skip midgard2 extension is required");
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+report_memleaks = On
 --FILE--
 <?php
 var_dump(is_string(mgd_version()));

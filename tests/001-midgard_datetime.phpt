@@ -6,6 +6,7 @@ midgard_datetime tests
 midgard.engine = On
 midgard.http = Off
 midgard.memory_debug = Off
+report_memleaks = On
 --FILE--
 <?php
 $date = new midgard_datetime();
@@ -20,6 +21,7 @@ echo $date->format("Y-m-d H:i:s")."\n";
 $date->modify('+1 day');
 echo $date->format("Y-m-d H:i:s")."\n";
 
+echo ((string)$date)."\n";
 ?>
 ===DONE===
 --EXPECTF--
@@ -28,4 +30,5 @@ echo $date->format("Y-m-d H:i:s")."\n";
 2009-06-10 12:41:10
 2009-01-28 12:41:10
 2009-01-29 12:41:10
+2009-01-29T12:41:10+00:00
 ===DONE===

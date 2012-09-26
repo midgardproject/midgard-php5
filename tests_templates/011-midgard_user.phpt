@@ -15,9 +15,13 @@ var_dump($user1);
 ?>
 ===DONE===
 --EXPECTF--
+<<<<<<< HEAD
 object(midgard_user)#%d (9) {
   ["connection"]=>
   NULL
+=======
+object(MidgardUser)#%d (8) {
+>>>>>>> gjallarhorn
   ["guid"]=>
   string(0) ""
   ["login"]=>

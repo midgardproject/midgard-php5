@@ -123,6 +123,9 @@ static PHP_METHOD(php_midgard_reflection_method, getDocComment)
 	GET_REFLECTION_OBJECT_PTR(fptr);
 
 	if (fptr->type == ZEND_USER_FUNCTION) {
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+		RETURN_FALSE;
+#endif
 		if (fptr->op_array.doc_comment) {
 			RETURN_STRINGL(fptr->op_array.doc_comment, fptr->op_array.doc_comment_len, 1);
 		} else {
@@ -175,8 +178,11 @@ static PHP_METHOD(php_midgard_reflection_class, getDocComment)
 
 	if (ce == NULL)
 		RETURN_NULL();
-
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	RETURN_STRING(ce->info.user.doc_comment ? ce->info.user.doc_comment : "", 1);
+#else
 	RETURN_STRING(ce->doc_comment ? ce->doc_comment : "", 1);
+#endif
 }
 
 static PHP_METHOD(php_midgard_reflection_class, listSignals)
@@ -186,24 +192,27 @@ static PHP_METHOD(php_midgard_reflection_class, listSignals)
 	}
 
 	_GET_RC_CE;
-	array_init(return_value);
 
 	if (ce == NULL)
 		return;
 
+	array_init(return_value);
+
 	GType classtype = g_type_from_name(php_class_name_to_g_class_name(ce->name));
-	guint *ids;
-	guint n_ids;
-	guint i;
 
-	if (!classtype)
+	if (!classtype) {
 		return;
+	}
 
-	ids = g_signal_list_ids(classtype, &n_ids);
 
-	if (ids == NULL)
+	guint n_ids = 0;
+	guint *ids = g_signal_list_ids(classtype, &n_ids);
+
+	if (ids == NULL) {
 		return;
+	}
 
+	size_t i;
 	for (i = 0; i < n_ids; i++) {
 
 		zval *signalname;
@@ -315,7 +324,10 @@ static PHP_METHOD(php_midgard_reflection_class, get_user_value)
 	const gchar *value = midgard_reflector_object_get_schema_value(Z_STRVAL_P(class_name), field_name);
 	zval_ptr_dtor(&class_name);
 
-	RETURN_STRING(value, 1);
+	if (value)
+		RETURN_STRING(value, 1);
+
+	RETURN_NULL();
 }
 
 ZEND_BEGIN_ARG_INFO_EX(php_midgard_reflection_class_get_user_value, 0, 0, 1)
@@ -330,14 +342,14 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 	zend_reflection_class_class = php_midgard_get_class_ptr_by_name("reflectionclass" TSRMLS_CC);
 
 	/* Extend ReflectionMethod */
-	static function_entry midgard_reflection_method_methods[] = {
+	static zend_function_entry midgard_reflection_method_methods[] = {
 		PHP_ME(php_midgard_reflection_method, __construct,   NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(php_midgard_reflection_method, getDocComment, NULL, ZEND_ACC_PUBLIC)
 		{NULL, NULL, NULL}
 	};
 
 	/* Extend ReflectionClass */
-	static function_entry midgard_reflection_class_methods[] = {
+	static zend_function_entry midgard_reflection_class_methods[] = {
 		PHP_ME(php_midgard_reflection_class, __construct,    php_midgard_reflection_class___construct,     ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 		PHP_ME(php_midgard_reflection_class, getDocComment,  NULL,                                         ZEND_ACC_PUBLIC)
 		PHP_ME(php_midgard_reflection_class, listSignals,    NULL,                                         ZEND_ACC_PUBLIC)
@@ -351,14 +363,14 @@ PHP_MINIT_FUNCTION(midgard2_reflection_workaround)
 	INIT_CLASS_ENTRY(_reflection_ce, "midgard_reflection_method", midgard_reflection_method_methods);
 
 	php_midgard_reflection_method_class = zend_register_internal_class_ex(&_reflection_ce, zend_reflection_function_class, NULL TSRMLS_CC);
-	php_midgard_reflection_method_class->doc_comment = strdup("Helps Midgard to show doc_comments of methods of internal classes");
+	CLASS_SET_DOC_COMMENT(php_midgard_reflection_method_class, strdup("Helps Midgard to show doc_comments of methods of internal classes"));
 
 	php_midgard_docs_add_method_comment("midgard_reflection_method", "getDocComment", "returns doc_comment of method");
 
 	INIT_CLASS_ENTRY(_reflection_ce, "midgard_reflection_class", midgard_reflection_class_methods);
 
 	php_midgard_reflection_class_class = zend_register_internal_class_ex(&_reflection_ce, zend_reflection_class_class, NULL TSRMLS_CC);
-	php_midgard_reflection_class_class->doc_comment = strdup("Helps Midgard to show doc_comments of internal classes");
+	CLASS_SET_DOC_COMMENT(php_midgard_reflection_class_class, strdup("Helps Midgard to show doc_comments of internal classes"));
 
 	return SUCCESS;
 }

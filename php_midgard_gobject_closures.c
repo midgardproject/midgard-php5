@@ -47,16 +47,6 @@ static void php_midgard_closure_invalidate(gpointer data, GClosure *closure)
 
 static GHashTable *__classes_hash = NULL;
 
-static void __destroy_hash(gpointer data)
-{
-	if (!data)
-		return;
-
-	GHashTable *hash = (GHashTable*) data;
-
-	g_hash_table_destroy(hash);
-}
-
 void php_midgard_gobject_closure_hash_new()
 {
 	if (__classes_hash == NULL)
@@ -169,9 +159,9 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 	// "10000" on next line is a HACK. Just took a number which is slightly above normal, but still doesn't look like invalid
 	if (mgdclosure->zobject != NULL && Z_REFCOUNT_P(mgdclosure->zobject) < 10000) {
 		if (MGDG(midgard_memory_debug)) {
-			printf("[%p] ---> zobject refcount = %d\n", closure, Z_REFCOUNT_P(mgdclosure->zobject));
+			printf("[%p] ---> zobject (%p) refcount = %d\n", closure, mgdclosure->zobject, Z_REFCOUNT_P(mgdclosure->zobject));
 		}
-		zval_add_ref(&(mgdclosure->zobject));
+		Z_ADDREF_P(mgdclosure->zobject);
 		zend_hash_next_index_insert(Z_ARRVAL_P(params), &(mgdclosure->zobject), sizeof(zval *), NULL);
 	} else {
 		zval *dummy = NULL;
@@ -197,7 +187,7 @@ static void php_midgard_closure_default_marshal(GClosure *closure,
 				printf("[%p] ----> got ptr = %p, *ptr = %p [refcount = %d]\n", closure, ptr, *ptr, Z_REFCOUNT_P(*ptr));
 			}
 
-			zval_add_ref(ptr);
+			Z_ADDREF_PP(ptr);
 			zend_hash_next_index_insert(Z_ARRVAL_P(params), ptr, sizeof(zval *), NULL);
 		}
 	}
@@ -220,7 +210,7 @@ GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_c
 {
 	GClosure *closure;
 
-	if (zobject == NULL || !g_type_from_name(Z_OBJCE_P(zobject)->name)) {
+	if (zobject == NULL || !g_type_from_name(php_class_name_to_g_class_name(Z_OBJCE_P(zobject)->name))) {
 		closure = g_closure_new_simple(sizeof(php_mgd_closure), NULL);
 	} else {
 		closure = g_closure_new_object(sizeof(php_mgd_closure), __php_gobject_ptr(zobject));
@@ -236,7 +226,7 @@ GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_c
 	}
 
 	php_mgd_closure *mgdclosure = (php_mgd_closure*) closure;
-	zval_add_ref(&fci.function_name);
+	Z_ADDREF_P(fci.function_name);
 	mgdclosure->fci = fci;
 	mgdclosure->fci_cache = fci_cache;
 	mgdclosure->zobject = zobject; // we do not add reference here, as closure would be destroyed when object destroyed
@@ -244,7 +234,7 @@ GClosure *php_midgard_closure_new_default(zend_fcall_info fci, zend_fcall_info_c
 	mgdclosure->args = NULL;
 
 	if (zval_array) {
-		zval_add_ref(&zval_array);
+		Z_ADDREF_P(zval_array);
 		mgdclosure->args = zval_array;
 	}
 
