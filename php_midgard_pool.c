@@ -19,6 +19,7 @@
 #include "php_midgard_gobject.h"
 
 #include "php_midgard__helpers.h"
+#include "php_gobject.h"
 
 /* midgard core classes */
 zend_class_entry *php_midgard_execution_pool_class;

@@ -1,5 +1,6 @@
 #include "php_midgard.h"
 #include "php_midgard__helpers.h"
+#include "php_midgard_gobject.h"
 
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION == 2
 zend_class_entry *php_date_get_date_ce(void)
