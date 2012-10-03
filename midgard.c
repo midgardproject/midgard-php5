@@ -41,6 +41,7 @@ PHPAPI ZEND_DECLARE_MODULE_GLOBALS(midgard2);
 
 /* True global resources - no need for thread safety here */
 static MidgardSchema *midgard_global_schema = NULL;
+static MidgardSchema *midgard_local_schema = NULL;
 static zend_class_entry *midgard_metadata_class;
 zend_class_entry *ce_midgard_error_exception;
 guint global_loghandler = 0;
@@ -248,17 +249,17 @@ static void php_midgard_initialize_schema_from_path(TSRMLS_D)
 		return;
 
 	int i;
-	MidgardSchema *schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
+	if (midgard_local_schema == NULL)
+		midgard_local_schema = g_object_new(MIDGARD_TYPE_SCHEMA, NULL);
 	for(i = 0; paths[i] != NULL; i++) {
 		if (*paths[i] == '\0')
 			continue;
-		zend_bool success = midgard_schema_read_dir(schema, paths[i]);
+		zend_bool success = midgard_schema_read_dir(midgard_local_schema, paths[i]);
 		if (success == FALSE) {
 			php_error(E_WARNING, "Failed to read schema from given '%s' directory.", paths[i]);
 		}
 	}
 
-	g_object_unref (schema);
 	g_strfreev(paths);
 }
 
@@ -537,10 +538,16 @@ PHP_MSHUTDOWN_FUNCTION(midgard2)
 	// next line is a hack. we do not free resources
 	return SUCCESS;
 
-	/* Free schema */
+	/* Free global schema */
 	if (midgard_global_schema != NULL) {
 		g_object_unref(midgard_global_schema);
 		midgard_global_schema = NULL;
+	}
+
+	/* Free local schema */
+	if (midgard_local_schema != NULL) {
+		g_object_unref(midgard_local_schema);
+		midgard_local_schema = NULL;
 	}
 
 	/* Free connections */
