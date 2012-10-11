@@ -5,32 +5,19 @@ PHP from source).
 
 2 - Then run:
 
-./mkall 
-
-	If pkg-config is not in system's PATH, 	use --with-pkg-config argument.
-	Full path including pkg-config executable is required in such case.
-
-	./mkall --with-pkg-config=/usr/local/bin/pkg-config
-
-	If php-config is not in system's PATH, use --with-php-config argument.
-	Full path including php-config executable is required in such case.
-
-	./mkall --with-php-config=/opt/bin/php-config
+phpize
+./configure
+make
+sudo make install
 
 3 - Edit your php.ini to add:
 
 extension=midgard.so
 midgard.http=On
 
-and make sure that extension_dir at least contains the output of `php-config --extension-dir`
-
 Read 'HTTP SERVER NOTES' section for more details.
 
 4 - Stop and start httpd.
-
-You may stop and start httpd server when midgard-data is already configured and 
-installed.
-
 
 ########################################################
 ########### PHP ini configuration directives ###########
