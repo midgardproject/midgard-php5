@@ -125,7 +125,8 @@ static MidgardConnection *__handle_from_global_config(MgdGHolder *mgh, GHashTabl
 	mgd = midgard_connection_new();
 
 	if (!midgard_connection_open_config(mgd, config)) {
-		php_error(E_WARNING, "Failed to open connection using given '%s' configuration", config_name);
+		php_error(E_WARNING, "Failed to open connection using given '%s' configuration. %s", 
+				config_name, midgard_connection_get_error_string (mgd));
 		g_object_unref(mgd);
 		return NULL;
 	}
