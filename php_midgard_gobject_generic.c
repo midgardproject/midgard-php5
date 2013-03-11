@@ -1132,6 +1132,7 @@ CLEAN_AND_RETURN_NULL:
 
 const gchar* php_class_name_to_g_class_name(const char *php_class_name)
 {
+	TSRMLS_FETCH();
 	zend_class_entry *ce = php_midgard_get_class_ptr_by_name(php_class_name TSRMLS_CC);
 	if (ce)
 		return ce->name;
