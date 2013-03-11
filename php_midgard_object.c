@@ -1424,6 +1424,8 @@ int php_midgard_unserialize_dbobject_hook(zval **zobject, zend_class_entry *ce, 
 static zend_class_entry *
 __find_class_by_name (const gchar *name)
 {
+	TSRMLS_FETCH();
+
        	int iface_name_length = strlen(name);
 	char *lower_iface_name = g_ascii_strdown(name, iface_name_length);
 	zend_class_entry **ce;
@@ -1538,7 +1540,7 @@ __register_php_class(const gchar *class_name, zend_class_entry *parent TSRMLS_DC
 	GType *derived = g_type_children(g_type_from_name(class_name), &n_types);
 	for (i = 0; i < n_types; i++) {
 		const gchar *typename = g_type_name(derived[i]);
-		__register_php_class(typename, mgdclass_ptr);
+		__register_php_class(typename, mgdclass_ptr TSRMLS_CC);
 		__add_method_comments(typename);
 	}
 
