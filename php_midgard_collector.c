@@ -525,7 +525,7 @@ PHP_MINIT_FUNCTION(midgard2_collector)
 	INIT_CLASS_ENTRY(php_midgard_collector_class_entry, "MidgardCollector", collector_methods);
 
 	/* FIXME, this inheritance should be automatic once we switch to namespaces */
-	zend_class_entry *qbce = php_midgard_get_class_ptr_by_name("MidgardQueryBuilder");
+	zend_class_entry *qbce = php_midgard_get_class_ptr_by_name("MidgardQueryBuilder" TSRMLS_CC);
 	php_midgard_collector_class =  zend_register_internal_class_ex (&php_midgard_collector_class_entry, qbce, "MidgardQueryBuilder" TSRMLS_CC);
 	php_midgard_collector_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_collector_class, strdup("Optimized database query tool, that doesn't return objects"));
