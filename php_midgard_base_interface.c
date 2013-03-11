@@ -21,6 +21,8 @@ zend_class_entry *php_midgard_base_interface_class;
 zend_class_entry *
 __get_interface_entry (const gchar *name)
 {
+	TSRMLS_FETCH();
+
 	int iface_name_length = strlen(name);
        	char *lower_iface_name = g_ascii_strdown(name, iface_name_length);
 	zend_class_entry **ce;
@@ -59,6 +61,8 @@ __register_php_interface (const char *name)
 	/* If given type is not interface, silently gnore */
 	if (!G_TYPE_IS_INTERFACE (iface_type))
 		return;
+
+	TSRMLS_FETCH();
 
 	guint n_types;
 	guint i;
