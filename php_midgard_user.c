@@ -336,7 +336,7 @@ PHP_MINIT_FUNCTION(midgard2_user)
 	php_midgard_user_class->serialize = php_midgard_serialize_dbobject_hook;
 	php_midgard_user_class->unserialize = php_midgard_unserialize_dbobject_hook;
 
-	zend_register_class_alias("midgard_user", php_midgard_user_class);
+	_FIXME_zend_register_class_alias("midgard_user", php_midgard_user_class);
 
 	return SUCCESS;
 }

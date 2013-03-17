@@ -437,7 +437,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	php_midgard_workspace_storage_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_workspace_storage_class, strdup("Base class for workspaces"));
 
-	zend_register_class_alias("midgard_workspace_storage", php_midgard_workspace_storage_class);
+	_FIXME_zend_register_class_alias("midgard_workspace_storage", php_midgard_workspace_storage_class);
 
 	static zend_function_entry midgard_workspace_methods[] = {
 		PHP_ME(midgard_workspace, __construct, arginfo_midgard_workspace___construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -452,7 +452,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	php_midgard_workspace_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_workspace_class, strdup("Represents single workspace"));
 
-	zend_register_class_alias("midgard_workspace", php_midgard_workspace_class);
+	_FIXME_zend_register_class_alias("midgard_workspace", php_midgard_workspace_class);
 
 	static zend_function_entry midgard_workspace_context_methods[] = {
 		PHP_ME(midgard_workspace_context, __construct,   arginfo_midgard_workspace_context___construct,   ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -467,7 +467,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	php_midgard_workspace_context_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_workspace_context_class, strdup("Represents workspaces' tree"));
 
-	zend_register_class_alias("midgard_workspace_context", php_midgard_workspace_context_class);
+	_FIXME_zend_register_class_alias("midgard_workspace_context", php_midgard_workspace_context_class);
 
 	static zend_function_entry midgard_workspace_manager_methods[] = {
 		PHP_ME(midgard_workspace_manager, __construct,           arginfo_midgard_workspace_manager___construct,           ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -488,7 +488,7 @@ PHP_MINIT_FUNCTION(midgard2_workspaces)
 	php_midgard_workspace_manager->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_workspace_manager, strdup("Workspaces' manager"));
 
-	zend_register_class_alias("midgard_workspace_manager", php_midgard_workspace_manager);
+	_FIXME_zend_register_class_alias("midgard_workspace_manager", php_midgard_workspace_manager);
 
 	return SUCCESS;
 }

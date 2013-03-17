@@ -199,7 +199,7 @@ PHP_MINIT_FUNCTION(midgard2_config)
 	php_midgard_config_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_config_class, strdup("Represents Midgard unified configuration file"));
 	
-	zend_register_class_alias("midgard_config", php_midgard_config_class);
+	_FIXME_zend_register_class_alias("midgard_config", php_midgard_config_class);
 
 	return SUCCESS;
 }

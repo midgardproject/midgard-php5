@@ -206,7 +206,7 @@ PHP_MINIT_FUNCTION(midgard2_model)
 	php_midgard_object_reference_class->ce_flags = 0;
 	CLASS_SET_DOC_COMMENT(php_midgard_object_reference_class, strdup("Object which holds reference"));
 
-	zend_register_class_alias("midgard_object_reference", php_midgard_object_reference_class);
+	_FIXME_zend_register_class_alias("midgard_object_reference", php_midgard_object_reference_class);
 
 	return SUCCESS;
 }

@@ -669,7 +669,7 @@ PHP_MINIT_FUNCTION(midgard2_connection)
 
 	zend_declare_property_null(php_midgard_connection_class, "instance", sizeof("instance")-1, ZEND_ACC_PRIVATE|ZEND_ACC_STATIC TSRMLS_CC);
 
-	zend_register_class_alias("midgard_connection", php_midgard_connection_class);
+	_FIXME_zend_register_class_alias("midgard_connection", php_midgard_connection_class);
 
 	return SUCCESS;
 }

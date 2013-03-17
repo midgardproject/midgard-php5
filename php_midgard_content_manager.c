@@ -149,7 +149,7 @@ PHP_MINIT_FUNCTION(midgard2_content_manager)
 	php_midgard_sql_content_manager_class->ce_flags = 0;
 	CLASS_SET_DOC_COMMENT(php_midgard_sql_content_manager_class, strdup("ContentManager implementation for SQL storage"));
 
-	zend_register_class_alias("midgard_sql_content_manager", php_midgard_sql_content_manager_class);
+	_FIXME_zend_register_class_alias("midgard_sql_content_manager", php_midgard_sql_content_manager_class);
 
 	return SUCCESS;
 }

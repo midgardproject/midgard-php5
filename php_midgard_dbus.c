@@ -125,7 +125,7 @@ PHP_MINIT_FUNCTION(midgard2_dbus)
 	php_midgard_dbus_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_dbus_class, strdup("Sender of DBUS messages"));
 
-	zend_register_class_alias("midgard_dbus", php_midgard_dbus_class);
+	_FIXME_zend_register_class_alias("midgard_dbus", php_midgard_dbus_class);
 
 	return SUCCESS;
 }

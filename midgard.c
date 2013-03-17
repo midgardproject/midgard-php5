@@ -432,7 +432,7 @@ PHP_MINIT_FUNCTION(midgard2)
 	midgard_metadata_class = zend_register_internal_class(&midgard_metadata_class_entry TSRMLS_CC);
 	midgard_metadata_class->create_object = php_midgard_gobject_new;
 
-	zend_register_class_alias("midgard_metadata", midgard_metadata_class);
+	_FIXME_zend_register_class_alias("midgard_metadata", midgard_metadata_class);
 
 #define MGD_PHP_REGISTER_CONSTANT(name) \
 	REGISTER_LONG_CONSTANT(#name, name, CONST_CS | CONST_PERSISTENT)

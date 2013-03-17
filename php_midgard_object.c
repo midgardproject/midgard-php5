@@ -1554,7 +1554,7 @@ PHP_MINIT_FUNCTION(midgard2_object)
 
 	php_midgard_dbobject_class = zend_register_internal_class(&php_midgard_dbobject_ce TSRMLS_CC);
 	php_midgard_dbobject_class->ce_flags = ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
-	zend_register_class_alias("midgard_dbobject", php_midgard_dbobject_class);
+	_FIXME_zend_register_class_alias("midgard_dbobject", php_midgard_dbobject_class);
 
 	/* Register midgard_object class */
 	static zend_class_entry php_midgard_object_ce;
@@ -1562,7 +1562,7 @@ PHP_MINIT_FUNCTION(midgard2_object)
 
 	php_midgard_object_class = zend_register_internal_class_ex(&php_midgard_object_ce, php_midgard_dbobject_class, "MidgardDBObject" TSRMLS_CC);
 	php_midgard_object_class->ce_flags = ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
-	zend_register_class_alias ("midgard_object", php_midgard_object_class);
+	_FIXME_zend_register_class_alias ("midgard_object", php_midgard_object_class);
 
 
 	guint n_types, i;

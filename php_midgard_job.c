@@ -309,7 +309,7 @@ PHP_MINIT_FUNCTION(midgard2_job)
 	php_midgard_sql_content_manager_job_class->ce_flags = 0;
 	CLASS_SET_DOC_COMMENT(php_midgard_sql_content_manager_job_class, strdup("ContentManagerJob implementation for SQL storage"));
 
-	zend_register_class_alias("midgard_sql_content_manager_job", php_midgard_sql_content_manager_job_class);
+	_FIXME_zend_register_class_alias("midgard_sql_content_manager_job", php_midgard_sql_content_manager_job_class);
 
 	/*	SqlContentManagerJobLoad	*/
 	static zend_class_entry job_load_class_entry;
@@ -317,7 +317,7 @@ PHP_MINIT_FUNCTION(midgard2_job)
 	zend_class_entry *job_load_class = zend_register_internal_class_ex(&job_load_class_entry, 
 			php_midgard_sql_content_manager_job_class, "MidgardSqlContentManagerJob" TSRMLS_CC); 
 	job_load_class->create_object = php_midgard_gobject_new;
-	zend_register_class_alias("midgard_sql_content_manager_job_load", job_load_class);
+	_FIXME_zend_register_class_alias("midgard_sql_content_manager_job_load", job_load_class);
 
 	/*	SqlContentManagerJobCreate	*/
 	static zend_class_entry job_create_class_entry;
@@ -325,7 +325,7 @@ PHP_MINIT_FUNCTION(midgard2_job)
 	zend_class_entry *job_create_class = zend_register_internal_class_ex(&job_create_class_entry, 
 			php_midgard_sql_content_manager_job_class, "MidgardSqlContentManagerJob" TSRMLS_CC); 
 	job_create_class->create_object = php_midgard_gobject_new;
-	zend_register_class_alias("midgard_sql_content_manager_job_create", job_create_class);
+	_FIXME_zend_register_class_alias("midgard_sql_content_manager_job_create", job_create_class);
 
 	/*	SqlContentManagerJobUpdate	*/
 	static zend_class_entry job_update_class_entry;
@@ -333,7 +333,7 @@ PHP_MINIT_FUNCTION(midgard2_job)
 	zend_class_entry *job_update_class = zend_register_internal_class_ex(&job_update_class_entry, 
 			php_midgard_sql_content_manager_job_class, "MidgardSqlContentManagerJob" TSRMLS_CC); 
 	job_create_class->create_object = php_midgard_gobject_new;
-	zend_register_class_alias("midgard_sql_content_manager_job_update", job_update_class);
+	_FIXME_zend_register_class_alias("midgard_sql_content_manager_job_update", job_update_class);
 
 	/*	SqlContentManagerJobDelete	*/
 	static zend_class_entry job_delete_class_entry;
@@ -341,7 +341,7 @@ PHP_MINIT_FUNCTION(midgard2_job)
 	zend_class_entry *job_delete_class = zend_register_internal_class_ex(&job_delete_class_entry, 
 			php_midgard_sql_content_manager_job_class, "MidgardSqlContentManagerJob" TSRMLS_CC); 
 	job_delete_class->create_object = php_midgard_gobject_new;
-	zend_register_class_alias("midgard_sql_content_manager_job_update", job_delete_class);
+	_FIXME_zend_register_class_alias("midgard_sql_content_manager_job_update", job_delete_class);
 
 	/*	SqlContentManagerJobPurge	*/
 	static zend_class_entry job_purge_class_entry;
@@ -349,7 +349,7 @@ PHP_MINIT_FUNCTION(midgard2_job)
 	zend_class_entry *job_purge_class = zend_register_internal_class_ex(&job_purge_class_entry, 
 			php_midgard_sql_content_manager_job_class, "MidgardSqlContentManagerJob" TSRMLS_CC); 
 	job_purge_class->create_object = php_midgard_gobject_new;
-	zend_register_class_alias("midgard_sql_content_manager_job_purge", job_purge_class);
+	_FIXME_zend_register_class_alias("midgard_sql_content_manager_job_purge", job_purge_class);
 
 	return SUCCESS;
 }

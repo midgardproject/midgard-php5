@@ -530,7 +530,7 @@ PHP_MINIT_FUNCTION(midgard2_collector)
 	php_midgard_collector_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_collector_class, strdup("Optimized database query tool, that doesn't return objects"));
 
-	zend_register_class_alias("midgard_collector", php_midgard_collector_class);
+	_FIXME_zend_register_class_alias("midgard_collector", php_midgard_collector_class);
 
 	return SUCCESS;
 }
