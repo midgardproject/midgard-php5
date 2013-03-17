@@ -144,7 +144,7 @@ PHP_MINIT_FUNCTION(midgard2_pool)
 	php_midgard_execution_pool_class->ce_flags = 0;
 	CLASS_SET_DOC_COMMENT(php_midgard_execution_pool_class, strdup("Pool implementation for executions"));
 
-	zend_register_class_alias("midgard_execution_pool", php_midgard_execution_pool_class);
+	_FIXME_zend_register_class_alias("midgard_execution_pool", php_midgard_execution_pool_class);
 
 	return SUCCESS;
 }

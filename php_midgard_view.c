@@ -143,7 +143,7 @@ PHP_MINIT_FUNCTION(midgard2_view)
 		__register_view_php_classes(typename, php_midgard_view_class TSRMLS_CC);
 	}
 
-	zend_register_class_alias("midgard_view", php_midgard_view_class);
+	_FIXME_zend_register_class_alias("midgard_view", php_midgard_view_class);
 
 	g_free(all_types);
 

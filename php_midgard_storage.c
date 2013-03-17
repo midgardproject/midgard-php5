@@ -129,7 +129,7 @@ PHP_MINIT_FUNCTION(midgard2_storage)
 	php_midgard_storage_class->create_object = NULL;
 	CLASS_SET_DOC_COMMENT(php_midgard_storage_class, strdup("Collection of static methods for managing underlying data storage"));
 
-	zend_register_class_alias("midgard_storage", php_midgard_storage_class);
+	_FIXME_zend_register_class_alias("midgard_storage", php_midgard_storage_class);
 
 	return SUCCESS;
 }

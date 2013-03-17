@@ -175,7 +175,7 @@ PHP_MINIT_FUNCTION(midgard2_transaction)
 	php_midgard_transaction_class->unserialize = NULL;
 	CLASS_SET_DOC_COMMENT(php_midgard_transaction_class, strdup("Transaction manager"));
 
-	zend_register_class_alias("midgard_transaction", php_midgard_transaction_class);
+	_FIXME_zend_register_class_alias("midgard_transaction", php_midgard_transaction_class);
 
 	return SUCCESS;
 }

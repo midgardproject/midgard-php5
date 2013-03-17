@@ -393,7 +393,7 @@ PHP_MINIT_FUNCTION(midgard2_query_builder)
 	php_midgard_query_builder_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_builder_class, strdup("API for building complex data-queries"));
 
-	zend_register_class_alias("midgard_query_builder", php_midgard_query_builder_class);
+	_FIXME_zend_register_class_alias("midgard_query_builder", php_midgard_query_builder_class);
 
 	return SUCCESS;
 }

@@ -301,4 +301,9 @@ extern zend_class_entry *php_midgard_query_constraint_simple_class;
 #define MGD_PHP_SET_GOBJECT_G(instance, object) (__php_gobject_ptr(instance) = object)
 #define MGD_PHP_SET_GOBJECT(instance, object)  MGD_PHP_SET_GOBJECT_G(instance, G_OBJECT(object))
 
+/* ZEND BUGS WORKAROUNDS */
+/*  TSRMLS_DC given to zend_register_class_alias_ex */
+#define _FIXME_zend_register_class_alias(name, ce) \
+	zend_register_class_alias_ex(name, sizeof(name)-1, ce TSRMLS_CC)
+
 #endif	/* PHP_MIDGARD_H */

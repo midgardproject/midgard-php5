@@ -305,7 +305,7 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 	php_midgard_query_executor_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_executor_class, strdup("Base, abstract class for queries executions"));
 
-	zend_register_class_alias("midgard_query_executor", php_midgard_query_executor_class);
+	_FIXME_zend_register_class_alias("midgard_query_executor", php_midgard_query_executor_class);
 
 	static zend_function_entry midgard_query_select_methods[] = {
 		PHP_ME(midgard_query_select, __construct,      arginfo_midgard_query_select___construct,      ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -323,7 +323,7 @@ PHP_MINIT_FUNCTION(midgard2_query_executors)
 	php_midgard_query_select_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_select_class, strdup("SQL SELECT queries generator and executor"));
 
-	zend_register_class_alias("midgard_query_select", php_midgard_query_select_class);
+	_FIXME_zend_register_class_alias("midgard_query_select", php_midgard_query_select_class);
 
 	return SUCCESS;
 }

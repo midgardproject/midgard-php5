@@ -33,7 +33,7 @@ PHP_MINIT_FUNCTION(midgard2_repligard)
 	php_midgard_repligard_class = zend_register_internal_class_ex(&php_midgard_repligard_ce, php_midgard_dbobject_class, "MidgardDBObject" TSRMLS_CC);
 	php_midgard_repligard_class->ce_flags = ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
 
-	zend_register_class_alias("midgard_repligard", php_midgard_repligard_class);
+	_FIXME_zend_register_class_alias("midgard_repligard", php_midgard_repligard_class);
 
 	return SUCCESS;
 }

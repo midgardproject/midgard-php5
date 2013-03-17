@@ -264,7 +264,7 @@ PHP_MINIT_FUNCTION(midgard2_key_config)
 	CLASS_SET_DOC_COMMENT(php_midgard_key_config_class, strdup("Abstract class for key-value (ini like) configurations"));
 	php_midgard_key_config_class->create_object = php_midgard_gobject_new;
 	
-	zend_register_class_alias("midgard_key_config", php_midgard_key_config_class);
+	_FIXME_zend_register_class_alias("midgard_key_config", php_midgard_key_config_class);
 
 	return SUCCESS;
 }

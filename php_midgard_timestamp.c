@@ -297,7 +297,7 @@ PHP_MINIT_FUNCTION(midgard2_datetime)
 	zend_declare_property_string(php_midgard_datetime_class, "object",   sizeof("object")-1,   "", ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_string(php_midgard_datetime_class, "property", sizeof("property")-1, "", ZEND_ACC_PRIVATE TSRMLS_CC);
 
-	zend_register_class_alias("midgard_datetime", php_midgard_datetime_class);
+	_FIXME_zend_register_class_alias("midgard_datetime", php_midgard_datetime_class);
 
 	return SUCCESS;
 }

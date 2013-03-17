@@ -529,7 +529,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_query_column_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_column_class, strdup("Base, abstract class for column in query result"));
 
-	zend_register_class_alias("midgard_query_column", php_midgard_query_column_class);
+	_FIXME_zend_register_class_alias("midgard_query_column", php_midgard_query_column_class);
 
 	/*	QueryRow	*/
 	static zend_function_entry midgard_query_row_methods[] = {
@@ -547,7 +547,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_query_row_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_row_class, strdup("Base, abstract class for a row in query result"));
 
-	zend_register_class_alias("midgard_query_row", php_midgard_query_row_class);
+	_FIXME_zend_register_class_alias("midgard_query_row", php_midgard_query_row_class);
 
 	/*	QuerySelector	*/
 	static zend_function_entry midgard_query_selector_methods[] = {
@@ -565,7 +565,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_query_selector_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_selector_class, strdup("Base, abstract class for a query selector"));
 
-	zend_register_class_alias("midgard_query_selector", php_midgard_query_selector_class);
+	_FIXME_zend_register_class_alias("midgard_query_selector", php_midgard_query_selector_class);
 
 	/*	QueryResult	*/
 	static zend_function_entry midgard_query_result_methods[] = {
@@ -584,7 +584,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_query_result_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_result_class, strdup("Base, abstract class for a query result"));
 
-	zend_register_class_alias("midgard_query_result", php_midgard_query_result_class);
+	_FIXME_zend_register_class_alias("midgard_query_result", php_midgard_query_result_class);
 
 	/*	SqlQueryResult	*/
 	static zend_class_entry php_midgard_sql_query_result_class_entry;
@@ -594,7 +594,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_sql_query_result_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_result_class, strdup("SQL query result"));
 
-	zend_register_class_alias("midgard_sql_query_result", php_midgard_query_result_class);
+	_FIXME_zend_register_class_alias("midgard_sql_query_result", php_midgard_query_result_class);
 
 	/*	SqlQueryColumn	*/
 	static zend_function_entry midgard_sql_query_column_methods[] = {
@@ -610,7 +610,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	CLASS_SET_DOC_COMMENT(php_midgard_query_column_class, strdup("SQL query column"));
 
 	zend_class_implements(php_midgard_sql_query_column_class TSRMLS_CC, 1, php_midgard_query_column_class);
-	zend_register_class_alias("midgard_sql_query_column", php_midgard_query_column_class);
+	_FIXME_zend_register_class_alias("midgard_sql_query_column", php_midgard_query_column_class);
 
 	/*	SqlQueryRow	*/
 	static zend_class_entry php_midgard_sql_query_row_class_entry;
@@ -620,7 +620,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_sql_query_row_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_query_row_class, strdup("SQL query row"));
 
-	zend_register_class_alias("midgard_sql_query_row", php_midgard_query_row_class);
+	_FIXME_zend_register_class_alias("midgard_sql_query_row", php_midgard_query_row_class);
 
 	/*	SqlQueryConstraint	*/
 	static zend_function_entry midgard_sql_query_constraint_methods[] = {
@@ -640,7 +640,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	php_midgard_sql_query_constraint_class->create_object = php_midgard_gobject_new;
 	CLASS_SET_DOC_COMMENT(php_midgard_sql_query_constraint_class, strdup("SQL query constraint"));
 
-	zend_register_class_alias("midgard_sql_query_constraint", php_midgard_sql_query_constraint_class);
+	_FIXME_zend_register_class_alias("midgard_sql_query_constraint", php_midgard_sql_query_constraint_class);
 
 	/*	SqlQuerySelectData	*/
 	static zend_function_entry midgard_sql_query_select_data_methods[] = {
@@ -661,7 +661,7 @@ PHP_MINIT_FUNCTION(midgard2_query_selectors)
 	CLASS_SET_DOC_COMMENT(php_midgard_sql_query_select_data_class, strdup("SQL data selector"));
 
 	zend_class_implements(php_midgard_sql_query_select_data_class TSRMLS_CC, 1, php_midgard_query_selector_class);
-	zend_register_class_alias("midgard_sql_query_select_data", php_midgard_sql_query_select_data_class);
+	_FIXME_zend_register_class_alias("midgard_sql_query_select_data", php_midgard_sql_query_select_data_class);
 
 	return SUCCESS;
 }
